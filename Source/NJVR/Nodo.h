@@ -74,12 +74,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     float Radio;
 
-    //UPROPERTY(VisibleAnywhere, Category = "Visualization")
-    //UStaticMeshComponent * SphereMesh;
+    //Mesh del nodo
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UStaticMeshComponent * NodoMesh; // debe tener este componente ya que en cualquier tipo de nodo, podre cambiar el color del mesh
 
     //UPROPERTY(VisibleAnywhere, Category = "Visualization")
-    //USphereComponent * SphereComponent;
-    //UMaterialInstanceDynamic * MaterialDynamic;
+    //USphereComponent * NodoCollision;// el detector de colisiones es diferente en cada nodo por lo tanto se manejan con funciones diferentes, este deberia ser un UShape para poder generalizar, pero por ahora lo dejameros a decision de las subclases
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UMaterialInstanceDynamic * NodoMaterialDynamic;
     
 	
 };

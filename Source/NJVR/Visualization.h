@@ -34,3 +34,5 @@ public:
 	
 	
 };
+
+//por ahora usar los nodos blueprint, ya que estos pueden hacer el cambio de color de forma adecuada, pero usar la variable MaterialDynaimc para almacenar la referencai, y no promover variables
