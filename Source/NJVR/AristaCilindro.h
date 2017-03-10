@@ -13,7 +13,10 @@ class NJVR_API AAristaCilindro : public AArista
 {
     GENERATED_BODY()
 
+public:
     AAristaCilindro();
+
+    virtual void Actualizar() override;
 	
 	
 	

@@ -40,11 +40,11 @@ public:
 
     //id del nodo del que sale esta arista, es decir del padre
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
-    int Source;
+    int SourceId;
 
     //id del nodo al que se dirige la arista, es decir el hijo
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
-    int Target;
+    int TargetId;
 
     //referencia al nodo padre
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
@@ -60,4 +60,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent * AristaMesh;//un capsule mesh es dificl de scalar de forma adecuada para que las semiesferas no se deformen
 	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void Actualizar();
 };

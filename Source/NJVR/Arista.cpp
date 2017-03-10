@@ -25,4 +25,7 @@ void AArista::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+void AArista::Actualizar() {
+
+}
 
