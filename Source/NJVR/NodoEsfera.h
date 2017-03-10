@@ -17,8 +17,8 @@ public:
     ANodoEsfera();
 
 
-    UPROPERTY(VisibleAnywhere, Category = "Visualization")
-    USphereComponent * NodoCollision;
+    //UPROPERTY(VisibleAnywhere, Category = "Visualization")
+    //USphereComponent * NodoCollision;
 	
 	
 };
