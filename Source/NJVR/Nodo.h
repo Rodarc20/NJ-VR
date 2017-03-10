@@ -81,8 +81,10 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "Visualization")
     USphereComponent * NodoCollision;// el detector de colisiones es diferente en cada nodo por lo tanto se manejan con funciones diferentes, este deberia ser un UShape para poder generalizar, pero por ahora lo dejameros a decision de las subclases
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
     UMaterialInstanceDynamic * NodoMaterialDynamic;
     
-	
+    //Cambiar el color del material
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void CambiarColor(FLinearColor NewColor);
 };

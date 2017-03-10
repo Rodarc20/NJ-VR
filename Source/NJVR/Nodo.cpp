@@ -26,3 +26,9 @@ void ANodo::Tick(float DeltaTime)
 
 }
 
+void ANodo::CambiarColor(FLinearColor NewColor) {
+    if (NodoMaterialDynamic != nullptr) {
+        NodoMaterialDynamic->SetVectorParameterValue(TEXT("Color"), NewColor);// a que pareametro del material se le asiganara el nuevo color
+    }
+}
+
