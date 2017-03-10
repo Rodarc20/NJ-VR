@@ -31,6 +31,10 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     bool Valid;
 
+    //verdadero si es un nodo real, falso si es un nodo virtual
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    bool Selected;
+
     //la corrdenada x
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     float Xcoordinate;//esta es la coordenada original obtenida del xml, es posible que esto se mapee en otro eje, o en otra posición
@@ -45,7 +49,12 @@ public:
 
     //el color que tiene
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
-    float Color;
+    float ColorNum;
+
+    //el color que tiene de forma predeterminada com normal, que pdepende y se le asigana, de forma predeterminada sera blanco
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FLinearColor Color;
+
 
     //los labels como titulo del documento, y nombre del archivo
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
@@ -83,7 +92,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
     UMaterialInstanceDynamic * NodoMaterialDynamic;
-    
+
     //Cambiar el color del material
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void CambiarColor(FLinearColor NewColor);
