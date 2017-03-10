@@ -33,6 +33,9 @@ public:
     TArray<class ANodo*> Nodos;
 
     TArray<class AArista*> Aristas;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    TArray<class ANodo*> NodosSeleccionados;
 	
 
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
