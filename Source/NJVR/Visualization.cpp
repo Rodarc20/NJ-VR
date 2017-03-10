@@ -34,6 +34,7 @@ AVisualization::AVisualization()
         TipoArista = AristaClass.Class;
     }
 
+    ColorSeleccion = FLinearColor::Green;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +58,8 @@ void AVisualization::BeginPlay()
         CreateNodos();
         CreateAristas();
     }
+
+    SetVisualizationMode(EVisualizationMode::ENoSelection);
 }
 
 // Called every frame
@@ -168,6 +171,13 @@ void AVisualization::CreateNodos() {
             XMLvertexs.Add(XMLnodes[i]);
         }
     }
+    //obtenienod la unicaion del ulitmo nodo para centrar todo el arbol
+    FXmlNode * nodexorigen = XMLvertexs[XMLvertexs.Num()-1]->FindChildNode(FString("x-coordinate"));
+    FString xorigen = nodexorigen->GetAttribute("value");
+    float OrigenX = FCString::Atof(*xorigen);
+    FXmlNode * nodeyorigen = XMLvertexs[XMLvertexs.Num()-1]->FindChildNode(FString("y-coordinate"));
+    FString yorigen = nodeyorigen->GetAttribute("value");
+    float OrigenY = FCString::Atof(*yorigen) * -1;
     //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::FromInt(vertexs.Num()));
     //tengo todos los vertices en ese array
     for (int i = 0; i < XMLvertexs.Num(); ++i) {
@@ -221,7 +231,7 @@ void AVisualization::CreateNodos() {
             SpawnParams.Owner = this;
             SpawnParams.Instigator = Instigator;
 
-            FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate), -1*FCString::Atof(*ycoordinate));//ejes invertidos a los recibidos
+            FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos
             ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
             NodoInstanciado->Id = FCString::Atoi(*id);
             NodoInstanciado->Valid = FCString::ToBool(*valid);
@@ -236,7 +246,9 @@ void AVisualization::CreateNodos() {
                 NodoInstanciado->SonsId.Add(FCString::Atoi(*sons[j]));
                 NodoInstanciado->Sons.Add(Nodos[NodoInstanciado->SonsId[j]]);//para agregar la referencia, esto o se peude con el padre, por que en toeria aun no existe, habria que realizar una segunda pasada, alli podiasmos incluir esto para evtar algun fallo
             }
+            NodoInstanciado->Selected = false;
             Nodos.Add(NodoInstanciado);
+            //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
         }
     }
 
@@ -310,4 +322,76 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
         Aristas.Add(AristaInstanciado);
         count++;
     }
+}
+
+//quiza esta funcon deberia separarla y crear una tercera que las llama dependiendo del estado del nodo, para no hacerlo en el blueprint
+//asi mismo esta tercera funcoin se encargara del control del VisualizationMode, verificando en que modo esta y luego verificando si el nodo marcado esta activo o no
+//solo siempore tener cuidado de no agregar doble, por eso es vital checkear en la tercera funcion
+//los unicos casos raors son los de seleccionar y deseleccionar todo, por que no le doy click a algo, asta con entrar en el modo y ya deberia ejecutarse eso por lo tanto en el blueprint, quita no se deba verificar algunas cosas, 
+//aun que pensandolo bien, al entrar ne los modos solo algunos ejecutan algo, el resto solo debe esperar al click del usuraio  para ahcer algo, 
+// a modo de prueba el blueprint puede encargarse de la funcionalidad anterior mente mencionada
+
+
+void AVisualization::SeleccionarNodo(ANodo * NodoSeleccionado) {
+    //if (!NodoSeleccionado->Selected) {
+    NodoSeleccionado->Selected = true;
+    NodoSeleccionado->CambiarColor(ColorSeleccion);
+    NodosSeleccionados.Add(NodoSeleccionado);
+    //}
+}
+
+void AVisualization::DeseleccionarNodo(ANodo * NodoSeleccionado) {
+    NodoSeleccionado->Selected = false;
+    NodoSeleccionado->CambiarColor(NodoSeleccionado->Color);
+    NodosSeleccionados.Remove(NodoSeleccionado);
+}
+
+void AVisualization::SeleccionarTodo() {
+    NodosSeleccionados = Nodos;// esta accion borra todos los elementos y le copia los elementos del segundo array
+    //pero ahora debo marcarlos y 
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        NodosSeleccionados[i]->Selected = true;
+        NodosSeleccionados[i]->CambiarColor(ColorSeleccion);
+    }
+}
+
+void AVisualization::SeleccionarRama(ANodo * NodoSeleccionado) {
+    TQueue<ANodo*> Cola;
+    Cola.Enqueue(NodoSeleccionado);
+    while (!Cola.IsEmpty()) {
+        Cola.Dequeue(NodoSeleccionado);
+        NodoSeleccionado->Selected = true;
+        NodoSeleccionado->CambiarColor(ColorSeleccion);
+        NodosSeleccionados.Add(NodoSeleccionado);
+        for (int i = 0; i < NodoSeleccionado->Sons.Num(); i++) {
+            Cola.Enqueue(NodoSeleccionado->Sons[i]);
+        }
+    }
+}
+
+void AVisualization::DeseleccionarRama(ANodo * NodoSeleccionado) {
+    TQueue<ANodo*> Cola;
+    Cola.Enqueue(NodoSeleccionado);
+    while (!Cola.IsEmpty()) {
+        Cola.Dequeue(NodoSeleccionado);
+        NodoSeleccionado->Selected = false;
+        NodoSeleccionado->CambiarColor(NodoSeleccionado->Color);
+        NodosSeleccionados.Remove(NodoSeleccionado);
+        for (int i = 0; i < NodoSeleccionado->Sons.Num(); i++) {
+            Cola.Enqueue(NodoSeleccionado->Sons[i]);
+        }
+    }
+}
+
+void AVisualization::DeseleccionarTodo() {
+    //pero ahora debo marcarlos y 
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        NodosSeleccionados[i]->Selected = false;
+        NodosSeleccionados[i]->CambiarColor(NodosSeleccionados[i]->Color);
+    }
+    NodosSeleccionados.Empty();
+}
+
+void AVisualization::SetVisualizationMode(EVisualizationMode NewVisualizationMode) {
+    CurrentVisualizationMode = NewVisualizationMode;
 }
