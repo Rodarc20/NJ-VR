@@ -3,25 +3,22 @@
 #pragma once
 
 #include "XmlParser.h"
-#include "GameFramework/Actor.h"
-#include "Visualization.generated.h"
+#include "GameFramework/GameModeBase.h"
+#include "VisualizationNJ2DGameModeBase.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class NJVR_API AVisualization : public AActor
+class NJVR_API AVisualizationNJ2DGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	AVisualization();
+	
+public: 
+    AVisualizationNJ2DGameModeBase();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    virtual void BeginPlay() override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TSubclassOf<class ANodo> TipoNodo;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
@@ -41,6 +38,5 @@ public:
     void CreateNodos();
     void CreateAristas();
 	
+	
 };
-
-//por ahora usar los nodos blueprint, ya que estos pueden hacer el cambio de color de forma adecuada, pero usar la variable MaterialDynaimc para almacenar la referencai, y no promover variables

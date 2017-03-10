@@ -1,20 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NJVR.h"
-#include "Visualization.h"
+#include "VisualizationNJ2DGameModeBase.h"
 #include "Nodo.h"
 #include "Arista.h"
 
+AVisualizationNJ2DGameModeBase::AVisualizationNJ2DGameModeBase() {
 
-// Sets default values
-AVisualization::AVisualization()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
+    static ConstructorHelpers::FClassFinder<APawn> PawnBP(TEXT("BlueprintGeneratedClass'/Game/ControllerSetup/VRPawn2_BP.VRPawn2_BP_C'"));//para buscar la clase pawn por defecto, en este caso es para el vr,
+    if (PawnBP.Succeeded()) {
+        if(GEngine)//no hacer esta verificación provocaba error al iniciar el editor
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Pawn encontrado."));
+        DefaultPawnClass = PawnBP.Class;
+    }
+    
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("/Script/NJVR.Nodo"));
-    //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("Class'/Script/NJVR.NodoEsfera'"));
-    static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/NodoEsfera_BP.NodoEsfera_BP_C'"));
+    static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("Class'/Script/NJVR.NodoEsfera'"));
+    //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/NodoEsfera_BP.NodoEsfera_BP_C'"));
     if (NodoClass.Succeeded()) {
         if(GEngine)//no hacer esta verificación provocaba error al iniciar el editor
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TipoNodo encontrado."));
@@ -23,21 +25,20 @@ AVisualization::AVisualization()
 
     //Para buscar la clase arista que sera default en este codigo
     //static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("/Script/NJVR.Arista"));
-    //static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("Class'/Script/NJVR.AristaCilindro'"));
-    static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/AristaCilindro_BP.AristaCilindro_BP_C'"));
+    static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("Class'/Script/NJVR.AristaCilindro'"));
+    //static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/AristaCilindro_BP.AristaCilindro_BP_C'"));
     if (AristaClass.Succeeded()) {
         if(GEngine)//no hacer esta verificación provocaba error al iniciar el editor
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TipoArista encontrado."));
         TipoArista = AristaClass.Class;
     }
-
 }
 
-// Called when the game starts or when spawned
-void AVisualization::BeginPlay()
-{
-	Super::BeginPlay();
-	
+
+
+void AVisualizationNJ2DGameModeBase::BeginPlay() {
+    Super::BeginPlay();
+
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
     FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
     //FString path = FString("/Game/Resources/cbr-ilp-ir-son.xml");//esto no funciona
@@ -56,14 +57,7 @@ void AVisualization::BeginPlay()
     }
 }
 
-// Called every frame
-void AVisualization::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void AVisualization::LoadNodos() {
+void AVisualizationNJ2DGameModeBase::LoadNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
     if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
@@ -149,7 +143,7 @@ void AVisualization::LoadNodos() {
 
 }
 
-void AVisualization::CreateNodos() {
+void AVisualizationNJ2DGameModeBase::CreateNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
     if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
@@ -239,7 +233,7 @@ void AVisualization::CreateNodos() {
 
 }
 
-void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista hacia el que aparece como su padre
+void AVisualizationNJ2DGameModeBase::CreateAristas() {//el ultimo nodoe debe tener una arista hacia el que aparece como su padre
     int count = 0;
     UWorld * const World = GetWorld();
     if (World) {//este if deberia estar afuera
@@ -251,7 +245,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
                 int padre = i;
                 int hijo = Nodos[i]->SonsId[j];
 
-
+                //no estaba
                 FVector Diferencia = Nodos[hijo]->GetActorLocation() - Nodos[padre]->GetActorLocation();
                 FVector Direccion = Diferencia.GetClampedToSize(1.0f, 1.0f);
                 FVector SpawnLocation(Diferencia/2 + Nodos[padre]->GetActorLocation());//ejes invertidos a los recibidos
@@ -265,11 +259,12 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
                 }
                 FRotator SpawnRotation(0.0f, 0.0f, angle);
 
-                AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, SpawnLocation, SpawnRotation, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
                 //AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
+                AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, SpawnLocation, SpawnRotation, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
                 AristaInstanciado->Id = count;
                 AristaInstanciado->SourceId = padre;
                 AristaInstanciado->TargetId = hijo;
+                //quiza no deba llenar las referencias
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Actualizar();
@@ -281,6 +276,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
         //instancia de la ultima arista
         int padre = Nodos.Num() - 1;
         int hijo = Nodos[Nodos.Num() - 1]->ParentId;
+
         FVector Diferencia = Nodos[hijo]->GetActorLocation() - Nodos[padre]->GetActorLocation();
         FVector Direccion = Diferencia.GetClampedToSize(1.0f, 1.0f);
         FVector SpawnLocation(Diferencia/2 + Nodos[padre]->GetActorLocation());//ejes invertidos a los recibidos
@@ -293,10 +289,9 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
             angle = 360-angle;
         }
         FRotator SpawnRotation(0.0f, 0.0f, angle);
-
-        AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, SpawnLocation, SpawnRotation, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
         //los calculos de tamañao direccion y posición debe estar dentro de la arita solo deberia pasarle la información referente a los nodos, la rista sola debe autocalcular lo demas
         //AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
+        AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, SpawnLocation, SpawnRotation, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
         AristaInstanciado->Id = count;
         AristaInstanciado->SourceId = padre;
         AristaInstanciado->TargetId = hijo;
