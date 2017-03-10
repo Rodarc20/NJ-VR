@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "XmlParser.h"
 #include "GameFramework/Actor.h"
 #include "Visualization.generated.h"
 
@@ -32,6 +33,12 @@ public:
     TArray<class ANodo*> Vertices;
     TArray<class AArista*> Edges;
 	
+
+    FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
+	
+    void LoadVertexs();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
+    void CreateNodos();
+    void CreateAristas();
 	
 };
 
