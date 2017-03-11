@@ -60,6 +60,7 @@ void AVisualization::BeginPlay()
     }
 
     SetVisualizationMode(EVisualizationMode::ENoSelection);
+    SetVisualizationTask(EVisualizationTask::ENoTask);
 }
 
 // Called every frame
@@ -394,4 +395,16 @@ void AVisualization::DeseleccionarTodo() {
 
 void AVisualization::SetVisualizationMode(EVisualizationMode NewVisualizationMode) {
     CurrentVisualizationMode = NewVisualizationMode;
+}
+
+EVisualizationMode AVisualization::GetVisualizationMode() {
+    return CurrentVisualizationMode;
+}
+
+void AVisualization::SetVisualizationTask(EVisualizationTask NewVisualizationTask) {
+    CurrentVisualizationTask = NewVisualizationTask;
+}
+
+EVisualizationTask AVisualization::GetVisualizationTask() {
+    return CurrentVisualizationTask;
 }

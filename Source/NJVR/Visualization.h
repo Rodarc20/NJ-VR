@@ -7,7 +7,14 @@
 #include "Visualization.generated.h"
 
 
-
+UENUM(BlueprintType)
+enum class EVisualizationTask : uint8 {
+    ESelectionTask UMETA(DisplayName = "Seleccionar"),
+    ETraslationTask UMETA(DisplayName = "Trasladar"),
+    ERotationTask UMETA(DisplayName = "Rotar"),
+    EVisualizationTask UMETA(DisplayName = "Visualizar"),
+    ENoTask UMETA(DisplayName = "Ninguno")
+};
 
 UENUM(BlueprintType)//para que nos permita usarlo en blueprint, en el blueprint del HUD
 enum class EVisualizationMode : uint8 {//al parecer estos estados son predefinidos
@@ -57,11 +64,26 @@ public:
     void LoadNodos();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
     void CreateNodos();
     void CreateAristas();
+
+    //Task
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    EVisualizationTask CurrentVisualizationTask;
 	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void SetVisualizationTask(EVisualizationTask NewVisualizationTask);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    EVisualizationTask GetVisualizationTask();
+
+    //Mode
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     EVisualizationMode CurrentVisualizationMode;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void SetVisualizationMode(EVisualizationMode NewVisualizationMode);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    EVisualizationMode GetVisualizationMode();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void SeleccionarNodo(ANodo * NodoSeleccionado);
