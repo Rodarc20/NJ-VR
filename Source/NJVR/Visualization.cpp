@@ -35,6 +35,11 @@ AVisualization::AVisualization()
     }
 
     ColorSeleccion = FLinearColor::Green;
+    ColorVirtual = FLinearColor::White;
+
+    Plano = CreateDefaultSubobject<UBoxComponent>(TEXT("Plano"));
+    Plano->SetupAttachment(RootComponent);
+    Plano->InitBoxExtent(FVector(0.0f, 2000.0f, 2000.0f));
 }
 
 // Called when the game starts or when spawned
@@ -248,6 +253,15 @@ void AVisualization::CreateNodos() {
                 NodoInstanciado->Sons.Add(Nodos[NodoInstanciado->SonsId[j]]);//para agregar la referencia, esto o se peude con el padre, por que en toeria aun no existe, habria que realizar una segunda pasada, alli podiasmos incluir esto para evtar algun fallo
             }
             NodoInstanciado->Selected = false;
+            if (NodoInstanciado->Valid) {//aqui a los nodos reales se le debe asiganar algun colo de acerud a algun criterio, por ahora dejar asi
+                NodoInstanciado->Color = FLinearColor::Blue;
+            }
+            else {
+                NodoInstanciado->Color = ColorVirtual;//tambien debo cambiarle el tamaño
+                NodoInstanciado->Radio = 2.0f;
+            }
+            //actualizar nodo, para cambiar el color o el tamaño si es necesario
+            NodoInstanciado->Actualizar();
             Nodos.Add(NodoInstanciado);
             //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
         }
@@ -407,4 +421,11 @@ void AVisualization::SetVisualizationTask(EVisualizationTask NewVisualizationTas
 
 EVisualizationTask AVisualization::GetVisualizationTask() {
     return CurrentVisualizationTask;
+}
+
+void AVisualization::AplicarTraslacion(FVector Traslacion) {
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
+        NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+    }
 }

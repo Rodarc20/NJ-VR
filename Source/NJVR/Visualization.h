@@ -42,6 +42,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    class UMotionControllerComponent* RightController;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    class UMotionControllerComponent* LeftController;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool bHitNodo;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool bHitBoard;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FVector ImpactPoint;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    AActor* HitActor;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TSubclassOf<class ANodo> TipoNodo;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
 
@@ -55,9 +74,19 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TArray<class ANodo*> NodosSeleccionados;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool bNodoGuia;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    ANodo* NodoGuia;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     FLinearColor ColorSeleccion;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FLinearColor ColorVirtual;
 
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 	
@@ -103,6 +132,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void DeseleccionarTodo();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void AplicarTraslacion(FVector Traslacion);
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UBoxComponent* Plano;
 };
 
 //por ahora usar los nodos blueprint, ya que estos pueden hacer el cambio de color de forma adecuada, pero usar la variable MaterialDynaimc para almacenar la referencai, y no promover variables

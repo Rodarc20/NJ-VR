@@ -49,7 +49,7 @@ void AAristaCilindro::Actualizar() {
     FRotator NewRotation(0.0f, 0.0f, angle);
     SetActorLocationAndRotation(NewLocation, NewRotation);
     
-    Distancia = Diferencia.Size()-4;
+    Distancia = Diferencia.Size()-2;
     AristaCollision->SetCapsuleHalfHeight(Distancia/2);
     AristaMesh->SetWorldScale3D(FVector(2*Radio/100, 2*Radio/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
 }

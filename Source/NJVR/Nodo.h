@@ -77,7 +77,7 @@ public:
     //eata es la clase base, no deberia tener componentes importantes aun
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    float Escala;
+    float Escala;//la escala lo usare en la posicino o escalado en el modo escalado
 
     //radio de representacion visula del nodo
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
@@ -96,4 +96,11 @@ public:
     //Cambiar el color del material
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void CambiarColor(FLinearColor NewColor);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void Actualizar();
 };
+
+//La colision por defecto de esta calse esta como WorldDynamic, sin mebargo le creare su propio perfil llamado Nodo, para rastrear de forma especifica de acruerdo a la necesiadad, y esta coo overlap all dynamic, sin collision physica
+//el collision est basicmanete todo en overlap all dynamic, y tod en overlap
+//el mesh esta en Block al dynamic, Colision enable, Worldynamic cmo objeto, todo en block

@@ -16,6 +16,7 @@ class NJVR_API ANodoEsfera : public ANodo
 public:
     ANodoEsfera();
 
+    virtual void Actualizar() override;
 
     //UPROPERTY(VisibleAnywhere, Category = "Visualization")
     //USphereComponent * NodoCollision;

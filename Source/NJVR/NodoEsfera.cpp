@@ -44,7 +44,7 @@ ANodoEsfera::ANodoEsfera()
     if (SphereMeshAsset.Succeeded()) {
         NodoMesh->SetStaticMesh(SphereMeshAsset.Object);//este objeto tiene el pivot en la parte inferior
         //esto solo para cuando use los baisc de engine, si uso los del starter contento no
-        static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterialAsset(TEXT("/Engine/BasicShapes/BasicShapeMaterial"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
+        static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterialAsset(TEXT("Material'/Game/Visualization/Materials/NodeValidMaterial.NodeValidMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
         if (SphereMaterialAsset.Succeeded()) {
             NodoMesh->SetMaterial(0, SphereMaterialAsset.Object);
         }
@@ -52,4 +52,10 @@ ANodoEsfera::ANodoEsfera()
     }
 
 
+}
+
+void ANodoEsfera::Actualizar() {
+    NodoCollision->SetSphereRadius(Radio);
+    NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100));
+    CambiarColor(Color);
 }

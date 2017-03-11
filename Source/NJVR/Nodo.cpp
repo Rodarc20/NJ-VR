@@ -32,3 +32,6 @@ void ANodo::CambiarColor(FLinearColor NewColor) {
     }
 }
 
+void ANodo::Actualizar() {
+
+}
