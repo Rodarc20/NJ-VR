@@ -37,9 +37,21 @@ AVisualization::AVisualization()
     ColorSeleccion = FLinearColor::Green;
     ColorVirtual = FLinearColor::White;
 
-    Plano = CreateDefaultSubobject<UBoxComponent>(TEXT("Plano"));
-    Plano->SetupAttachment(RootComponent);
-    Plano->InitBoxExtent(FVector(0.0f, 2000.0f, 2000.0f));
+    /*Limite = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Limite"));
+    Limite->SetupAttachment(RootComponent);
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> LimiteMeshAsset(TEXT("/Engine/BasicShapes/Cube"));//probar con el plano
+    if (LimiteMeshAsset.Succeeded()) {
+        Limite->SetStaticMesh(LimiteMeshAsset.Object);//este objeto tiene el pivot en la parte inferior
+        //esto solo para cuando use los baisc de engine, si uso los del starter contento no
+        static ConstructorHelpers::FObjectFinder<UMaterial> LimiteMaterialAsset(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
+        if (LimiteMaterialAsset.Succeeded()) {
+            Limite->SetMaterial(0, LimiteMaterialAsset.Object);
+        }
+        Limite->SetWorldScale3D(FVector(0.0f, 40.0f, 40.0f));
+    }*/
+    //Limite->SetVisibility(false);
+    //Limite->SetCastShadow(false);
+    //Limite->SetCollisionObjectType()
 }
 
 // Called when the game starts or when spawned
@@ -237,7 +249,7 @@ void AVisualization::CreateNodos() {
             SpawnParams.Owner = this;
             SpawnParams.Instigator = Instigator;
 
-            FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos
+            FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos//-1 al y
             ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
             NodoInstanciado->Id = FCString::Atoi(*id);
             NodoInstanciado->Valid = FCString::ToBool(*valid);
@@ -262,6 +274,8 @@ void AVisualization::CreateNodos() {
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
             NodoInstanciado->Actualizar();
+            NodoInstanciado->AttachRootComponentToActor(this);
+            //NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::);
             Nodos.Add(NodoInstanciado);
             //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
         }
@@ -303,6 +317,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Actualizar();
+                AristaInstanciado->AttachRootComponentToActor(this);
 
                 Aristas.Add(AristaInstanciado);
                 count++;
@@ -333,6 +348,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
         AristaInstanciado->SourceNodo = Nodos[padre];
         AristaInstanciado->TargetNodo = Nodos[hijo];
         AristaInstanciado->Actualizar();
+        AristaInstanciado->AttachRootComponentToActor(this);
 
         Aristas.Add(AristaInstanciado);
         count++;

@@ -2,6 +2,7 @@
 
 #include "NJVR.h"
 #include "Arista.h"
+#include "Nodo.h"
 
 
 // Sets default values
@@ -23,6 +24,9 @@ void AArista::BeginPlay()
 void AArista::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    if (SourceNodo->Selected || TargetNodo->Selected) {//solo debo llamar a esto ccuando este seleccionado, algo, en el modo deseleccionado, se supone que seta la visiulizacion, y se mueve la visualizacion, es decir todos los elementso, se arrastan
+        Actualizar();
+    }
 
 }
 void AArista::Actualizar() {

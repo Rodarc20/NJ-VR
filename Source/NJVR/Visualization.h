@@ -136,8 +136,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void AplicarTraslacion(FVector Traslacion);
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
-    UBoxComponent* Plano;
+    /*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UStaticMeshComponent* Limite;*/
+    //por alguna razón no funciona cuando creo esto aqui, pero funciona bien si lo creo en el blueprint
+    //quiza es que no puedo asignar lo de los perfiles bien
 };
 
 //por ahora usar los nodos blueprint, ya que estos pueden hacer el cambio de color de forma adecuada, pero usar la variable MaterialDynaimc para almacenar la referencai, y no promover variables
