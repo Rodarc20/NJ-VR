@@ -136,6 +136,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void AplicarTraslacion(FVector Traslacion);
 
+    //Para el modo general
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float DistanciaLaser;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FVector OffsetToPointLaser;
     /*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent* Limite;*/
     //por alguna razón no funciona cuando creo esto aqui, pero funciona bien si lo creo en el blueprint
