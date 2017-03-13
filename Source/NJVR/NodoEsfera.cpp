@@ -35,10 +35,12 @@ ANodoEsfera::ANodoEsfera()
 
     NodoCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
     RootComponent = NodoCollision;
+    NodoCollision->SetCollisionProfileName(FName(TEXT("Nodo")));
     NodoCollision->InitSphereRadius(Radio);//tener cuidado con las unidades, tiene radio 6 quiza sea muy grande
     
     NodoMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereStaticMeshComponent"));
     NodoMesh->SetupAttachment(RootComponent);
+    NodoMesh->SetCollisionProfileName(FName(TEXT("Nodo")));
     //RootComponent = NodoMesh;
     static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Engine/BasicShapes/Sphere"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
     if (SphereMeshAsset.Succeeded()) {

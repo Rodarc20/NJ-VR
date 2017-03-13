@@ -18,6 +18,7 @@ AAristaCilindro::AAristaCilindro()
     AristaCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("AristaCollision"));
     RootComponent = AristaCollision;
     AristaCollision->InitCapsuleSize(Radio, Distancia/2);//multiplicarlos por la escala
+    AristaCollision->SetCollisionProfileName(FName(TEXT("Arista")));
 
     AristaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AristaMesh"));
     AristaMesh->SetupAttachment(RootComponent);
@@ -25,6 +26,7 @@ AAristaCilindro::AAristaCilindro()
     //este estatic mesh es de 100 x100x100
     static ConstructorHelpers::FObjectFinder<UStaticMesh> AristaMeshAsset(TEXT("/Engine/BasicShapes/Cylinder"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
     if (AristaMeshAsset.Succeeded()) {
+        AristaMesh->SetCollisionProfileName(FName(TEXT("Arista")));
         AristaMesh->SetStaticMesh(AristaMeshAsset.Object);//este objeto tiene el pivot en la parte inferior
         static ConstructorHelpers::FObjectFinder<UMaterial> AristaMaterialAsset(TEXT("/Engine/BasicShapes/BasicShapeMaterial"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
         if (AristaMaterialAsset.Succeeded()) {
@@ -50,6 +52,10 @@ void AAristaCilindro::Actualizar() {
     SetActorLocationAndRotation(NewLocation, NewRotation);
     
     Distancia = Diferencia.Size()-2;
-    AristaCollision->SetCapsuleHalfHeight(Distancia/2);
+    //AristaCollision->SetCapsuleHalfHeight(Distancia/2);//modificar el tamaño del componete que hace la coslision, en este aso el capsule componente hace que actualizar el overlap aumente, en ese caso como no lo necesito por el momento al realizar traslaciones, esto puede estar desactivado hasta que lo necesite en laguna interaccion, y llamar a este cambio recien cuado suelte el boton de traslado
     AristaMesh->SetWorldScale3D(FVector(2*Radio/100, 2*Radio/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+}
+
+void AAristaCilindro::ActualizarCollision() {
+    AristaCollision->SetCapsuleHalfHeight(Distancia/2);//modificar el tamaño del componete que hace la coslision, en este aso el capsule componente hace que actualizar el overlap aumente, en ese caso como no lo necesito por el momento al realizar traslaciones, esto puede estar desactivado hasta que lo necesite en laguna interaccion, y llamar a este cambio recien cuado suelte el boton de traslado
 }

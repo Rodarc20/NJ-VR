@@ -17,6 +17,8 @@ public:
     AAristaCilindro();
 
     virtual void Actualizar() override;
+
+    virtual void ActualizarCollision() override;
 	
 	
 	

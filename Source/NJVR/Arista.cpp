@@ -25,7 +25,7 @@ void AArista::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
     if (SourceNodo->Selected || TargetNodo->Selected) {//solo debo llamar a esto ccuando este seleccionado, algo, en el modo deseleccionado, se supone que seta la visiulizacion, y se mueve la visualizacion, es decir todos los elementso, se arrastan
-        Actualizar();
+        Actualizar();//deberia llamarse solo si han sido movidos no seleccinados, podria ser que los nodos tengan un vector posicionultima, y vea si hes diferente a la actual y camibar, o al moverme, por quemplo en el tick, ver si el punto de colision es diferente, a uno anterior, y actualizar solo cuando se mueva, de esta forma las aristas solo deben revisar o yo llamar a las arsitas involucardas, es otra forma
     }
 
 }
@@ -33,3 +33,6 @@ void AArista::Actualizar() {
 
 }
 
+void AArista::ActualizarCollision() {
+
+}

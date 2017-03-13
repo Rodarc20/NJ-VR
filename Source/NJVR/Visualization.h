@@ -68,8 +68,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TSubclassOf<class AArista> TipoArista;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TArray<class ANodo*> Nodos;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TArray<class AArista*> Aristas;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
@@ -149,3 +151,8 @@ public:
 };
 
 //por ahora usar los nodos blueprint, ya que estos pueden hacer el cambio de color de forma adecuada, pero usar la variable MaterialDynaimc para almacenar la referencai, y no promover variables
+
+
+//tanto nodos como arista coo limite estan ignorando todo
+//pero deberian tener overlaps entre elllos, almenos nodos y aristas con sigo mismos
+//eto deberéactivarlo de acuerdo a la necesidad o al momento en que lo necesite, y desactivarlo cuadno no lo necesite

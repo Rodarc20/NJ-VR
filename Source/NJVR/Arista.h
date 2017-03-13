@@ -62,4 +62,8 @@ public:
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void Actualizar();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void ActualizarCollision();
+
 };

@@ -317,6 +317,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Actualizar();
+                AristaInstanciado->ActualizarCollision();
                 AristaInstanciado->AttachRootComponentToActor(this);
 
                 Aristas.Add(AristaInstanciado);
@@ -348,6 +349,7 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
         AristaInstanciado->SourceNodo = Nodos[padre];
         AristaInstanciado->TargetNodo = Nodos[hijo];
         AristaInstanciado->Actualizar();
+        AristaInstanciado->ActualizarCollision();
         AristaInstanciado->AttachRootComponentToActor(this);
 
         Aristas.Add(AristaInstanciado);
