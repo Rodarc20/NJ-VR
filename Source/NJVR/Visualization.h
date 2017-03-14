@@ -144,6 +144,21 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     FVector OffsetToPointLaser;
+
+
+    //Rotacion del controll capturado al presionar el trigger
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FRotator InitialRotationController;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FRotator InitialRotation;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool Rotar;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia);
+
     /*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent* Limite;*/
     //por alguna razón no funciona cuando creo esto aqui, pero funciona bien si lo creo en el blueprint
