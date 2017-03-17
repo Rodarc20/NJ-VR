@@ -18,6 +18,10 @@ public:
 
     virtual void Actualizar() override;
 
+    virtual void MostrarNombre() override;
+
+    virtual void OcultarNombre() override;
+
     //UPROPERTY(VisibleAnywhere, Category = "Visualization")
     //USphereComponent * NodoCollision;
 	

@@ -198,6 +198,7 @@ void AVisualization::CreateNodos() {
     float OrigenY = FCString::Atof(*yorigen) * -1;
     //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::FromInt(vertexs.Num()));
     //tengo todos los vertices en ese array
+    TArray<int> numerocolores;
     for (int i = 0; i < XMLvertexs.Num(); ++i) {
         //obteniendo el id
         FString id = XMLvertexs[i]->GetAttribute(FString("id"));//devuelve el valor del atributo que le doy, hay otra funocin que me devuelve todos los atributos en un arrya de un obejto especial//quiza deba esto guardarlo como int cuando genere la clase Vertex
@@ -238,6 +239,14 @@ void AVisualization::CreateNodos() {
             labels.Add(labelschilds[j]->GetAttribute("value"));
             //aqui faltaria definir que label es cada uno, para poder ponerlo en la variable que corresponda en el la calse vertex que creare
         }
+        FXmlNode * nodescalars = XMLvertexs[i]->FindChildNode(FString("scalars"));//quiza no sean necesario usar FString
+        TArray<FXmlNode*> scalarschilds = nodescalars->GetChildrenNodes();
+        FString colorcdata;
+        for (int j = 0; j < scalarschilds.Num(); j++) {
+            if (scalarschilds[j]->GetAttribute("name") == "cdata") {
+                colorcdata = scalarschilds[j]->GetAttribute("value");
+            }
+        }
         //el contenido de los nodos, es lo que hay en trexto plano dentro del tag de apertura y de cierre
 
         //TArray<FXmlNode*> childs = vertexs[i]->GetChildrenNodes();//para el caso de los vertexs sus hijos son unicos o son un array por lo tanto podria usar la funcion findchildren, para encontrar los que necesito
@@ -259,6 +268,9 @@ void AVisualization::CreateNodos() {
             for (int j = 0; j < labels.Num(); j++) {
                 NodoInstanciado->Labels.Add(labels[j]);
             }
+            if(labels.Num()){
+                NodoInstanciado->Nombre->SetText(labels[0]);
+            }
             NodoInstanciado->ParentId = FCString::Atoi(*parent);
             for (int j = 0; j < sons.Num(); j++) {
                 NodoInstanciado->SonsId.Add(FCString::Atoi(*sons[j]));
@@ -266,22 +278,36 @@ void AVisualization::CreateNodos() {
             }
             NodoInstanciado->Selected = false;
             if (NodoInstanciado->Valid) {//aqui a los nodos reales se le debe asiganar algun colo de acerud a algun criterio, por ahora dejar asi
-                NodoInstanciado->Color = FLinearColor::Blue;
+                NodoInstanciado->Color = FLinearColor::Black;
+                NodoInstanciado->ColorNum = FCString::Atoi(*colorcdata);
+                numerocolores.AddUnique(NodoInstanciado->ColorNum);
+                //UE_LOG(LogClass, Log, TEXT("Color = %d"), NodoInstanciado->ColorNum);
             }
             else {
                 NodoInstanciado->Color = ColorVirtual;//tambien debo cambiarle el tamaño
+                NodoInstanciado->ColorNum = FCString::Atoi(*colorcdata);
                 NodoInstanciado->Radio = 2.0f;
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
             NodoInstanciado->Actualizar();
             NodoInstanciado->AttachRootComponentToActor(this);
-            //NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::);
+            //NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::);//segun el compilador de unral debo usar esto
             Nodos.Add(NodoInstanciado);
             //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
         }
     }
+    //UE_LOG(LogClass, Log, TEXT("NumeroColor = %d"), numerocolores.Num());
+    int variacion = 360 / numerocolores.Num();
+    for (int k = 0; k < numerocolores.Num(); k++) {
+        int h = (k*variacion) % 360;
+        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, 1.0f, 1.0f));
+    }
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
+        if (Nodos[i]->Valid) {
+            Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            Nodos[i]->Actualizar();
+        }
     }
 
 }

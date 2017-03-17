@@ -4,6 +4,7 @@
 
 #include "XmlParser.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Visualization.generated.h"
 
 
@@ -12,6 +13,7 @@ enum class EVisualizationTask : uint8 {
     ESelectionTask UMETA(DisplayName = "Seleccionar"),
     ETraslationTask UMETA(DisplayName = "Trasladar"),
     ERotationTask UMETA(DisplayName = "Rotar"),
+    EScaleTask UMETA(DisplayName = "Escalar"),
     EVisualizationTask UMETA(DisplayName = "Visualizar"),
     ENoTask UMETA(DisplayName = "Ninguno")
 };
@@ -84,6 +86,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     ANodo* NodoGuia;
 	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    TArray<FLinearColor> Colores;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     FLinearColor ColorSeleccion;
 

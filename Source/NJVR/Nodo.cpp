@@ -35,3 +35,11 @@ void ANodo::CambiarColor(FLinearColor NewColor) {
 void ANodo::Actualizar() {
 
 }
+
+void ANodo::MostrarNombre() {
+
+}
+
+void ANodo::OcultarNombre() {
+
+}

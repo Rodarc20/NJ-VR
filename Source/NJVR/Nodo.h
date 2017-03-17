@@ -49,11 +49,11 @@ public:
 
     //el color que tiene
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
-    float ColorNum;
+    int ColorNum;
 
     //el color que tiene de forma predeterminada com normal, que pdepende y se le asigana, de forma predeterminada sera blanco
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    FLinearColor Color;
+    FLinearColor Color;//este podria cambiar a un arreglo de colores si tengo diferentes formas de clasificar
 
 
     //los labels como titulo del documento, y nombre del archivo
@@ -99,6 +99,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void Actualizar();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
+    UTextRenderComponent * Nombre;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void MostrarNombre();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void OcultarNombre();
 };
 
 //La colision por defecto de esta calse esta como WorldDynamic, sin mebargo le creare su propio perfil llamado Nodo, para rastrear de forma especifica de acruerdo a la necesiadad, y esta coo overlap all dynamic, sin collision physica

@@ -53,6 +53,13 @@ ANodoEsfera::ANodoEsfera()
         NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
     }
 
+    Nombre = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
+    Nombre->SetupAttachment(RootComponent);
+    Nombre->SetTextRenderColor(FColor::White);
+    Nombre->SetWorldSize(15.0f);
+    Nombre->SetVisibility(false);
+    //Nombre->AddRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    //Nombre->RelativeRotation = FRotator(0.0f, 0.0f, 180.0f);
 
 }
 
@@ -60,4 +67,12 @@ void ANodoEsfera::Actualizar() {
     NodoCollision->SetSphereRadius(Radio);
     NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100));
     CambiarColor(Color);
+}
+
+void ANodoEsfera::MostrarNombre() {
+    Nombre->SetVisibility(true);
+}
+
+void ANodoEsfera::OcultarNombre() {
+    Nombre->SetVisibility(false);
 }
