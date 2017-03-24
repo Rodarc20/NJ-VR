@@ -64,6 +64,12 @@ public:
     AActor* HitActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    ANodo* HitNodo;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    AActor* HitLimite;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     TSubclassOf<class ANodo> TipoNodo;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
 
     //el tipo de nodo que se instancia
@@ -161,9 +167,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     bool Rotar;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool MostrarLabel;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia);
 
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    FString ObtenerContenidoNodo(ANodo* Nodo);
     /*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent* Limite;*/
     //por alguna razón no funciona cuando creo esto aqui, pero funciona bien si lo creo en el blueprint

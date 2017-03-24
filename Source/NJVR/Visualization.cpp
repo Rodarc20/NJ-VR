@@ -76,8 +76,8 @@ void AVisualization::BeginPlay()
         CreateAristas();
     }
 
-    SetVisualizationMode(EVisualizationMode::ENoSelection);
-    SetVisualizationTask(EVisualizationTask::ENoTask);
+    SetVisualizationMode(EVisualizationMode::ENoSelection);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
+    SetVisualizationTask(EVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
 }
 
 // Called every frame
@@ -517,4 +517,13 @@ void AVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector
         NodosSeleccionados[i]->SetActorTransform(NewTransform);
         //NodosSeleccionados[i]->SetActorTransform(NodosSeleccionados[i]->GetActorTransform().SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation));
     }
+}
+
+FString AVisualization::ObtenerContenidoNodo(ANodo* Nodo) {
+    FString contenido;
+    FString archivo("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son/");
+    archivo += Nodo->Url;
+    FFileHelper::LoadFileToString(contenido, *archivo);
+    return contenido;
+
 }
