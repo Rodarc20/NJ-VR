@@ -54,11 +54,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     class ANodo* TargetNodo;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
-    UCapsuleComponent * AristaCollision;//este funciona bien a falta de un cilindro
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
-    UStaticMeshComponent * AristaMesh;//un capsule mesh es dificl de scalar de forma adecuada para que las semiesferas no se deformen
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void Actualizar();
@@ -66,4 +61,5 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void ActualizarCollision();
 
+    //esta clase deberia tener una variable color , esta se usa en todos, acutalizar es tambien cambiar el color si ha cambiado, la colission, en lagunos casos se eactualizara solo en otros se hacce manualmente
 };

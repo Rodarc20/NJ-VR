@@ -21,5 +21,10 @@ public:
     virtual void ActualizarCollision() override;
 	
 	
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UCapsuleComponent * AristaCollision;//este funciona bien a falta de un cilindro
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UStaticMeshComponent * AristaMesh;//un capsule mesh es dificl de scalar de forma adecuada para que las semiesferas no se deformen
 	
 };
