@@ -269,7 +269,9 @@ void AVisualization::CreateNodos() {
                 NodoInstanciado->Labels.Add(labels[j]);
             }
             if(labels.Num()){
-                NodoInstanciado->Nombre->SetText(labels[0]);
+                //NodoInstanciado->Nombre->SetText(labels[0]);
+                NodoInstanciado->Nombre->SetText(FText::FromString(labels[0]));
+
             }
             NodoInstanciado->ParentId = FCString::Atoi(*parent);
             for (int j = 0; j < sons.Num(); j++) {
@@ -290,8 +292,8 @@ void AVisualization::CreateNodos() {
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
             NodoInstanciado->Actualizar();
-            NodoInstanciado->AttachRootComponentToActor(this);
-            //NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::);//segun el compilador de unral debo usar esto
+            //NodoInstanciado->AttachRootComponentToActor(this);
+            NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);//segun el compilador de unral debo usar esto
             Nodos.Add(NodoInstanciado);
             //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
         }
@@ -347,7 +349,8 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Actualizar();
                 AristaInstanciado->ActualizarCollision();
-                AristaInstanciado->AttachRootComponentToActor(this);
+                //AristaInstanciado->AttachRootComponentToActor(this);
+                AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
                 Aristas.Add(AristaInstanciado);
                 count++;
@@ -379,7 +382,8 @@ void AVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista ha
         AristaInstanciado->TargetNodo = Nodos[hijo];
         AristaInstanciado->Actualizar();
         AristaInstanciado->ActualizarCollision();
-        AristaInstanciado->AttachRootComponentToActor(this);
+        //AristaInstanciado->AttachRootComponentToActor(this);
+        AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
         Aristas.Add(AristaInstanciado);
         count++;

@@ -102,8 +102,8 @@ public:
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 	
     void LoadNodos();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
-    void CreateNodos();
-    void CreateAristas();
+    virtual void CreateNodos();
+    virtual void CreateAristas();
 
     //Task
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
@@ -125,6 +125,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     EVRVisualizationMode GetVisualizationMode();
 	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void SeleccionarNodo(ANodo * NodoSeleccionado);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void DeseleccionarNodo(ANodo * NodoSeleccionado);
@@ -142,7 +144,7 @@ public:
     void DeseleccionarTodo();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void AplicarTraslacion(FVector Traslacion);
+    virtual void AplicarTraslacion(FVector Traslacion);
 
     //Para el modo general
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
@@ -166,9 +168,14 @@ public:
     bool MostrarLabel;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia);
-
+    virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     FString ObtenerContenidoNodo(ANodo* Nodo);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    class UWidgetComponent * Document;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    class UWidgetInteractionComponent * Interaction;
 };

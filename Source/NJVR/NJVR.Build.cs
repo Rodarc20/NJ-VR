@@ -6,7 +6,7 @@ public class NJVR : ModuleRules
 {
 	public NJVR(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "XmlParser" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "XmlParser", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "SteamVR", "SteamVRController", "Slate", "SlateCore" });
 
