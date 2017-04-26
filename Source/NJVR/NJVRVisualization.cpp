@@ -96,6 +96,7 @@ void ANJVRVisualization::CreateNodos() {
             FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos//-1 al y
             ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
             NodoInstanciado->Id = FCString::Atoi(*id);
+            NodoInstanciado->Numero->SetText(FText::FromString(*id));//para el texto del numero, quiza este tipo de funcionalidad deberia estar encapsulada en alguna funcion de la clase nodo
             NodoInstanciado->Valid = FCString::ToBool(*valid);
             NodoInstanciado->Xcoordinate = FCString::Atof(*xcoordinate);
             NodoInstanciado->Ycoordinate = FCString::Atof(*ycoordinate);

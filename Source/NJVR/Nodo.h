@@ -100,7 +100,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void Actualizar();
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
     UTextRenderComponent * Nombre;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
@@ -108,6 +108,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void OcultarNombre();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
+    UTextRenderComponent * Numero;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void MostrarNumero();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void OcultarNumero();
 };
 
 //La colision por defecto de esta calse esta como WorldDynamic, sin mebargo le creare su propio perfil llamado Nodo, para rastrear de forma especifica de acruerdo a la necesiadad, y esta coo overlap all dynamic, sin collision physica

@@ -167,6 +167,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     bool MostrarLabel;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool MostrarNumero;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia);
 
@@ -178,4 +181,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     class UWidgetInteractionComponent * Interaction;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void MostrarNumeracion();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void OcultarNumeracion();
 };

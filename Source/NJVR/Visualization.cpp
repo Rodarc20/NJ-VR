@@ -262,6 +262,7 @@ void AVisualization::CreateNodos() {
             ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
             NodoInstanciado->Id = FCString::Atoi(*id);
             NodoInstanciado->Valid = FCString::ToBool(*valid);
+            NodoInstanciado->Numero->SetText(FText::FromString(*id));//para el texto del numero, quiza este tipo de funcionalidad deberia estar encapsulada en alguna funcion de la clase nodo
             NodoInstanciado->Xcoordinate = FCString::Atof(*xcoordinate);
             NodoInstanciado->Ycoordinate = FCString::Atof(*ycoordinate);
             NodoInstanciado->Url = url;

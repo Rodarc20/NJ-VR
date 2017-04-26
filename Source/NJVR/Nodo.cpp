@@ -43,3 +43,11 @@ void ANodo::MostrarNombre() {
 void ANodo::OcultarNombre() {
 
 }
+
+void ANodo::MostrarNumero() {
+
+}
+
+void ANodo::OcultarNumero() {
+
+}

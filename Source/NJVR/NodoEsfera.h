@@ -22,6 +22,9 @@ public:
 
     virtual void OcultarNombre() override;
 
+    virtual void MostrarNumero() override;
+
+    virtual void OcultarNumero() override;
     //UPROPERTY(VisibleAnywhere, Category = "Visualization")
     //USphereComponent * NodoCollision;
 	

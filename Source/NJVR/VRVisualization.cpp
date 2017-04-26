@@ -250,3 +250,14 @@ FString AVRVisualization::ObtenerContenidoNodo(ANodo* Nodo) {
     FFileHelper::LoadFileToString(contenido, *archivo);
     return contenido;
 }
+
+void AVRVisualization::MostrarNumeracion() {
+    for (int i = 0; i < Nodos.Num(); i++)
+        Nodos[i]->Numero->SetVisibility(true);
+
+}
+
+void AVRVisualization::OcultarNumeracion() {
+    for (int i = 0; i < Nodos.Num(); i++)
+        Nodos[i]->Numero->SetVisibility(false);
+}
