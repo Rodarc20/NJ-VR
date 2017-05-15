@@ -106,6 +106,9 @@ public:
     void LoadNodos();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
     void CreateNodos();
     void CreateAristas();
+    float distanciaMaxima;
+    void CreateNodos2();
+    void CreateAristas2();
 
     //Task
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")

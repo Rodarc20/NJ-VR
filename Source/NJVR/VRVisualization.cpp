@@ -44,7 +44,10 @@ void AVRVisualization::BeginPlay()
 	Super::BeginPlay();
 	
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
-    FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
+    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
+    FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml");//de esta forma tambien funciona
+    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/imagesCorel.xml");//de esta forma tambien funciona
+    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagesCorel.xml");//de esta forma tambien funciona
     //FString path = FString("/Game/Resources/cbr-ilp-ir-son.xml");//esto no funciona
     bool cargado = XmlSource.LoadFile(path, EConstructMethod::ConstructFromFile);//para construirlo como archivo
     if (GEngine) {
