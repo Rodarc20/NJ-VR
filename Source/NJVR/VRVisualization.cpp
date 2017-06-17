@@ -13,6 +13,7 @@ AVRVisualization::AVRVisualization()
 
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 
+    Escala = 1.0f;
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("/Script/NJVR.Nodo"));
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("Class'/Script/NJVR.NodoEsfera'"));
     static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/NodoEsfera_BP.NodoEsfera_BP_C'"));
@@ -46,8 +47,8 @@ void AVRVisualization::BeginPlay()
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
     FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml");//de esta forma tambien funciona
-    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/imagesCorel.xml");//de esta forma tambien funciona
-    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagesCorel.xml");//de esta forma tambien funciona
+    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml");//de esta forma tambien funciona
+    //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml");//de esta forma tambien funciona
     //FString path = FString("/Game/Resources/cbr-ilp-ir-son.xml");//esto no funciona
     bool cargado = XmlSource.LoadFile(path, EConstructMethod::ConstructFromFile);//para construirlo como archivo
     if (GEngine) {
@@ -240,6 +241,30 @@ void AVRVisualization::DeseleccionarTodo() {
 
 void AVRVisualization::AplicarTraslacion(FVector Traslacion) {
 
+}
+
+/*void AVRVisualization::AplicarEscala(float NuevaEscala) {
+    for (int i = 0; i < Nodos.Num(); i++) {
+        Nodos[i]->Escala = NuevaEscala;
+        Nodos[i]->Actualizar();//este deberia actualziar tal vez también la posicion del nodo, o calcularlo afuera
+        FTransform NewTransform = Nodos[i]->GetActorTransform();
+        //NewTransform.SetLocation(Nodos[i]->GetTransform().GetLocation() * NuevaEscala);
+        NewTransform.SetLocation(PosicionesNodosInicialEscala[i] * NuevaEscala);
+        Nodos[i]->SetActorTransform(NewTransform);
+    }
+    for (int i = 0; i < Aristas.Num(); i++) {
+        Aristas[i]->Escala = NuevaEscala;
+        Aristas[i]->Actualizar();
+    }
+}*/
+//Hya dos formas de aplicar la escala, una seria la que esta expresada, que los elemnetos y sus posiciones esten escalados respecto a esta clase
+//la otra es que se escale esta clase, como los nodos y las aristas estan dentro, como hijos, tambien deberian ser escalados, eso evita mucho calculo y correciones
+void AVRVisualization::AplicarEscala(float NuevaEscala) {
+    //esta forma es menos costosa, y parece mas sencialla de manipular todos los elementos, solo hya que hacer que todo tenga concordancia, no como la arista actual
+    SetActorScale3D(FVector(NuevaEscala));
+    //FTransform NuevoTransform = GetTransform();
+    //NuevoTransform.SetScale3D(FVector(NuevaEscala));
+    //SetActorTransform(NuevoTransform);
 }
 
 void AVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {

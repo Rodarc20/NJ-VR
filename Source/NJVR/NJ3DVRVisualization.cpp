@@ -94,7 +94,7 @@ void ANJ3DVRVisualization::CreateNodos() {
             SpawnParams.Instigator = Instigator;
 
             FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos//-1 al y
-            ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+            ANodo * const NodoInstanciado = World->SpawnActor<ANodo>(TipoNodo, SpawnLocation * Escala, FRotator::ZeroRotator, SpawnParams);
             NodoInstanciado->Id = FCString::Atoi(*id);
             NodoInstanciado->Numero->SetText(FText::FromString(*id));//para el texto del numero, quiza este tipo de funcionalidad deberia estar encapsulada en alguna funcion de la clase nodo
             NodoInstanciado->Valid = FCString::ToBool(*valid);
@@ -125,6 +125,7 @@ void ANJ3DVRVisualization::CreateNodos() {
                 NodoInstanciado->Radio = 2.0f;
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
+            NodoInstanciado->Escala = Escala;
             NodoInstanciado->Actualizar();
             //NodoInstanciado->AttachRootComponentToActor(this);
             NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);//segun el compilador de unral debo usar esto
@@ -167,12 +168,13 @@ void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una ari
                 //FRotator r(angle, 0.0f, 0.0f);
                 //FRotator r(0.0f, angle, 0.0f);//rotacion con el eje up
                 //UE_LOG(LogClass, Log, TEXT("Arista id = %d, angle= %f, sing = %f"), count, angle, sing);
-                float angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector::UpVector, Direccion)));
+                /*float angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector::UpVector, Direccion)));
                 float sing = FVector::CrossProduct(FVector::UpVector, Direccion).X;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
                 if (sing >= 0) {
                     angle = 360-angle;
                 }
-                FRotator SpawnRotation(0.0f, 0.0f, angle);
+                FRotator SpawnRotation(0.0f, 0.0f, angle);*/
+                FRotator SpawnRotation(0.0f, 0.0f, 0.0f);
 
                 AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, SpawnLocation, SpawnRotation, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
                 //AArista * const AristaInstanciado = World->SpawnActor<AArista>(TipoArista, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);//creo que es mejor si yo hago los calculos de los angulos, para generar el rotator
@@ -181,6 +183,7 @@ void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una ari
                 AristaInstanciado->TargetId = hijo;
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
+                AristaInstanciado->Escala = Escala;
                 AristaInstanciado->Actualizar();
                 AristaInstanciado->ActualizarCollision();
                 //AristaInstanciado->AttachRootComponentToActor(this);
@@ -214,6 +217,7 @@ void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una ari
         AristaInstanciado->TargetId = hijo;
         AristaInstanciado->SourceNodo = Nodos[padre];
         AristaInstanciado->TargetNodo = Nodos[hijo];
+        AristaInstanciado->Escala = Escala;
         AristaInstanciado->Actualizar();
         AristaInstanciado->ActualizarCollision();
         //AristaInstanciado->AttachRootComponentToActor(this);

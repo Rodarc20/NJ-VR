@@ -146,6 +146,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void AplicarTraslacion(FVector Traslacion);
 
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void AplicarEscala(float NuevaEscala);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+        TArray<FVector> PosicionesNodosInicialEscala;//debe tenere el mismo tamaño que el array de nodos
+
     //Para el modo general
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     float DistanciaLaser;
@@ -153,6 +159,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     FVector OffsetToPointLaser;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Escala;
 
     //Rotacion del controll capturado al presionar el trigger
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
@@ -188,3 +196,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void OcultarNumeracion();
 };
+
+//la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.
+//Lo mismo deberia hacer con la rotacion

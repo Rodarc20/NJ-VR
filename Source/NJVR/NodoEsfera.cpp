@@ -50,13 +50,13 @@ ANodoEsfera::ANodoEsfera()
         if (SphereMaterialAsset.Succeeded()) {
             NodoMesh->SetMaterial(0, SphereMaterialAsset.Object);
         }
-        NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+        NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100 * Escala));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
     }
 
     Nombre = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
     Nombre->SetupAttachment(RootComponent);
     Nombre->SetTextRenderColor(FColor::White);
-    Nombre->SetWorldSize(15.0f);
+    Nombre->SetWorldSize(15.0f*Escala);
     Nombre->SetVisibility(false);
     //Nombre->AddRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
     //Nombre->RelativeRotation = FRotator(0.0f, 0.0f, 180.0f);
@@ -64,13 +64,13 @@ ANodoEsfera::ANodoEsfera()
     Numero = CreateDefaultSubobject<UTextRenderComponent>(TEXT("NumeroTextRenderComponent"));
     Numero->SetupAttachment(RootComponent);
     Numero->SetTextRenderColor(FColor::White);
-    Numero->SetWorldSize(5.0f);
+    Numero->SetWorldSize(5.0f*Escala);
     Numero->SetVisibility(false);
 }
 
 void ANodoEsfera::Actualizar() {
-    NodoCollision->SetSphereRadius(Radio);
-    NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100));
+    NodoCollision->SetSphereRadius(Radio*Escala);//esta linea podria ser costosa, sacarla afuera solo deberia ejecutarse cuando se suele el boton de la escala, creo que deberia teer dos funcinces de acutalizacion
+    NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100 * Escala));
     CambiarColor(Color);
 }
 

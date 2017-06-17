@@ -18,6 +18,6 @@ void AAristaLinea::ActualizarCollision() {
 }
 
 void AAristaLinea::Tick(float DeltaTime) {
-    DrawDebugLine(GetWorld(), SourceNodo->GetActorLocation(), TargetNodo->GetActorLocation(), FColor::Black, false, -1.0f, 0, Radio);
+    DrawDebugLine(GetWorld(), SourceNodo->GetActorLocation(), TargetNodo->GetActorLocation(), FColor::Black, false, -1.0f, 0, Radio*Escala);
 }
 
