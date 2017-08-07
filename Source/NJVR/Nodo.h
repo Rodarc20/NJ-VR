@@ -43,6 +43,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     float Ycoordinate;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    float Zcoordinate;
     //el path del archivo
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     FString Url;
@@ -117,6 +119,30 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void OcultarNumero();
+
+    //para layouts propios
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Theta;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Phi;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Nivel;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Altura;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float WInicio;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float WTam;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Hojas;
+
 };
 
 //La colision por defecto de esta calse esta como WorldDynamic, sin mebargo le creare su propio perfil llamado Nodo, para rastrear de forma especifica de acruerdo a la necesiadad, y esta coo overlap all dynamic, sin collision physica

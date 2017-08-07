@@ -1,24 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NJVR.h"
-#include "NJ3DVRVisualization.h"
+#include "Layout1VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
 
-ANJ3DVRVisualization::ANJ3DVRVisualization() {
-    
+ALayout1VRVisualization::ALayout1VRVisualization(){
+
+    Rad = 1500.0f;
 }
-void ANJ3DVRVisualization::CreateNodos() {
+
+void ALayout1VRVisualization::CreateNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
-    if (GEngine) {
+    //if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
-    }
+    //}
     TArray<FXmlNode *> XMLnodes = rootnode->GetChildrenNodes();
     TArray<FXmlNode*> XMLvertexs;
-    //for(FXmlNode* nodo : nodos){
-        //if (nodo->GetTag() == "vertex") {
-            //vertexs.Add(nodo);
-        //}
     for (int i = 0; i < XMLnodes.Num(); ++i) {
         if (XMLnodes[i]->GetTag() == "vertex") {
             XMLvertexs.Add(XMLnodes[i]);
@@ -31,7 +29,6 @@ void ANJ3DVRVisualization::CreateNodos() {
     FXmlNode * nodeyorigen = XMLvertexs[XMLvertexs.Num()-1]->FindChildNode(FString("y-coordinate"));
     FString yorigen = nodeyorigen->GetAttribute("value");
     float OrigenY = FCString::Atof(*yorigen) * -1;
-    //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::FromInt(vertexs.Num()));
     //tengo todos los vertices en ese array
     TArray<int> numerocolores;
     for (int i = 0; i < XMLvertexs.Num(); ++i) {
@@ -150,7 +147,8 @@ void ANJ3DVRVisualization::CreateNodos() {
 
 }
 
-void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una arista hacia el que aparece como su padre
+
+void ALayout1VRVisualization::CreateAristas() {
     int count = 0;
     UWorld * const World = GetWorld();
     if (World) {//este if deberia estar afuera
@@ -232,59 +230,108 @@ void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una ari
     }
 }
 
-void ANJ3DVRVisualization::AplicarTraslacion(FVector Traslacion) {
-    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
-        //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
-        NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+void ALayout1VRVisualization::Calculos(ANodo * V) {
+    //calcular hojas, altura, nivel
+    if (V->Sons.Num() == 0) {//deberia usar si es virtual o no
+        V->Hojas = 1;
+        V->Altura = 0;
+    }
+    else {
+        V->Hojas = 0;
+        V->Altura = 0;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            Calculos(V->Sons[i]);
+            V->Hojas += V->Sons[i]->Hojas;
+            V->Altura = FMath::Max<float>(V->Altura, V->Sons[i]->Altura);
+        }
+        V->Altura++;
+    }
+}
+
+void ALayout1VRVisualization::Calculos2() {
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Calculos(Root->Parent);
+    Root->Altura = Root->Parent->Altura;
+    Root->Hojas = Root->Parent->Hojas;
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Calculos(Root->Sons[i]);
+        Root->Hojas += Root->Sons[i]->Hojas;
+        Root->Altura = FMath::Max<float>(Root->Altura, Root->Sons[i]->Altura);
+    }
+    Root->Altura++;
+}
+
+void ALayout1VRVisualization::Layout(float Radio) {//en este algoritmo puedo asignar el nivel
+    TQueue<ANodo *> Cola;
+    //la raiz es el ultimo nodo
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Calculos2();
+    Root->Theta = 0;
+    Root->Phi = 0;
+    Root->WTam = 2*PI;
+    Root->WInicio = 0;
+    Root->Xcoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
+    Root->Ycoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
+    Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+    float DeltaPhi = PI / Root->Altura;
+    float WTemp = Root->WInicio;
+    //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
+    Root->Parent->Phi = Root->Phi + DeltaPhi / 2;
+    Root->Parent->WTam = Root->WTam * (Root->Parent->Hojas / Root->Hojas);
+    Root->Parent->WInicio = WTemp;
+    Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
+    Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Ycoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = Radio * FMath::Cos(Root->Parent->Phi);
+    WTemp += Root->Parent->WTam;
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Root->Sons[i]->Phi = Root->Phi + DeltaPhi / 2;
+        Root->Sons[i]->WTam = Root->WTam * (Root->Sons[i]->Hojas / Root->Hojas);
+        Root->Sons[i]->WInicio = WTemp;
+        Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
+        Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Ycoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = Radio * FMath::Cos(Root->Sons[i]->Phi);
+        WTemp += Root->Sons[i]->WTam;
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = V->Phi + DeltaPhi;
+            V->Sons[i]->WTam = V->WTam * (V->Sons[i]->Hojas / V->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
+            WTemp += V->Sons[i]->WTam;
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ALayout1VRVisualization::ActualizarLayout() {
+    for (int i = 0; i < Nodos.Num(); i++) {
+        FVector NuevaPosicion;
+        NuevaPosicion.X = Nodos[i]->Xcoordinate;
+        NuevaPosicion.Y = Nodos[i]->Ycoordinate;
+        NuevaPosicion.Z = Nodos[i]->Zcoordinate;
+        UE_LOG(LogClass, Log, TEXT("Nodo id = %d, (%f,%f,%f)"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z);
+        Nodos[i]->SetActorLocation(NuevaPosicion);
     }
 
 }
 
-void ANJ3DVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
-    //debo llenar el vector de seleccionados antes, pero sin el resaltado que hace la tarea seleccion, esete arreglo se mantiene mientras este moviendo la rama, luego la vacion cuadno suelte el trrigger
-    PuntoReferencia = GetActorTransform().TransformPosition(PuntoReferencia);
-    //UE_LOG(LogClass, Log, TEXT("PuntoReferencai x = %f, y = %f, z = %f"), PuntoReferencia.X, PuntoReferencia.Y, PuntoReferencia.Z);
-    ANodo* NodoCentro = NodoReferencia->Parent;
-    //este trasnforma debo convertirlo a relativo, seguramente lo estoy recibiendo como worldspace
-    //calcular el angulo del vector hacia el punto de referencia, con respecto al vetor hacia el padre, esto deberia ser en en el plano relativo, para trabajr sobre un solo plano
-    FVector CentroToNodoReference = NodoReferencia->GetActorTransform().GetLocation() - NodoCentro->GetActorTransform().GetLocation();
-    FVector CentroToPointReference = PuntoReferencia - NodoCentro->GetActorTransform().GetLocation();
-    //CentroToNodoReference = CentroToNodoReference.GetClampedToSize(1.0f, 1.0f);//en teoria no necesito esto
-    //CentroToPointReference = CentroToPointReference.GetClampedToSize(1.0f, 1.0f);
-    //calcular el angulo que se agreaga
-    float DeltaAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CentroToPointReference.GetClampedToSize(1.0f, 1.0f), CentroToNodoReference.GetClampedToSize(1.0f, 1.0f))));
-    float DeltaSing = FVector::CrossProduct(CentroToPointReference.GetClampedToSize(1.0f, 1.0f), CentroToNodoReference.GetClampedToSize(1.0f, 1.0f)).X;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
-    if (DeltaSing >= 0) {
-        DeltaAngle = 360-DeltaAngle;
-    }
-    FRotator VariacionRotation(0.0f, 0.0f, DeltaAngle);//esta es la varaicion en teoria, ahora debo agregarla a los demas, no se si va en angle, o en algun otro
-    //esta es la variacion respecto al vector del hacia el apdre del nodo centro, esta variacion, es la que se debe aplicar a los otros, 
-    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
-        FVector CentroToNodo = NodosSeleccionados[i]->GetActorTransform().GetLocation() - NodoCentro->GetActorTransform().GetLocation();
-        float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CentroToNodo.GetClampedToSize(1.0f, 1.0f), FVector::RightVector)));
-        float Sing = FVector::CrossProduct(CentroToNodo.GetClampedToSize(1.0f, 1.0f), FVector::RightVector).X;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
-        if (Sing >= 0) {
-            Angle = 360 - Angle;
-        }
-        float NewAngle = (Angle + DeltaAngle);
-        if (NewAngle >= 360) {
-            NewAngle -= 360;
-        }
-        //UE_LOG(LogClass, Log, TEXT("DeltaAngle = %f, Angle = %f, NewAngle = %f"), DeltaAngle, Angle, NewAngle);
-        FVector NewRelativeLocation(0.0f, CentroToNodo.Size()*FMath::Cos(FMath::DegreesToRadians(NewAngle)), CentroToNodo.Size()*FMath::Sin(FMath::DegreesToRadians(NewAngle)));
-        //UE_LOG(LogClass, Log, TEXT("NewRealtiveLocation x = %f, y = %f, z = %f"), NewRelativeLocation.X, NewRelativeLocation.Y, NewRelativeLocation.Z);
-        FTransform NewTransform = NodosSeleccionados[i]->GetActorTransform();
-        //UE_LOG(LogClass, Log, TEXT("oldLocation x = %f, y = %f, z = %f"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
-        NewTransform.SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation);
-        //UE_LOG(LogClass, Log, TEXT("newLocation x = %f, y = %f, z = %f"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
-        NodosSeleccionados[i]->SetActorTransform(NewTransform);
-        //NodosSeleccionados[i]->SetActorTransform(NodosSeleccionados[i]->GetActorTransform().SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation));
-    }
+void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
 
 }
 
+void ALayout1VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
 
-
-
-
-
+}
