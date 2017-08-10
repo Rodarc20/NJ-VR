@@ -1,16 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NJVR.h"
-#include "Layout1VRVisualization.h"
+#include "Layout2VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include<stack>
 
-ALayout1VRVisualization::ALayout1VRVisualization(){
+ALayout2VRVisualization::ALayout2VRVisualization(){
 
     Rad = 300.0f;
 }
 
-void ALayout1VRVisualization::CreateNodos() {
+void ALayout2VRVisualization::CreateNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
     //if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
@@ -148,7 +149,7 @@ void ALayout1VRVisualization::CreateNodos() {
 }
 
 
-void ALayout1VRVisualization::CreateAristas() {
+void ALayout2VRVisualization::CreateAristas() {
     int count = 0;
     UWorld * const World = GetWorld();
     if (World) {//este if deberia estar afuera
@@ -230,93 +231,97 @@ void ALayout1VRVisualization::CreateAristas() {
     }
 }
 
-void ALayout1VRVisualization::Calculos(ANodo * V) {
-    //calcular hojas, altura, nivel
-    if (V->Sons.Num() == 0) {//deberia usar si es virtual o no
-        V->Hojas = 1;
-        V->Altura = 0;
-    }
-    else {
-        V->Hojas = 0;
-        V->Altura = 0;
-        for (int i = 0; i < V->Sons.Num(); i++) {
-            Calculos(V->Sons[i]);
-            V->Hojas += V->Sons[i]->Hojas;
-            V->Altura = FMath::Max<float>(V->Altura, V->Sons[i]->Altura);
-        }
-        V->Altura++;
-    }
+void ALayout2VRVisualization::Calculos(ANodo * V) {//quien sera la raiz. tener cuidado con esto para layouts pequeños o esferitas
 }
 
-void ALayout1VRVisualization::Calculos2() {
-    ANodo * Root = Nodos[Nodos.Num() - 1];
-    Calculos(Root->Parent);
-    Root->Altura = Root->Parent->Altura;
-    Root->Hojas = Root->Parent->Hojas;
-    for (int i = 0; i < Root->Sons.Num(); i++) {
-        Calculos(Root->Sons[i]);
-        Root->Hojas += Root->Sons[i]->Hojas;
-        Root->Altura = FMath::Max<float>(Root->Altura, Root->Sons[i]->Altura);
-    }
-    Root->Altura++;
-}
-
-void ALayout1VRVisualization::Layout(float Radio) {//en este algoritmo puedo asignar el nivel
-    TQueue<ANodo *> Cola;
+void ALayout2VRVisualization::Calculos2(int & hojas, int & nivelMax) {
+    std::stack<ANodo *> pila;
     //la raiz es el ultimo nodo
     ANodo * Root = Nodos[Nodos.Num() - 1];
-    Calculos2();
+    Root->Nivel = 0;
+    //pila.push(Root);//no deberia dsencolarlo
+    hojas = 0;
+    nivelMax = 0;
+    Root->Parent->Nivel = 1;
+    pila.push(Root->Parent);
+    Root->Sons[1]->Nivel = 1;
+    pila.push(Root->Sons[1]);
+    Root->Sons[0]->Nivel = 1;
+    pila.push(Root->Sons[0]);
+    while (!pila.empty()) {
+        ANodo * V = pila.top();
+        pila.pop();
+        if (V->Sons.Num()) {
+            for (int i = V->Sons.Num()-1; i >= 0; i--) {
+                V->Sons[i]->Nivel = V->Nivel + 1;
+                pila.push(V->Sons[i]);
+            }
+        }
+        else {
+            V->Casilla = hojas;
+            hojas++;
+            nivelMax = FMath::Max<float>(nivelMax, V->Nivel);
+        }
+    }
+}
+
+void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asignar el nivel
+    TQueue<ANodo *> Cola;
+    std::stack<ANodo *> pila;
+    //la raiz es el ultimo nodo
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    int hojas;
+    int nivelMax;
+    Calculos2(hojas, nivelMax);
     Root->Theta = 0;
     Root->Phi = 0;
-    Root->WTam = 2*PI;
-    Root->WInicio = 0;
     Root->Xcoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
     Root->Ycoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
     Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
-    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
-    float DeltaPhi = PI / Root->Altura;
-    float WTemp = Root->WInicio;
-    //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
-    Root->Parent->Phi = Root->Phi + DeltaPhi / 2;
-    Root->Parent->WTam = Root->WTam * (Root->Parent->Hojas / Root->Hojas);
-    Root->Parent->WInicio = WTemp;
-    Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
-    Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
-    Root->Parent->Ycoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
-    Root->Parent->Zcoordinate = Radio * FMath::Cos(Root->Parent->Phi);
-    WTemp += Root->Parent->WTam;
+    //UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+    //float DeltaPhi = PI / nivelMax;
+    float DeltaPhi = PI/2 / nivelMax;
+    float DeltaTheta = 2 * PI / hojas;
+    Cola.Enqueue(Root->Sons[0]);
+    pila.push(Root->Sons[0]);
+    Cola.Enqueue(Root->Sons[1]);
+    pila.push(Root->Sons[1]);
     Cola.Enqueue(Root->Parent);
-    for (int i = 0; i < Root->Sons.Num(); i++) {
-        Root->Sons[i]->Phi = Root->Phi + DeltaPhi / 2;
-        Root->Sons[i]->WTam = Root->WTam * (Root->Sons[i]->Hojas / Root->Hojas);
-        Root->Sons[i]->WInicio = WTemp;
-        Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
-        Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
-        Root->Sons[i]->Ycoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
-        Root->Sons[i]->Zcoordinate = Radio * FMath::Cos(Root->Sons[i]->Phi);
-        WTemp += Root->Sons[i]->WTam;
-        Cola.Enqueue(Root->Sons[i]);
-    }
+    pila.push(Root->Parent);
 
     while (!Cola.IsEmpty()) {
         ANodo * V;
         Cola.Dequeue(V);
-        WTemp = V->WInicio;
         for (int i = 0; i < V->Sons.Num(); i++) {
-            V->Sons[i]->Phi = V->Phi + DeltaPhi;
-            V->Sons[i]->WTam = V->WTam * (V->Sons[i]->Hojas / V->Hojas);
-            V->Sons[i]->WInicio = WTemp;
-            V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
-            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
-            WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
+            pila.push(V->Sons[i]);
+        }
+    }
+
+    while (!pila.empty()) {
+        ANodo * V = pila.top();
+        pila.pop();
+        if (V->Sons.Num()) {
+            V->Casilla = (V->Sons[0]->Casilla + V->Sons[1]->Casilla) / 2;
+            V->Casilla += V->Nivel & 1;
+            V->Phi = V->Nivel * DeltaPhi;
+            V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
+            V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+            V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+            V->Zcoordinate = Radio * FMath::Cos(V->Phi);
+        }
+        else{
+            //V->Phi = V->Nivel * DeltaPhi;
+            V->Phi = nivelMax * DeltaPhi;
+            V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);
+            V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+            V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+            V->Zcoordinate = Radio * FMath::Cos(V->Phi);
         }
     }
 }
 
-void ALayout1VRVisualization::ActualizarLayout() {
+void ALayout2VRVisualization::ActualizarLayout() {
     for (int i = 0; i < Nodos.Num(); i++) {
         FVector NuevaPosicion;
         NuevaPosicion.X = Nodos[i]->Xcoordinate;
@@ -328,10 +333,14 @@ void ALayout1VRVisualization::ActualizarLayout() {
 
 }
 
-void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
+void ALayout2VRVisualization::AplicarTraslacion(FVector Traslacion) {
 
 }
 
-void ALayout1VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
+void ALayout2VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
 
 }
+
+
+
+

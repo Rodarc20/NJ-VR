@@ -77,8 +77,9 @@ void AAristaCilindro::Actualizar() {
     }
     float angleYaw = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector::RightVector, FVector(Direccion.X, Direccion.Y, 0.0f))));//estaba solo direccion
     float singYaw = FVector::CrossProduct(FVector::RightVector, FVector(Direccion.X, Direccion.Y, 0.0f)).Z;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
+    //float singYaw = FVector::CrossProduct(FVector::ForwardVector, FVector(Direccion.X, Direccion.Y, 0.0f)).Z;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
     if (singYaw >= 0) {
-        angleYaw = 360-angleYaw;
+        angleYaw = 360 - angleYaw;
     }
     //FRotator NewRotation(0.0f, 0.0f, angleRoll);
     UE_LOG(LogClass, Log, TEXT("angleYaw = %f"), angleYaw);

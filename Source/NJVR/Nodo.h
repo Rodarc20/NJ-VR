@@ -129,10 +129,10 @@ public:
     float Phi;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    float Nivel;
+    int Nivel;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    float Altura;
+    int Altura;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     float WInicio;
@@ -141,7 +141,10 @@ public:
     float WTam;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    float Hojas;
+    int Hojas;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    int Casilla;//para el layout2
 
 };
 
