@@ -278,7 +278,7 @@ void ALayout1VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
     float WTemp = Root->WInicio;
     //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
     Root->Parent->Phi = Root->Phi + DeltaPhi / 2;
-    Root->Parent->WTam = Root->WTam * (Root->Parent->Hojas / Root->Hojas);
+    Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
     Root->Parent->WInicio = WTemp;
     Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
     Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
@@ -288,7 +288,7 @@ void ALayout1VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
         Root->Sons[i]->Phi = Root->Phi + DeltaPhi / 2;
-        Root->Sons[i]->WTam = Root->WTam * (Root->Sons[i]->Hojas / Root->Hojas);
+        Root->Sons[i]->WTam = Root->WTam * (float(Root->Sons[i]->Hojas) / Root->Hojas);
         Root->Sons[i]->WInicio = WTemp;
         Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
         Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
@@ -304,7 +304,7 @@ void ALayout1VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
         WTemp = V->WInicio;
         for (int i = 0; i < V->Sons.Num(); i++) {
             V->Sons[i]->Phi = V->Phi + DeltaPhi;
-            V->Sons[i]->WTam = V->WTam * (V->Sons[i]->Hojas / V->Hojas);
+            V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
             V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);

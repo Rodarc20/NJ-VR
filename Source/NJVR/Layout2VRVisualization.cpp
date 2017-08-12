@@ -280,7 +280,7 @@ void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
     Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
     //UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
     //float DeltaPhi = PI / nivelMax;
-    float DeltaPhi = PI/2 / nivelMax;
+    float DeltaPhi = PI / nivelMax;
     float DeltaTheta = 2 * PI / hojas;
     Cola.Enqueue(Root->Sons[0]);
     pila.push(Root->Sons[0]);
@@ -311,9 +311,10 @@ void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
             V->Zcoordinate = Radio * FMath::Cos(V->Phi);
         }
         else{
-            //V->Phi = V->Nivel * DeltaPhi;
-            V->Phi = nivelMax * DeltaPhi;
-            V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);
+            V->Phi = V->Nivel * DeltaPhi;
+            //V->Phi = nivelMax * DeltaPhi;
+            V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
+            //V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);
             V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
             V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
             V->Zcoordinate = Radio * FMath::Cos(V->Phi);
