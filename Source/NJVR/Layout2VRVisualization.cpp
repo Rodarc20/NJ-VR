@@ -329,9 +329,12 @@ void ALayout2VRVisualization::ActualizarLayout() {
         NuevaPosicion.Y = Nodos[i]->Ycoordinate;
         NuevaPosicion.Z = Nodos[i]->Zcoordinate;
         UE_LOG(LogClass, Log, TEXT("Nodo id = %d, (%f,%f,%f)"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z);
-        Nodos[i]->SetActorLocation(NuevaPosicion);
+        //Nodos[i]->SetActorLocation(NuevaPosicion);
+        Nodos[i]->SetActorRelativeLocation(NuevaPosicion);
     }
-
+    for (int i = 0; i < Aristas.Num(); i++) {
+        Aristas[i]->Actualizar();
+    }
 }
 
 void ALayout2VRVisualization::AplicarTraslacion(FVector Traslacion) {
