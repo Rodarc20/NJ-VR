@@ -43,60 +43,72 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UMotionControllerComponent* RightController;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UMotionControllerComponent* LeftController;
     
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool bHitNodo;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool bHitBoard;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     FVector ImpactPoint;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     AActor* HitActor;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class ANodo* HitNodo;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     AActor* HitLimite;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     TSubclassOf<class ANodo> TipoNodo;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
 
+    //Dimension que ocupara cada nodo
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    float RadioNodos;
+
+    //Dimension que ocupara cada nodo
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    float RadioNodosVirtuales;
+
     //el tipo de nodo que se instancia
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     TSubclassOf<class AArista> TipoArista;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    //Dimension que ocupara cada arista
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    float RadioAristas;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     TArray<class ANodo*> Nodos;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     TArray<class AArista*> Aristas;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     TArray<class ANodo*> NodosSeleccionados;
 
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool bNodoGuia;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     ANodo* NodoGuia;
 	
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     TArray<FLinearColor> Colores;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     FLinearColor ColorSeleccion;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     FLinearColor ColorVirtual;
 
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
@@ -106,7 +118,7 @@ public:
     virtual void CreateAristas();
 
     //Task
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Modos y Tareas")
     EVRVisualizationTask CurrentVisualizationTask;
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
@@ -116,7 +128,7 @@ public:
     EVRVisualizationTask GetVisualizationTask();
 
     //Mode
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Modos y Tareas")
     EVRVisualizationMode CurrentVisualizationMode;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
@@ -149,33 +161,33 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void AplicarEscala(float NuevaEscala);
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-        TArray<FVector> PosicionesNodosInicialEscala;//debe tenere el mismo tamaño que el array de nodos
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    TArray<FVector> PosicionesNodosInicialEscala;//debe tenere el mismo tamaño que el array de nodos
 
     //Para el modo general
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float DistanciaLaser;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     FVector OffsetToPointLaser;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float Escala;
 
     //Rotacion del controll capturado al presionar el trigger
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     FRotator InitialRotationController;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     FRotator InitialRotation;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool Rotar;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool MostrarLabel;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool MostrarNumero;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
@@ -184,10 +196,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     FString ObtenerContenidoNodo(ANodo* Nodo);
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UWidgetComponent * Document;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UWidgetInteractionComponent * Interaction;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
@@ -195,6 +207,21 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void OcultarNumeracion();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    bool bGripIzquierdo;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    bool bGripDerecho;
+
+    UPROPERTY(BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    bool bCalcularEscala;// si no quiero que aparezca en el editor
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    float DistanciaInicialControles;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
+    float EscalaTemp;
 };
 
 //la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.

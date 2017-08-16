@@ -8,8 +8,15 @@
 
 ALayout2VRVisualization::ALayout2VRVisualization(){
 
-    Rad = 300.0f;
+    Radio = 300.0f;
 }
+
+void ALayout2VRVisualization::BeginPlay() {
+    Super::BeginPlay();
+    Layout(Radio);
+    ActualizarLayout();
+}
+
 
 void ALayout2VRVisualization::CreateNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
@@ -265,7 +272,7 @@ void ALayout2VRVisualization::Calculos2(int & hojas, int & nivelMax) {
     }
 }
 
-void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asignar el nivel
+void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo asignar el nivel
     TQueue<ANodo *> Cola;
     std::stack<ANodo *> pila;
     //la raiz es el ultimo nodo
@@ -275,9 +282,9 @@ void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
     Calculos2(hojas, nivelMax);
     Root->Theta = 0;
     Root->Phi = 0;
-    Root->Xcoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
-    Root->Ycoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
-    Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
+    Root->Xcoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
+    Root->Ycoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
+    Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
     //UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
     //float DeltaPhi = PI / nivelMax;
     float DeltaPhi = PI / nivelMax;
@@ -306,18 +313,18 @@ void ALayout2VRVisualization::Layout(float Radio) {//en este algoritmo puedo asi
             V->Casilla += V->Nivel & 1;
             V->Phi = V->Nivel * DeltaPhi;
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
-            V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
-            V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
-            V->Zcoordinate = Radio * FMath::Cos(V->Phi);
+            V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+            V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+            V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
         }
         else{
             V->Phi = V->Nivel * DeltaPhi;
             //V->Phi = nivelMax * DeltaPhi;
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
             //V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);
-            V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
-            V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
-            V->Zcoordinate = Radio * FMath::Cos(V->Phi);
+            V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+            V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+            V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
         }
     }
 }

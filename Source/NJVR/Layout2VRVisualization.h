@@ -13,6 +13,10 @@ class NJVR_API ALayout2VRVisualization : public AVRVisualization
 {
 	GENERATED_BODY()
 	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 public:
     ALayout2VRVisualization();
 
@@ -20,11 +24,11 @@ public:
 
     virtual void CreateAristas() override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    float Rad;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float Radio;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void Layout(float Radio);
+    void Layout(float NewRadio);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void Calculos(ANodo * V);
