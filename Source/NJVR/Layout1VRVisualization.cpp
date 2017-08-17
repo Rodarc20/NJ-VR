@@ -8,6 +8,8 @@
 ALayout1VRVisualization::ALayout1VRVisualization(){
 
     Radio = 300.0f;
+    PhiMax = PI;
+    PhiMin = 0;
 }
 
 void ALayout1VRVisualization::BeginPlay() {
@@ -283,7 +285,8 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     Root->Ycoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
     Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
     UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
-    float DeltaPhi = PI / Root->Altura;
+    //float DeltaPhi = PI / Root->Altura;
+    float DeltaPhi = (PhiMax-PhiMin) / Root->Altura;
     float WTemp = Root->WInicio;
     //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
     Root->Parent->Phi = Root->Phi + DeltaPhi / 2;
