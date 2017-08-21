@@ -41,7 +41,7 @@ public:
     void Layout(float NewRadio);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiInicial, float WTamInicial, float WInicioInicial);
+    void Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiInicial, float WInicioInicial, float WTamInicial);
 
     int EncontrarNivel(class TQueue<ANodo*>& cola, ANodo * Rama, int Nivel);//que retorne el numero de hojas en el nivel que retorne
 
