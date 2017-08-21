@@ -32,8 +32,9 @@ AAristaCilindro::AAristaCilindro()
         if (AristaMaterialAsset.Succeeded()) {
             AristaMesh->SetMaterial(0, AristaMaterialAsset.Object);
         }
-        AristaMesh->SetWorldScale3D(FVector(2*Radio/100, 2*Radio/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+        AristaMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
         //estos 2*, es por que el pivot esta enel centro de los static mesh
+        //la distancia no necesita ser escalada, se basa en las posiciones de otros
     }
 
 }
@@ -49,7 +50,7 @@ void AAristaCilindro::Actualizar() {
 
     Distancia = Diferencia.Size()-3;
     //AristaCollision->SetCapsuleHalfHeight(Distancia/2);//modificar el tamaño del componete que hace la coslision, en este aso el capsule componente hace que actualizar el overlap aumente, en ese caso como no lo necesito por el momento al realizar traslaciones, esto puede estar desactivado hasta que lo necesite en laguna interaccion, y llamar a este cambio recien cuado suelte el boton de traslado
-    AristaMesh->SetWorldScale3D(FVector(2*Radio/100, 2*Radio/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    AristaMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
 }
 
 void AAristaCilindro::ActualizarCollision() {

@@ -40,6 +40,11 @@ AVRVisualization::AVRVisualization()
     ColorVirtual = FLinearColor::White;
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml"));
+    DataSetSeleccionado = 0;
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +58,8 @@ void AVRVisualization::BeginPlay()
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml");//de esta forma tambien funciona
     //FString path = FString("/Game/Resources/cbr-ilp-ir-son.xml");//esto no funciona
-    bool cargado = XmlSource.LoadFile(path, EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    //bool cargado = XmlSource.LoadFile(path, EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    bool cargado = XmlSource.LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
     if (GEngine) {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Probando."));
         if(cargado)

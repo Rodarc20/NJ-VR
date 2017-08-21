@@ -4,6 +4,8 @@
 #include "Layout1VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include <stack>
+#include <queue>
 
 ALayout1VRVisualization::ALayout1VRVisualization(){
 
@@ -241,6 +243,25 @@ void ALayout1VRVisualization::CreateAristas() {
     }
 }
 
+int ALayout1VRVisualization::mod(int a, int b) {
+    int d = a / b;
+    int m = a - b*d;
+    if (m < 0)
+        m += b;
+    return m;
+}
+
+float ALayout1VRVisualization::modFloat(float a, float b) {
+    //por ahora es solo para el exceso en resta, para el esferico nunca exceden el doblre asi que sera solo la suma para hacerlo positivo
+    if (a > b) {
+        return a - b;
+    }
+    if (a < 0) {
+        return a + b;
+    }
+    return a;
+}
+
 void ALayout1VRVisualization::Calculos(ANodo * V) {
     //calcular hojas, altura, nivel
     if (V->Sons.Num() == 0) {//deberia usar si es virtual o no
@@ -342,6 +363,138 @@ void ALayout1VRVisualization::ActualizarLayout() {
         Aristas[i]->Actualizar();
     }
 
+}
+void ALayout1VRVisualization::Calc() {//para hallar niveles
+    std::stack<ANodo *> pila;
+    //la raiz es el ultimo nodo
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Root->Nivel = 0;
+    //pila.push(Root);//no deberia dsencolarlo
+    Root->Parent->Nivel = 1;
+    pila.push(Root->Parent);
+    Root->Sons[1]->Nivel = 1;
+    pila.push(Root->Sons[1]);
+    Root->Sons[0]->Nivel = 1;
+    pila.push(Root->Sons[0]);
+    while (!pila.empty()) {
+        ANodo * V = pila.top();
+        pila.pop();
+        if (V->Sons.Num()) {
+            for (int i = V->Sons.Num()-1; i >= 0; i--) {
+                V->Sons[i]->Nivel = V->Nivel + 1;
+                pila.push(V->Sons[i]);
+            }
+        }
+    }
+}
+
+int ALayout1VRVisualization::EncontrarNivel(TQueue<ANodo *> & cola, ANodo * Rama, int Nivel) {//este requiere que los nodos tenga el nivel pueso, o que este layout calcule el nivel
+    //encuentra los nodos del nivel respectivo
+    int NumHojas = 0;
+    ANodo * V;
+    cola.Enqueue(Rama);
+    NumHojas += Rama->Hojas;
+    while (!cola.IsEmpty() && cola.Peek(V) && V->Nivel != Nivel) {
+        cola.Dequeue(V);
+        NumHojas -= V->Hojas;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            cola.Enqueue(V->Sons[i]);
+            NumHojas += V->Sons[i]->Hojas;
+        }
+    }
+    cola.Peek(V);
+    //UE_LOG(LogClass, Log, TEXT("tam cola = %d"), V->Nivel);
+    //al finalizar la cola, tendra los nodos de el nivel ene l que empieza esta cosa
+    return NumHojas;
+}
+
+void ALayout1VRVisualization::Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiNode, float WTamInicial, float WInicioInicial) {
+    TQueue<ANodo *> Cola;
+    TQueue<ANodo *> Cola2;
+    int HojasNivel = EncontrarNivel(Cola2, Node, NivelExp);
+    //Node->Phi = PhiNode;
+    //Node->WInicio = WInicioInicial;
+    //Node->WTam = WTamInicial;
+    //no pudo aplcarle a inicio de la rama, debo aplicar esto desde aqui, con el wtemp
+    //para los lementod de la cola, o sus hijos de bo actualurza con los parametros ingresados
+    float WTemp = WInicioInicial;
+    while (!Cola2.IsEmpty()) {
+        ANodo * V;
+        Cola2.Dequeue(V);
+        Cola.Enqueue(V);
+        V->WTam = WTamInicial * (float(V->Hojas) / HojasNivel);//necesitare saber todas las hojas, de este nivel
+        V->WInicio = WTemp;
+        V->Theta = modFloat(WTemp + V->WTam / 2, 2*PI);
+        V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+        V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+        V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
+        WTemp = modFloat(WTemp + V->WTam, 2*PI);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        float DeltaPhi = (PhiMax-PhiMin) / Nodos[Nodos.Num() - 1]->Altura;
+        WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = V->Phi + DeltaPhi;
+            V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = modFloat(WTemp + V->Sons[i]->WTam / 2, 2*PI);
+            V->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(V->Sons[i]->Phi);
+            WTemp = modFloat(WTemp + V->Sons[i]->WTam, 2*PI);
+            //UE_LOG(LogClass, Log, TEXT("THETA %f"), V->Sons[i]->Theta);
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ALayout1VRVisualization::ExpandirLayout() {
+    Calc();
+    TArray<ANodo *> Ramas;
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Ramas.Add(Root->Sons[0]);
+    Ramas.Add(Root->Sons[1]);
+    Ramas.Add(Root->Parent);
+    TArray<float> WIniciales;
+    TArray<float> WTams;
+    TArray<int> NivelExpansion;
+    for (int i = 0; i < Ramas.Num(); i++) {
+        int idxIzq = mod((i - 1), Ramas.Num());
+        int idxDer = mod((i + 1), Ramas.Num());
+        UE_LOG(LogClass, Log, TEXT("Rama Altura %d, indices %d, %d"), Ramas[i]->Altura, idxIzq, idxDer);
+        int NivelExp = 0;
+        if (Ramas[i]->Altura > Ramas[idxIzq]->Altura) {//rama de la izquierda
+            UE_LOG(LogClass, Log, TEXT("izquierda"));
+            NivelExp = Ramas[idxIzq]->Altura + Ramas[i]->Nivel + 1;//marcamos a que nivel se hara la expansion, que luego se comparara con el de la siguiente rama
+            //agregamos la mitad del espacion para poder distribuir ramas/
+            WIniciales.Add(modFloat(Ramas[i]->WInicio - Ramas[idxIzq]->WTam / 2, 2*PI));//el nuevo inicial sera a la mitad del espacinde la rama, este menos deberia estar reducido,o sacar una especie de modulo de 2*PI
+            WTams.Add(Ramas[i]->WTam + Ramas[idxIzq]->WTam / 2);//incrementamos el tamañó con lo correspondiente, 
+        }
+        else {//como no es mayor, los valores se mantinen, pero hay que agregar los valores en los arreglos 
+            NivelExp = Ramas[i]->Altura + Ramas[i]->Nivel + 1;
+            WIniciales.Add(Ramas[i]->WInicio);//aun que si pusiera 0 podria diferenciar, si modifique o no, para no recalcular en una rama, que no sea necesario, por ahora calcular en todas
+            WTams.Add(Ramas[i]->WTam);
+        }
+        if (Ramas[i]->Altura > Ramas[idxDer]->Altura) {// rama de la derecha
+            UE_LOG(LogClass, Log, TEXT("derecha"));
+            NivelExp = FMath::Max<float>(Ramas[idxDer]->Altura + Ramas[i]->Nivel + 1, NivelExp);
+            WTams[i] += Ramas[idxDer]->WTam / 2;//incrementamos el tamaño en el arreglo de tams con lo correspondiente, 
+        }
+        NivelExpansion.Add(NivelExp);
+        //calculos listos, ahora se procede a modificar cada rama, para esto se debe ir rama por rama, con los repectivos nuevos valores
+        //profunidzar en cada rama, ahsta el nivel respectivo, a travez de un bfs, me quedo con los nodos de ese nivel en una cola, y luego procedo a recalcular las dimensiones
+    }
+    /*for (int i = 0; i < Ramas.Num(); i++) {
+    }*/
+    for (int i = 0; i < Ramas.Num(); i++) {
+        UE_LOG(LogClass, Log, TEXT("ramas %d, %f, %f"), NivelExpansion[i], Ramas[i]->WInicio, Ramas[i]->WTam);
+        UE_LOG(LogClass, Log, TEXT("ramasnuevo %d, %f, %f"), NivelExpansion[i], WIniciales[i], WTams[i]);
+        if(i != 2)
+        Layout2(Ramas[i], Radio, NivelExpansion[i], Ramas[i]->Phi, WIniciales[i], WTams[i]);
+    }
 }
 
 void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {

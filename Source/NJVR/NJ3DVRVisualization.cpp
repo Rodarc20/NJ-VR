@@ -240,6 +240,7 @@ void ANJ3DVRVisualization::AplicarTraslacion(FVector Traslacion) {
         //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
         NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
     }
+    //se deben actualizar las aristas involucradas
 
 }
 

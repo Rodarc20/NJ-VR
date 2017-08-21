@@ -43,6 +43,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    TArray<FString> DataSets;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    int DataSetSeleccionado;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UMotionControllerComponent* RightController;
 
