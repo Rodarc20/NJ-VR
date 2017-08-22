@@ -409,6 +409,76 @@ int ALayout1VRVisualization::EncontrarNivel(TQueue<ANodo *> & cola, ANodo * Rama
     return NumHojas;
 }
 
+void ALayout1VRVisualization::Layout3(float NewRadio) {
+    Calculos2();//no siemepre seran necesarios, reptirlos si ya se calcualron antes, salvo que cambien la estructura del arbol y se deban actualizar
+    Calc();
+    int NivelDenso= NivelMasDenso();
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    //para calcular el deltaPhi, necesito examinar hacia arriba y hacia abajo del nivel maximo, seleccionar el que tenga mas niveles y dividir PI/2 entre esa cantidad de niveles, para calclar la variacion
+    //y luego calcular el phi inicial, para el primer nivel despues de la raiz, y emepzar desde alli el layout
+    float DeltaPhi;
+    float DeltaInicial;
+    if (NivelDenso > Root->Altura / 2) {//estos calculos cambiaran cuano pempiece a limitar los angulos maximos para la esfera, tamibien falta agergar el umbral
+        DeltaPhi = (PI / 2) / NivelDenso;
+        DeltaInicial = DeltaPhi;//aplica desde el primer nivel
+    }
+    else {
+        DeltaPhi = (PI / 2) / (Root->Altura - NivelDenso);
+        DeltaInicial = PI / 2 - (NivelDenso - 1)*DeltaPhi;
+    }
+    
+    TQueue<ANodo *> Cola;
+    //la raiz es el ultimo nodo
+    Root->Theta = 0;
+    Root->Phi = 0;
+    Root->WTam = 2*PI;
+    Root->WInicio = 0;
+    Root->Xcoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
+    Root->Ycoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
+    Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
+    UE_LOG(LogClass, Log, TEXT("Layout 3 Nivel Denso = %d"), NivelDenso);
+    //float DeltaPhi = PI / Root->Altura;
+    float WTemp = Root->WInicio;
+    //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
+    Root->Parent->Phi = DeltaInicial;
+    Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
+    Root->Parent->WInicio = WTemp;
+    Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
+    Root->Parent->Xcoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Ycoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = NewRadio * FMath::Cos(Root->Parent->Phi);
+    WTemp += Root->Parent->WTam;
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Root->Sons[i]->Phi = DeltaInicial;
+        Root->Sons[i]->WTam = Root->WTam * (float(Root->Sons[i]->Hojas) / Root->Hojas);
+        Root->Sons[i]->WInicio = WTemp;
+        Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
+        Root->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(Root->Sons[i]->Phi);
+        WTemp += Root->Sons[i]->WTam;
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = V->Phi + DeltaPhi;
+            V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
+            V->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(V->Sons[i]->Phi);
+            WTemp += V->Sons[i]->WTam;
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
 void ALayout1VRVisualization::Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiNode, float WInicioInicial, float WTamInicial) {
     TQueue<ANodo *> Cola;
     TQueue<ANodo *> Cola2;

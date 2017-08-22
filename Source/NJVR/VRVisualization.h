@@ -123,6 +123,8 @@ public:
     virtual void CreateNodos();
     virtual void CreateAristas();
 
+    int NivelMasDenso();
+
     //Task
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Modos y Tareas")
     EVRVisualizationTask CurrentVisualizationTask;
