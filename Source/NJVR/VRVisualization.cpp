@@ -215,6 +215,32 @@ int AVRVisualization::NivelMasDenso() {//de todo el arbol
     return NivelDensoMaximo;
 }
 
+int AVRVisualization::NivelMasDensoRama(ANodo * Nodo) {//de todo el arbol, deeria tomarme en cuenta, osea el nodo inicial,
+    int NivelDensoMaximo = Nodo->Nivel;
+    int CantidadNodosMaximo = 1;
+    int CantidadNodosNivelActual = 1;
+    int NivelActual = Nodo->Nivel + 1;//estaba solo 1
+    std::queue<ANodo *> Cola;
+    Cola.push(Nodo);
+    while(!Cola.empty()){
+        while (!Cola.empty() && Cola.front()->Nivel < NivelActual) {
+            ANodo * V;
+            V = Cola.front();
+            Cola.pop();
+            for (int i = 0; i < V->Sons.Num(); i++) {
+                Cola.push(V->Sons[i]);
+            }
+        }
+        CantidadNodosNivelActual = Cola.size();
+        if (CantidadNodosNivelActual >= CantidadNodosMaximo) {// deberia camniar si estoy ma abajo o arriba??
+            CantidadNodosMaximo = CantidadNodosNivelActual;
+            NivelDensoMaximo = NivelActual;
+        }
+        NivelActual++;
+    }
+    return NivelDensoMaximo;//el valor de retorno es respecto al arbol general, no de forma relativba a la rama
+}
+
 EVRVisualizationTask AVRVisualization::GetVisualizationTask() {
     return CurrentVisualizationTask;
 }

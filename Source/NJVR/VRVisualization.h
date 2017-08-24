@@ -125,6 +125,8 @@ public:
 
     int NivelMasDenso();
 
+    int NivelMasDensoRama(ANodo * Nodo);
+
     //Task
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Modos y Tareas")
     EVRVisualizationTask CurrentVisualizationTask;

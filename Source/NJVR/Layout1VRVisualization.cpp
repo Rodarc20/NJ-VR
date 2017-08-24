@@ -479,6 +479,70 @@ void ALayout1VRVisualization::Layout3(float NewRadio) {
     }
 }
 
+void ALayout1VRVisualization::UbicacionesLayout4(ANodo * Rama, int NivelDenso) {// en lugar de nre radio, deberia usar la variable radio
+    NivelDenso = NivelMasDensoRama(Rama);//esta linea digamos se quejeucta afuera, o podria dejarlo a quito dentro, 
+    //para calcular el deltaPhi, necesito examinar hacia arriba y hacia abajo del nivel maximo, seleccionar el que tenga mas niveles y dividir PI/2 entre esa cantidad de niveles, para calclar la variacion
+    //y luego calcular el phi inicial, para el primer nivel despues de la raiz, y emepzar desde alli el layout
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    float DeltaPhi;
+    float DeltaInicial;
+    //hay que corregir el valor del nivel denso de la rama, en funcion de su posicion o nivel del nodo inicial de la rama, para que tenga sentido las divisiones sigueintes
+    if (NivelDenso > Root->Altura / 2) {//estos calculos cambiaran cuano pempiece a limitar los angulos maximos para la esfera, tamibien falta agergar el umbral
+        DeltaPhi = (PI / 2) / NivelDenso;
+        DeltaInicial = DeltaPhi;//aplica desde el primer nivel
+    }
+    else {
+        DeltaPhi = (PI / 2) / (Root->Altura - NivelDenso);
+        DeltaInicial = PI / 2 - (NivelDenso - 1)*DeltaPhi;
+    }
+    Rama->Phi = DeltaInicial;
+    Rama->Xcoordinate = Radio * FMath::Sin(Rama->Phi) * FMath::Cos(Rama->Theta);
+    Rama->Ycoordinate = Radio * FMath::Sin(Rama->Phi) * FMath::Sin(Rama->Theta);
+    Rama->Zcoordinate = Radio * FMath::Cos(Rama->Phi);
+    TQueue<ANodo *> Cola;
+    //la raiz es el ultimo nodo
+
+    Cola.Enqueue(Rama);
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        float WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = V->Phi + DeltaPhi;
+            V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
+            WTemp += V->Sons[i]->WTam;
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ALayout1VRVisualization::Layout4(float NewRadio) {//se entiende que sera usado despuesde un primer caclulo del radial layout
+    //encontrar hasta que nivel quiero dividir las ramas, y las almaceno
+    Calculos2();//no siemepre seran necesarios, reptirlos si ya se calcualron antes, salvo que cambien la estructura del arbol y se deban actualizar
+    Calc();
+    std::queue<ANodo *> Cola;
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Cola.push(Root->Parent);
+    Cola.push(Root->Sons[0]);
+    Cola.push(Root->Sons[1]);
+    for (int i = 0; i < Cola.size(); i++) {//quiza sea mejor usar un arreglo en lugar de una colas, es solo que lo anterior se reeempalzara por un bfs, que me debolvera algo, cola o array
+        int NivelDensoRama = NivelMasDensoRama(Cola.front());
+        UbicacionesLayout4(Cola.front(), NivelDensoRama);
+        Cola.push(Cola.front());
+        Cola.pop();
+    }
+    //luego de determinadas las posiciones para las ramas, se deben calcular las nuevas posiciones para los nodos, que nos hemos pasado.
+    //es decir los padres de las ramas; por ahora solo estamos tomando desde el primer nivel, asi que no hya que repossicionar nada, pero si descendiera mas, deberia calcular en funionce de los hijos de forma recursiva
+
+    //en cada rama seleccinada, busco su nivel mas denso.
+    //aplicar el layout3 el algoritmo del layot 3 para cada rama, este algortmo solo modific los dela phi, generar n aversion conrta de ese algortimo, para que se ejecute en ramas, ya no teneinedo en cuenta el problema de la raiz
+}
+
 void ALayout1VRVisualization::Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiNode, float WInicioInicial, float WTamInicial) {
     TQueue<ANodo *> Cola;
     TQueue<ANodo *> Cola2;

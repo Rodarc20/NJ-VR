@@ -37,14 +37,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float PhiMin;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout(float NewRadio);
 
     //Ubica el nivel mas denso de todo el arbol en el ecuador
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout3(float NewRadio);
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void UbicacionesLayout4(ANodo * Rama, int NivelDenso);
+
+    //ubica por ramas el nivel mas denso en la mitad de la esfera
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void Layout4(float NewRadio);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiInicial, float WInicioInicial, float WTamInicial);
 
     int EncontrarNivel(class TQueue<ANodo*>& cola, ANodo * Rama, int Nivel);//que retorne el numero de hojas en el nivel que retorne
@@ -55,12 +61,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void Calculos2();
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
 
     void Calc();
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ExpandirLayout();
 
     virtual void AplicarTraslacion(FVector Traslacion) override;
