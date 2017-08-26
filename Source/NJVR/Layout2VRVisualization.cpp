@@ -313,19 +313,16 @@ void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
             V->Casilla += V->Nivel & 1;
             V->Phi = V->Nivel * DeltaPhi;
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
-            V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
-            V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
-            V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
         }
         else{
             V->Phi = V->Nivel * DeltaPhi;
-            //V->Phi = nivelMax * DeltaPhi;
+            //V->Phi = nivelMax * DeltaPhi;//para alinear las hojas al ultimo nivel
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
             //V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);
-            V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
-            V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
-            V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
         }
+        V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+        V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+        V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
     }
 }
 
