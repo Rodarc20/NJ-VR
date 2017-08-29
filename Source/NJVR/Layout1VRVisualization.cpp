@@ -521,6 +521,7 @@ void ALayout1VRVisualization::UbicacionesLayout4(ANodo * Rama, int NivelDenso) {
     }
 }
 
+
 void ALayout1VRVisualization::Layout4(float NewRadio) {//se entiende que sera usado despuesde un primer caclulo del radial layout
     //encontrar hasta que nivel quiero dividir las ramas, y las almaceno
     Calculos2();//no siemepre seran necesarios, reptirlos si ya se calcualron antes, salvo que cambien la estructura del arbol y se deban actualizar
@@ -631,6 +632,17 @@ void ALayout1VRVisualization::ExpandirLayout() {
         //if(i != 2)
         Layout2(Ramas[i], Radio, NivelExpansion[i], Ramas[i]->Phi, WIniciales[i], WTams[i]);
     }
+}
+
+float ALayout1VRVisualization::EncontrarRadio1() {
+    int NivelDenso;
+    int CantidadNodos;
+    NivelMasDenso(NivelDenso, CantidadNodos);
+    return 0.0f;
+}
+
+float ALayout1VRVisualization::EncontrarRadio2() {
+    return 0.0f;
 }
 
 void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {

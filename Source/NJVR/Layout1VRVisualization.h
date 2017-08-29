@@ -45,6 +45,8 @@ public:
     void Layout3(float NewRadio);
 
     void UbicacionesLayout4(ANodo * Rama, int NivelDenso);
+    float EncontrarRadio1();//busca el nivel mas denso y hace un calculo sencillo
+    float EncontrarRadio2();//este deberia recibir el phi el ultimo nivel, para poder hacer los calculos, 
 
     //ubica por ramas el nivel mas denso en la mitad de la esfera
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
@@ -75,3 +77,8 @@ public:
 	
 	
 };
+
+//este layout requiere dos fases una en la que se calcula las coordenadas esfericas, y otra en la que se convierten estas coordenadas al sistenma normal, en funcion a un radio.
+//al inlcuir el caso del radio, no se debe recalcular todo, hacer la nuev transformacion con el uevo radio
+//otra forma es antes de proceder a las transfomracion, es determinar cual sera el delta para el nivel desno, si ya se conoce el inicio finaldel rango, el nivle que tocara, el delta phi, etc.
+//estas dos formas determinar dos estructuras de las funciones bastante distintas, escoger la mas optima, y comoda, quiza se deban quear ambas

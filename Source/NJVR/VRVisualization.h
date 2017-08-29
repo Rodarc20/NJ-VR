@@ -125,6 +125,8 @@ public:
 
     int NivelMasDenso();
 
+    void NivelMasDenso(int & NivelDenso, int & CantidadNodos);
+
     int NivelMasDensoRama(ANodo * Nodo);
 
     //Task

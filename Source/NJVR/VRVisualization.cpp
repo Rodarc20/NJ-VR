@@ -215,6 +215,45 @@ int AVRVisualization::NivelMasDenso() {//de todo el arbol
     return NivelDensoMaximo;
 }
 
+void AVRVisualization::NivelMasDenso(int & NivelDenso, int & CantidadNodos) {
+    int NivelDensoMaximo = 0;
+    int CantidadNodosMaximo = 0;
+    int CantidadNodosNivelActual = 0;
+    int NivelActual = 1;
+    std::queue<ANodo *> Cola;
+    //la raiz es el ultimo nodo
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    //UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+    Cola.push(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Cola.push(Root->Sons[i]);
+    }
+    CantidadNodosNivelActual = Cola.size();
+    if (CantidadNodosNivelActual >= CantidadNodosMaximo) {// deberia camniar si estoy ma abajo o arriba??
+        CantidadNodosMaximo = CantidadNodosNivelActual;
+        NivelDensoMaximo = NivelActual;
+    }
+    NivelActual++;//iniciaria el bucle con 2, pero los nodos ubicados en la cola son de nivel 1
+    while(!Cola.empty()){
+        while (!Cola.empty() && Cola.front()->Nivel < NivelActual) {
+            ANodo * V;
+            V = Cola.front();
+            Cola.pop();
+            for (int i = 0; i < V->Sons.Num(); i++) {
+                Cola.push(V->Sons[i]);
+            }
+        }
+        CantidadNodosNivelActual = Cola.size();
+        if (CantidadNodosNivelActual >= CantidadNodosMaximo) {// deberia camniar si estoy ma abajo o arriba??
+            CantidadNodosMaximo = CantidadNodosNivelActual;
+            NivelDensoMaximo = NivelActual;
+        }
+        NivelActual++;
+    }
+    NivelDenso = NivelDensoMaximo;
+    CantidadNodos = CantidadNodosMaximo;
+}
+
 int AVRVisualization::NivelMasDensoRama(ANodo * Nodo) {//de todo el arbol, deeria tomarme en cuenta, osea el nodo inicial,
     int NivelDensoMaximo = Nodo->Nivel;
     int CantidadNodosMaximo = 1;
