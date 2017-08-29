@@ -298,6 +298,13 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     //la raiz es el ultimo nodo
     ANodo * Root = Nodos[Nodos.Num() - 1];
     Calculos2();
+    Calc();//no estaba antes
+    float DeltaPhi = (PhiMax-PhiMin) / Root->Altura;
+    //agregado para el nuevo radio
+    int NivelDenso, CantidadNodosNivelDenso;
+    NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
+    NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
+    //
     Root->Theta = 0;
     Root->Phi = 0;
     Root->WTam = 2*PI;
@@ -307,10 +314,10 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
     UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
     //float DeltaPhi = PI / Root->Altura;
-    float DeltaPhi = (PhiMax-PhiMin) / Root->Altura;
     float WTemp = Root->WInicio;
     //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
-    Root->Parent->Phi = Root->Phi + DeltaPhi / 2;
+
+    Root->Parent->Phi = Root->Phi + DeltaPhi;//estaba dividido /2
     Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
     Root->Parent->WInicio = WTemp;
     Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
@@ -634,11 +641,16 @@ void ALayout1VRVisualization::ExpandirLayout() {
     }
 }
 
-float ALayout1VRVisualization::EncontrarRadio1() {
+float ALayout1VRVisualization::EncontrarRadio1(float PhiNivelDenso, int CantidadNodosNivel) {//el radio de los nodos esta en la variable de la clase VRVisualization
     int NivelDenso;
     int CantidadNodos;
     NivelMasDenso(NivelDenso, CantidadNodos);
-    return 0.0f;
+    float RadioNivel = 8 * CantidadNodosNivel*RadioNodos/(2*PI);
+    //usar la cantidad de nodos no esta bien, produce mucho errores, ya que no hay la suficiente cantidad, o no estan acomodados en el lugar correcto, el conjunto feo es pureuba de ello
+    //asumire que quiero una separacion casi nula en este nivel, de ser necesario agregare un sumando mas
+    float RadioArbol = RadioNivel / FMath::Sin(PhiNivelDenso);
+    
+    return RadioArbol;
 }
 
 float ALayout1VRVisualization::EncontrarRadio2() {

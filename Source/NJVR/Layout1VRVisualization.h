@@ -45,7 +45,7 @@ public:
     void Layout3(float NewRadio);
 
     void UbicacionesLayout4(ANodo * Rama, int NivelDenso);
-    float EncontrarRadio1();//busca el nivel mas denso y hace un calculo sencillo
+    float EncontrarRadio1(float PhiNivelDenso, int CantidadNodosNivel);//busca el nivel mas denso y hace un calculo sencillo
     float EncontrarRadio2();//este deberia recibir el phi el ultimo nivel, para poder hacer los calculos, 
 
     //ubica por ramas el nivel mas denso en la mitad de la esfera
