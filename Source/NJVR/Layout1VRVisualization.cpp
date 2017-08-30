@@ -278,6 +278,7 @@ void ALayout1VRVisualization::Calculos(ANodo * V) {
         }
         V->Altura++;
     }
+    //si el arbol tiene 4 niveles, el valor de altura de la raiz es 3
 }
 
 void ALayout1VRVisualization::Calculos2() {
@@ -299,19 +300,21 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     ANodo * Root = Nodos[Nodos.Num() - 1];
     Calculos2();
     Calc();//no estaba antes
-    float DeltaPhi = (PhiMax-PhiMin) / Root->Altura;
+    float DeltaPhi = (PhiMax-PhiMin) / (Root->Altura+1);
+    UE_LOG(LogClass, Log, TEXT("DeltaPhi = %f"), DeltaPhi);
     //agregado para el nuevo radio
-    int NivelDenso, CantidadNodosNivelDenso;
-    NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
-    NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
+    //int NivelDenso, CantidadNodosNivelDenso;
+    //NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
+    //NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
+    Radio = EncontrarRadio2(DeltaPhi * Root->Altura); 
     //
     Root->Theta = 0;
     Root->Phi = 0;
     Root->WTam = 2*PI;
     Root->WInicio = 0;
-    Root->Xcoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
-    Root->Ycoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
-    Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
+    Root->Xcoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
+    Root->Ycoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
+    Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
     UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
     //float DeltaPhi = PI / Root->Altura;
     float WTemp = Root->WInicio;
@@ -321,9 +324,9 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
     Root->Parent->WInicio = WTemp;
     Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
-    Root->Parent->Xcoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
-    Root->Parent->Ycoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
-    Root->Parent->Zcoordinate = NewRadio * FMath::Cos(Root->Parent->Phi);
+    Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Ycoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = Radio * FMath::Cos(Root->Parent->Phi);
     WTemp += Root->Parent->WTam;
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
@@ -331,9 +334,9 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
         Root->Sons[i]->WTam = Root->WTam * (float(Root->Sons[i]->Hojas) / Root->Hojas);
         Root->Sons[i]->WInicio = WTemp;
         Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
-        Root->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
-        Root->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
-        Root->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(Root->Sons[i]->Phi);
+        Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Ycoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = Radio * FMath::Cos(Root->Sons[i]->Phi);
         WTemp += Root->Sons[i]->WTam;
         Cola.Enqueue(Root->Sons[i]);
     }
@@ -347,9 +350,9 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
             V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
-            V->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
             WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
         }
@@ -440,9 +443,9 @@ void ALayout1VRVisualization::Layout3(float NewRadio) {
     Root->Phi = 0;
     Root->WTam = 2*PI;
     Root->WInicio = 0;
-    Root->Xcoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
-    Root->Ycoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
-    Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
+    Root->Xcoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
+    Root->Ycoordinate = Radio * FMath::Sin(Root->Phi) * FMath::Sin(Root->Theta);
+    Root->Zcoordinate = Radio * FMath::Cos(Root->Phi);
     UE_LOG(LogClass, Log, TEXT("Layout 3 Nivel Denso = %d"), NivelDenso);
     //float DeltaPhi = PI / Root->Altura;
     float WTemp = Root->WInicio;
@@ -451,9 +454,9 @@ void ALayout1VRVisualization::Layout3(float NewRadio) {
     Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
     Root->Parent->WInicio = WTemp;
     Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
-    Root->Parent->Xcoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
-    Root->Parent->Ycoordinate = NewRadio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
-    Root->Parent->Zcoordinate = NewRadio * FMath::Cos(Root->Parent->Phi);
+    Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Ycoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = Radio * FMath::Cos(Root->Parent->Phi);
     WTemp += Root->Parent->WTam;
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
@@ -461,9 +464,9 @@ void ALayout1VRVisualization::Layout3(float NewRadio) {
         Root->Sons[i]->WTam = Root->WTam * (float(Root->Sons[i]->Hojas) / Root->Hojas);
         Root->Sons[i]->WInicio = WTemp;
         Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
-        Root->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
-        Root->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
-        Root->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(Root->Sons[i]->Phi);
+        Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Ycoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = Radio * FMath::Cos(Root->Sons[i]->Phi);
         WTemp += Root->Sons[i]->WTam;
         Cola.Enqueue(Root->Sons[i]);
     }
@@ -477,9 +480,9 @@ void ALayout1VRVisualization::Layout3(float NewRadio) {
             V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
-            V->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
             WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
         }
@@ -570,9 +573,9 @@ void ALayout1VRVisualization::Layout2(ANodo * Node, float NewRadio, int NivelExp
         V->WInicio = WTemp;
         //UE_LOG(LogClass, Log, TEXT("Layout2 Id %d, Nivel Inicio %d, %f, %f"), V->Id, V->Nivel, V->WInicio, V->WTam);
         V->Theta = modFloat(WTemp + V->WTam / 2, 2*PI);
-        V->Xcoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
-        V->Ycoordinate = NewRadio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
-        V->Zcoordinate = NewRadio * FMath::Cos(V->Phi);
+        V->Xcoordinate = Radio * FMath::Sin(V->Phi) * FMath::Cos(V->Theta);
+        V->Ycoordinate = Radio * FMath::Sin(V->Phi) * FMath::Sin(V->Theta);
+        V->Zcoordinate = Radio * FMath::Cos(V->Phi);
         WTemp = modFloat(WTemp + V->WTam, 2*PI);
     }
 
@@ -585,9 +588,9 @@ void ALayout1VRVisualization::Layout2(ANodo * Node, float NewRadio, int NivelExp
             V->Sons[i]->WInicio = WTemp;
             //UE_LOG(LogClass, Log, TEXT("Layout2 Id %d, Nivel %d, %f, %f"), V->Sons[i]->Id, V->Sons[i]->Nivel, V->Sons[i]->WInicio, V->Sons[i]->WTam);
             V->Sons[i]->Theta = modFloat(WTemp + V->Sons[i]->WTam / 2, 2*PI);
-            V->Sons[i]->Xcoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = NewRadio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = NewRadio * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
             WTemp = modFloat(WTemp + V->Sons[i]->WTam, 2*PI);
             //UE_LOG(LogClass, Log, TEXT("THETA %f"), V->Sons[i]->Theta);
             Cola.Enqueue(V->Sons[i]);
@@ -653,8 +656,10 @@ float ALayout1VRVisualization::EncontrarRadio1(float PhiNivelDenso, int Cantidad
     return RadioArbol;
 }
 
-float ALayout1VRVisualization::EncontrarRadio2() {
-    return 0.0f;
+float ALayout1VRVisualization::EncontrarRadio2(float PhiUltimoNivel) {
+    float RadioNivel = Nodos.Num()*RadioNodos*0.8 / (2 * PI);
+    float RadioArbol = RadioNivel / FMath::Sin(PhiUltimoNivel);
+    return RadioArbol;
 }
 
 void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
