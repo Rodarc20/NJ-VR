@@ -9,6 +9,10 @@
 ALayout2VRVisualization::ALayout2VRVisualization(){
 
     Radio = 300.0f;
+    PhiMax = PI;
+    PhiMin = 0;
+    PhiMax = FMath::DegreesToRadians(150);
+    PhiMin = FMath::DegreesToRadians(40);
 }
 
 void ALayout2VRVisualization::BeginPlay() {
@@ -273,6 +277,7 @@ void ALayout2VRVisualization::Calculos2(int & hojas, int & nivelMax) {
 }
 
 void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo asignar el nivel
+    //Ladrillos
     TQueue<ANodo *> Cola;
     std::stack<ANodo *> pila;
     //la raiz es el ultimo nodo
@@ -280,6 +285,7 @@ void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     int hojas;
     int nivelMax;
     Calculos2(hojas, nivelMax);
+    //esos datos creo que se pueden sacar de la raiz del arbol
     Root->Theta = 0;
     Root->Phi = 0;
     Root->Xcoordinate = NewRadio * FMath::Sin(Root->Phi) * FMath::Cos(Root->Theta);
@@ -287,8 +293,10 @@ void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     Root->Zcoordinate = NewRadio * FMath::Cos(Root->Phi);
     //UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
     //float DeltaPhi = PI / nivelMax;
-    float DeltaPhi = PI / nivelMax;
+    float DeltaPhi = (PhiMax - PhiMin) / nivelMax;
+    //float DeltaPhi = PI / nivelMax;
     float DeltaTheta = 2 * PI / hojas;
+    UE_LOG(LogClass, Log, TEXT("DeltaPhi = %f"), DeltaPhi);
     Cola.Enqueue(Root->Sons[0]);
     pila.push(Root->Sons[0]);
     Cola.Enqueue(Root->Sons[1]);
@@ -311,11 +319,13 @@ void ALayout2VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
         if (V->Sons.Num()) {
             V->Casilla = (V->Sons[0]->Casilla + V->Sons[1]->Casilla) / 2;
             V->Casilla += V->Nivel & 1;
-            V->Phi = V->Nivel * DeltaPhi;
+            //V->Phi = V->Nivel * DeltaPhi;
+            V->Phi = (V->Nivel-1) * DeltaPhi + PhiMin;
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
         }
         else{
-            V->Phi = V->Nivel * DeltaPhi;
+            //V->Phi = V->Nivel * DeltaPhi;
+            V->Phi = (V->Nivel-1) * DeltaPhi + PhiMin;
             //V->Phi = nivelMax * DeltaPhi;//para alinear las hojas al ultimo nivel
             V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(V->Nivel & 1);
             //V->Theta = V->Casilla * DeltaTheta + DeltaTheta / 2 * !(nivelMax & 1);

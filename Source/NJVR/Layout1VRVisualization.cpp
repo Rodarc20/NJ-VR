@@ -12,6 +12,8 @@ ALayout1VRVisualization::ALayout1VRVisualization(){
     Radio = 300.0f;
     PhiMax = PI;
     PhiMin = 0;
+    PhiMax = FMath::DegreesToRadians(150);
+    PhiMin = FMath::DegreesToRadians(40);
 }
 
 void ALayout1VRVisualization::BeginPlay() {
@@ -320,7 +322,8 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     float WTemp = Root->WInicio;
     //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
 
-    Root->Parent->Phi = Root->Phi + DeltaPhi;//estaba dividido /2
+    //Root->Parent->Phi = Root->Phi + DeltaPhi;//estaba dividido /2
+    Root->Parent->Phi = PhiMin;//estaba dividido /2
     Root->Parent->WTam = Root->WTam * (float(Root->Parent->Hojas) / Root->Hojas);
     Root->Parent->WInicio = WTemp;
     Root->Parent->Theta = WTemp + Root->Parent->WTam / 2;
@@ -330,7 +333,8 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     WTemp += Root->Parent->WTam;
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
-        Root->Sons[i]->Phi = Root->Phi + DeltaPhi / 2;
+        //Root->Sons[i]->Phi = Root->Phi + DeltaPhi;//estaba dividido por 2
+        Root->Sons[i]->Phi = PhiMin;
         Root->Sons[i]->WTam = Root->WTam * (float(Root->Sons[i]->Hojas) / Root->Hojas);
         Root->Sons[i]->WInicio = WTemp;
         Root->Sons[i]->Theta = WTemp + Root->Sons[i]->WTam / 2;
@@ -657,7 +661,8 @@ float ALayout1VRVisualization::EncontrarRadio1(float PhiNivelDenso, int Cantidad
 }
 
 float ALayout1VRVisualization::EncontrarRadio2(float PhiUltimoNivel) {
-    float RadioNivel = Nodos.Num()*RadioNodos*0.8 / (2 * PI);
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    float RadioNivel = Root->Hojas*RadioNodos / (2 * PI);
     float RadioArbol = RadioNivel / FMath::Sin(PhiUltimoNivel);
     return RadioArbol;
 }

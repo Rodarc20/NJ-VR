@@ -27,6 +27,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float Radio;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float PhiMax;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float PhiMin;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void Layout(float NewRadio);
 
