@@ -4,6 +4,7 @@
 #include "VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include "Kismet/GameplayStatics.h"
 #include <queue>
 
 // Sets default values
@@ -52,7 +53,7 @@ AVRVisualization::AVRVisualization()
 void AVRVisualization::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
     FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml");//de esta forma tambien funciona

@@ -4,6 +4,8 @@
 
 #include "GameFramework/Pawn.h"
 #include "HeadMountedDisplay.h"
+#include "WidgetComponent.h"
+#include "WidgetInteractionComponent.h"
 #include "MotionControllerComponent.h"
 #include "VRPawn.generated.h"
 
@@ -28,21 +30,65 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     //analizar si estos parametos deben ser posibles verlosd esde el blueprint
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    TSubclassOf<class AVRVisualization> Visualization;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
     //Root component
-    UPROPERTY(VisibleAnywhere)
+    UPROPERTY(VisibleAnywhere, Category = "Visualization")
     USceneComponent * DefaultSceneRoot;
     //Camara del HMD
-    UPROPERTY(VisibleAnywhere)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UCameraComponent * VRCamera;
     
-    UPROPERTY(VisibleAnywhere)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     class UMotionControllerComponent * MotionControllerLeft;
-    UPROPERTY(VisibleAnywhere)
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     class UMotionControllerComponent * MotionControllerRight;
-    UPROPERTY(VisibleAnywhere)
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent * ViveControllerLeft;
-    UPROPERTY(VisibleAnywhere)
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UStaticMeshComponent * ViveControllerRight;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetComponent * Menu;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetComponent * Document;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetInteractionComponent * Interaction;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UParticleSystemComponent * Laser;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UFloatingPawnMovement * Movimiento;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    TArray<UParticleSystem *> Lasers;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    bool bPadDerecho;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float Velocidad;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void CambiarLaser(int Indice);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void PadDerechoPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void PadDerechoReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void SelectPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void SelectReleased();
 };
 
 

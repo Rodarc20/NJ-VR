@@ -2,6 +2,7 @@
 
 #include "NJVR.h"
 #include "VRPawn.h"
+#include "Blueprint/UserWidget.h" 
 
 
 // Sets default values
@@ -43,6 +44,73 @@ AVRPawn::AVRPawn()
             ViveControllerRight->SetMaterial(0, ViveControllerMaterialAsset.Object);
         }
     }
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> MenuClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenuVR.ControlMenuVR_C'"));
+    Menu = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu"));
+    Menu->SetWidgetSpace(EWidgetSpace::World);
+    Menu->SetupAttachment(MotionControllerLeft);
+    Menu->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    Menu->SetRelativeRotation(FRotator(50.0f, 180.0f, 0.0f));
+    Menu->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
+    if (MenuClass.Succeeded()) {
+        Menu->SetWidgetClass(MenuClass.Class);
+    }
+    Menu->SetDrawSize(FVector2D(300.0f, 250.0f));
+    Menu->SetPivot(FVector2D(0.5f, 1.0f));
+
+    Interaction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Interaction"));
+    Interaction->SetupAttachment(MotionControllerRight);
+
+    static ConstructorHelpers::FClassFinder<UUserWidget> DocumentClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenu2VR.ControlMenu2VR_C'"));
+    Document = CreateDefaultSubobject<UWidgetComponent>(TEXT("Document"));
+    Document->SetWidgetSpace(EWidgetSpace::World);
+    Document->SetupAttachment(RootComponent);
+    Document->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
+    Document->SetRelativeRotation(FRotator(00.0f, 180.0f, 0.0f));
+    Document->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
+    if (DocumentClass.Succeeded()) {
+        Document->SetWidgetClass(DocumentClass.Class);
+    }
+    Document->SetDrawSize(FVector2D(425.0f, 250.0f));
+    Document->SetPivot(FVector2D(0.425f, 0.5f));
+    Document->SetVisibility(false);
+
+    Movimiento = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movimiento"));
+
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LaserAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserAzul.LaserAzul'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
+    Laser = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Laser"));
+    Laser->SetupAttachment(MotionControllerRight);
+    if (LaserAsset.Succeeded()) {
+        Laser->SetTemplate(LaserAsset.Object);
+        Lasers.Add(LaserAsset.Object);
+    }
+
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserVerde.LaserVerde'"));
+    if (LasersAsset.Succeeded()) {
+        Lasers.Add(LasersAsset.Object);
+    }
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset2(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserRojo.LaserRojo'"));
+    if (LasersAsset2.Succeeded()) {
+        Lasers.Add(LasersAsset2.Object);
+    }
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset3(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserAmarillo.LaserAmarillo'"));
+    if (LasersAsset3.Succeeded()) {
+        Lasers.Add(LasersAsset3.Object);
+    }
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset4(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserTurquesa.LaserTurquesa'"));
+    if (LasersAsset4.Succeeded()) {
+        Lasers.Add(LasersAsset4.Object);
+    }
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset5(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserNaranja.LaserNaranja'"));
+    if (LasersAsset5.Succeeded()) {
+        Lasers.Add(LasersAsset5.Object);
+    }
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LasersAsset6(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LaserMorado.LaserMorado'"));
+    if (LasersAsset6.Succeeded()) {
+        Lasers.Add(LasersAsset6.Object);
+    }
+
+    Velocidad = 200.0f;
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +126,28 @@ void AVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    float MX = GetInputAxisValue("MoveForward");
+    float MY = GetInputAxisValue("MoveRight");
+    float MZ = GetInputAxisValue("MoveUp");
+    if (bPadDerecho && (MX != 0.0f || MY != 0.0f || MZ != 0.0f)) {
+        FVector Desplazamiento = GetActorForwardVector() * MX + GetActorRightVector() * MY + GetActorUpVector() * MZ;//reemplazar esos x , y
+        SetActorLocation(GetActorLocation() + Desplazamiento.GetSafeNormal() * Velocidad * DeltaTime);
+    }
+
+    float CX = GetInputAxisValue("ControllerForward");
+    float CY = GetInputAxisValue("ControllerRight");
+    float CZ = GetInputAxisValue("ControllerUp");
+    if (CX != 0.0f || CY != 0.0f || CZ != 0.0f) {
+        FVector Desplazamiento (CX, CY, CZ);
+        MotionControllerRight->SetWorldLocation(MotionControllerRight->GetComponentLocation() + Desplazamiento.GetSafeNormal() * Velocidad/2 * DeltaTime);
+    }
+    float CRoll = GetInputAxisValue("ControllerRoll");
+    float CPitch = GetInputAxisValue("ControllerPitch");
+    float CYaw = GetInputAxisValue("ControllerYaw");
+    if (CRoll != 0.0f || CPitch != 0.0f || CYaw != 0.0f) {
+        FRotator Rotacion(CPitch, CYaw, CRoll);
+        MotionControllerRight->AddRelativeRotation(Rotacion);
+    }
 }
 
 // Called to bind functionality to input
@@ -65,5 +155,42 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+    InputComponent->BindAction("Moverse", IE_Pressed, this, &AVRPawn::PadDerechoPressed);
+    InputComponent->BindAction("Moverse", IE_Released, this, &AVRPawn::PadDerechoReleased);
+    InputComponent->BindAction("Select", IE_Pressed, this, &AVRPawn::SelectPressed);
+    InputComponent->BindAction("Select", IE_Released, this, &AVRPawn::SelectReleased);
+
+    InputComponent->BindAxis("MoveForward");
+    InputComponent->BindAxis("MoveRight");
+    InputComponent->BindAxis("MoveUp");
+
+    InputComponent->BindAxis("ControllerForward");
+    InputComponent->BindAxis("ControllerRight");
+    InputComponent->BindAxis("ControllerUp");
+
+    InputComponent->BindAxis("ControllerRoll");
+    InputComponent->BindAxis("ControllerPitch");
+    InputComponent->BindAxis("ControllerYaw");
 }
 
+void AVRPawn::CambiarLaser(int Indice) {
+    if (Indice < Lasers.Num()) {
+        Laser->SetTemplate(Lasers[Indice]);
+    }
+}
+
+void AVRPawn::PadDerechoPressed() {
+    bPadDerecho = true;
+}
+
+void AVRPawn::PadDerechoReleased() {
+    bPadDerecho = false;
+}
+
+void AVRPawn::SelectPressed() {
+    Interaction->PressPointerKey(EKeys::LeftMouseButton);
+}
+
+void AVRPawn::SelectReleased() {
+    Interaction->ReleasePointerKey(EKeys::LeftMouseButton);
+}
