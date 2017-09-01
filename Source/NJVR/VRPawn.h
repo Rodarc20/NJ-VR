@@ -31,7 +31,8 @@ public:
 
     //analizar si estos parametos deben ser posibles verlosd esde el blueprint
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
-    TSubclassOf<class AVRVisualization> Visualization;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
+    class AVRVisualization * Visualization;//esto no es practio llenarlo en el cosntructor, cuando esta clase pase a bluprint sera mejor
+
     //Root component
     UPROPERTY(VisibleAnywhere, Category = "Visualization")
     USceneComponent * DefaultSceneRoot;

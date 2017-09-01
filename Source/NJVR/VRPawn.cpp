@@ -19,11 +19,11 @@ AVRPawn::AVRPawn()
 
     MotionControllerLeft = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionControllerLeft"));
     MotionControllerLeft->SetupAttachment(RootComponent);
-    MotionControllerLeft->SetRelativeLocation(FVector(0.0f, -40.0f, 0.0f));
+    MotionControllerLeft->SetRelativeLocation(FVector(50.0f, -40.0f, -20.0f));
 
     MotionControllerRight = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionControllerRight"));
     MotionControllerRight->SetupAttachment(RootComponent);
-    MotionControllerRight->SetRelativeLocation(FVector(0.0f, 40.0f, 0.0f));
+    MotionControllerRight->SetRelativeLocation(FVector(50.0f, 40.0f, 0.0f));
 
     ViveControllerLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ViveControllerLeft"));
     ViveControllerLeft->SetupAttachment(MotionControllerLeft);
@@ -49,14 +49,14 @@ AVRPawn::AVRPawn()
     Menu = CreateDefaultSubobject<UWidgetComponent>(TEXT("Menu"));
     Menu->SetWidgetSpace(EWidgetSpace::World);
     Menu->SetupAttachment(MotionControllerLeft);
+    Menu->SetDrawSize(FVector2D(300.0f, 250.0f));
+    Menu->SetPivot(FVector2D(0.5f, 1.0f));
     Menu->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     Menu->SetRelativeRotation(FRotator(50.0f, 180.0f, 0.0f));
     Menu->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
     if (MenuClass.Succeeded()) {
         Menu->SetWidgetClass(MenuClass.Class);
     }
-    Menu->SetDrawSize(FVector2D(300.0f, 250.0f));
-    Menu->SetPivot(FVector2D(0.5f, 1.0f));
 
     Interaction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Interaction"));
     Interaction->SetupAttachment(MotionControllerRight);
@@ -74,6 +74,9 @@ AVRPawn::AVRPawn()
     Document->SetDrawSize(FVector2D(425.0f, 250.0f));
     Document->SetPivot(FVector2D(0.425f, 0.5f));
     Document->SetVisibility(false);
+    //Document->SetCollisionProfileName("Custom");
+    //Document->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    //Document->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);arreglar esto!
 
     Movimiento = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movimiento"));
 
@@ -111,6 +114,7 @@ AVRPawn::AVRPawn()
     }
 
     Velocidad = 200.0f;
+    bPadDerecho = false;
 }
 
 // Called when the game starts or when spawned
@@ -130,7 +134,7 @@ void AVRPawn::Tick(float DeltaTime)
     float MY = GetInputAxisValue("MoveRight");
     float MZ = GetInputAxisValue("MoveUp");
     if (bPadDerecho && (MX != 0.0f || MY != 0.0f || MZ != 0.0f)) {
-        FVector Desplazamiento = GetActorForwardVector() * MX + GetActorRightVector() * MY + GetActorUpVector() * MZ;//reemplazar esos x , y
+        FVector Desplazamiento = GetActorForwardVector() * MX + GetActorRightVector() * MY + GetActorUpVector() * MZ;
         SetActorLocation(GetActorLocation() + Desplazamiento.GetSafeNormal() * Velocidad * DeltaTime);
     }
 

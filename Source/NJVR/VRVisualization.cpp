@@ -4,6 +4,7 @@
 #include "VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include "VRPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include <queue>
 
@@ -54,6 +55,14 @@ void AVRVisualization::BeginPlay()
 {
 	Super::BeginPlay();
 
+    AVRPawn * MyVRPawn = Cast<AVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+    if (MyVRPawn) {
+        RightController = MyVRPawn->MotionControllerRight;
+        LeftController = MyVRPawn->MotionControllerLeft;
+        MyVRPawn->Visualization = this;
+        Interaction = MyVRPawn->Interaction;
+        Document = MyVRPawn->Document;
+    }
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
     FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml");//de esta forma tambien funciona
