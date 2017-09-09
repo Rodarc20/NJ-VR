@@ -122,7 +122,10 @@ void AVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    UHeadMountedDisplayFunctionLibrary::EnableHMD(true);//esto es lo que hago en el blueprint, deberia funcionar igual, de no hacerlo, se peude sobrescribir en el bluprint despues
+    //UHeadMountedDisplayFunctionLibrary::EnableHMD(true);//esto es lo que hago en el blueprint, deberia funcionar igual, de no hacerlo, se peude sobrescribir en el bluprint despues
+    /*if (GEngine) {
+        GEngine->HMDDevice->EnableHMD(true);
+    }*/
 }
 
 // Called every frame

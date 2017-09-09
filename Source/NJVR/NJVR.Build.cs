@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class NJVR : ModuleRules
 {
-	public NJVR(TargetInfo Target)
+	public NJVR(ReadOnlyTargetRules Target): base(Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "XmlParser", "UMG" });
 
