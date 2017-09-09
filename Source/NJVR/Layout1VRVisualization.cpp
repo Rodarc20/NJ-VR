@@ -497,7 +497,7 @@ void ALayout1VRVisualization::UbicacionesLayout4(ANodo * Rama, int NivelDenso) {
     NivelDenso = NivelMasDensoRama(Rama);//esta linea digamos se quejeucta afuera, o podria dejarlo a quito dentro, 
     //para calcular el deltaPhi, necesito examinar hacia arriba y hacia abajo del nivel maximo, seleccionar el que tenga mas niveles y dividir PI/2 entre esa cantidad de niveles, para calclar la variacion
     //y luego calcular el phi inicial, para el primer nivel despues de la raiz, y emepzar desde alli el layout
-    ANodo * Root = Nodos[Nodos.Num() - 1];
+    /*ANodo * Root = Nodos[Nodos.Num() - 1];
     float DeltaPhi;
     float DeltaInicial;
     //hay que corregir el valor del nivel denso de la rama, en funcion de su posicion o nivel del nodo inicial de la rama, para que tenga sentido las divisiones sigueintes
@@ -508,6 +508,23 @@ void ALayout1VRVisualization::UbicacionesLayout4(ANodo * Rama, int NivelDenso) {
     else {
         DeltaPhi = (PI / 2) / (Root->Altura - NivelDenso);
         DeltaInicial = PI / 2 - (NivelDenso - 1)*DeltaPhi;
+    }*/
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    float DeltaPhi;
+    float DeltaInicial;
+    //hay que corregir el valor del nivel denso de la rama, en funcion de su posicion o nivel del nodo inicial de la rama, para que tenga sentido las divisiones sigueintes
+    if (NivelDenso > Rama->Altura / 2) {//estos calculos cambiaran cuano pempiece a limitar los angulos maximos para la esfera, tamibien falta agergar el umbral
+        DeltaPhi = (PI / 2) / NivelDenso;
+        DeltaInicial = DeltaPhi;//aplica desde el primer nivel
+        DeltaInicial = PI / 2 - (NivelDenso-1)*DeltaPhi;//esto esta bien tien el mismo resultdo que la linea anterior, pero esta si  funcionaria para los umbrales.
+    }
+    else {
+        DeltaPhi = (PI / 2) / (Rama->Altura+1 - NivelDenso);
+        DeltaInicial = PI / 2 - (NivelDenso - 1)*DeltaPhi;
+    }
+    if (DeltaPhi > PI / 30) {
+        DeltaPhi = PI / 60;
+        DeltaInicial = PI / 2 - (NivelDenso)*DeltaPhi;
     }
     Rama->Phi = DeltaInicial;
     Rama->Xcoordinate = Radio * FMath::Sin(Rama->Phi) * FMath::Cos(Rama->Theta);
