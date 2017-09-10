@@ -50,7 +50,7 @@ public:
 
     //ubica por ramas el nivel mas denso en la mitad de la esfera
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout4(float NewRadio);
+    void Layout4();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiInicial, float WInicioInicial, float WTamInicial);
@@ -70,6 +70,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ExpandirLayout();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void ReducionDistanciaHojas();
 
     virtual void AplicarTraslacion(FVector Traslacion) override;
 	

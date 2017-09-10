@@ -553,7 +553,7 @@ void ALayout1VRVisualization::UbicacionesLayout4(ANodo * Rama, int NivelDenso) {
 }
 
 
-void ALayout1VRVisualization::Layout4(float NewRadio) {//se entiende que sera usado despuesde un primer caclulo del radial layout
+void ALayout1VRVisualization::Layout4() {//se entiende que sera usado despuesde un primer caclulo del radial layout
     //encontrar hasta que nivel quiero dividir las ramas, y las almaceno
     Calculos2();//no siemepre seran necesarios, reptirlos si ya se calcualron antes, salvo que cambien la estructura del arbol y se deban actualizar
     Calc();
@@ -684,6 +684,43 @@ float ALayout1VRVisualization::EncontrarRadio2(float PhiUltimoNivel) {
     return RadioArbol;
 }
 
+void ALayout1VRVisualization::ReducionDistanciaHojas() {
+    //reducir la arista solo si es mas grande, del espacio o tamaño que deseo, esto avita que expanda, als que esten muy cortas
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    float Separacion = 2*2 * PI / Root->Hojas;
+    //recorrer el arbol, e ir comprobando los hijos si son hojas o no
+    std::queue<ANodo *> Cola;
+    Cola.push(Root->Parent);
+    Cola.push(Root->Sons[0]);
+    Cola.push(Root->Sons[1]);
+    while(!Cola.empty()){
+        ANodo * V = Cola.front();
+        Cola.pop();
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            ANodo * Hijito = V->Sons[i];
+            if(Hijito->Valid){
+                //UE_LOG(LogClass, Log, TEXT("Nodo a modificar: %d"), Hijito->Id);
+                float DistanciaAngular = V->Theta - Hijito->Theta;
+                if (abs(DistanciaAngular) > Separacion) {//mas grande de lo que deseo
+                    if (DistanciaAngular <= 0) {//si esta a la derecha o izquierda
+                        Hijito->Theta = modFloat(V->Theta + Separacion, 2 * PI);
+                        Hijito->Xcoordinate = Radio * FMath::Sin(Hijito->Phi) * FMath::Cos(Hijito->Theta);
+                        Hijito->Ycoordinate = Radio * FMath::Sin(Hijito->Phi) * FMath::Sin(Hijito->Theta);
+                        //Hijito->Zcoordinate = Radio * FMath::Cos(Hijito->Phi);
+                    }
+                    else {
+                        Hijito->Theta = modFloat(V->Theta - Separacion, 2 * PI);
+                        Hijito->Xcoordinate = Radio * FMath::Sin(Hijito->Phi) * FMath::Cos(Hijito->Theta);
+                        Hijito->Ycoordinate = Radio * FMath::Sin(Hijito->Phi) * FMath::Sin(Hijito->Theta);
+                        //Hijito->Zcoordinate = Radio * FMath::Cos(Hijito->Phi);
+                    }
+                }
+            }
+            Cola.push(V->Sons[i]);
+        }
+    }
+}
+
 void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
 
 }
@@ -691,3 +728,5 @@ void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
 void ALayout1VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
 
 }
+
+//reemplazar fors por entradas directas
