@@ -18,7 +18,7 @@ ALayout1VRVisualization::ALayout1VRVisualization(){
 
 void ALayout1VRVisualization::BeginPlay() {
     Super::BeginPlay();
-    Layout5(Radio);
+    Layout(Radio);
     ActualizarLayout();
 }
 
