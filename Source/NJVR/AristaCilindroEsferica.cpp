@@ -15,12 +15,13 @@ AAristaCilindroEsferica::AAristaCilindroEsferica() {
     AristaCollision->InitCapsuleSize(Radio, Distancia/2);//multiplicarlos por la escala
     AristaCollision->SetCollisionProfileName(FName(TEXT("Arista")));
 
-    AristaInicioMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AristaInicioMesh"));
-    AristaInicioMesh->SetupAttachment(RootComponent);
-
     //este estatic mesh es de 100 x100x100
     static ConstructorHelpers::FObjectFinder<UStaticMesh> AristaMeshAsset(TEXT("/Engine/BasicShapes/Cylinder"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
     static ConstructorHelpers::FObjectFinder<UMaterial> AristaMaterialAsset(TEXT("Material'/Game/Visualization/Materials/AristaMaterial.AristaMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
+
+    AristaInicioMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AristaInicioMesh"));
+    AristaInicioMesh->SetupAttachment(RootComponent);
+
     if (AristaMeshAsset.Succeeded()) {
         AristaInicioMesh->SetCollisionProfileName(FName(TEXT("Arista")));
         AristaInicioMesh->SetStaticMesh(AristaMeshAsset.Object);//este objeto tiene el pivot en la parte inferior
@@ -98,7 +99,7 @@ void AAristaCilindroEsferica::Actualizar() {
     AristaMedioMesh->SetRelativeRotation(NewRotation);
     Distancia = (P1-P2).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
     AristaMedioMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
-    
+     
     NewRotation = FRotationMatrix::MakeFromZ(P1L - SNL).Rotator();
     AristaInicioMesh->SetRelativeLocation(SNL + (P1L - SNL)/2);
     AristaInicioMesh->SetRelativeRotation(NewRotation);
