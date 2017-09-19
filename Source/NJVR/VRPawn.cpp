@@ -186,6 +186,12 @@ void AVRPawn::CambiarLaser(int Indice) {
     }
 }
 
+void AVRPawn::CambiarPuntoFinal(FVector PuntoFinal) {
+    //Laser->SetBeamEndPoint(0, PuntoFinal);//o target
+    Laser->SetBeamTargetPoint(0, PuntoFinal, 0);//o target
+    //Laser->SetBeamTargetPoint(0, GetTransform().InverseTransformPosition(PuntoFinal), 0);//o target
+}
+
 void AVRPawn::PadDerechoPressed() {
     bPadDerecho = true;
 }

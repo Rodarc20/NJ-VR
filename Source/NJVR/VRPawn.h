@@ -80,6 +80,9 @@ public:
     void CambiarLaser(int Indice);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void CambiarPuntoFinal(FVector PuntFinal);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
     void PadDerechoPressed();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")

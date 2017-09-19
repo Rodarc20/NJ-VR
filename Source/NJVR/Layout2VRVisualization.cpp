@@ -4,6 +4,8 @@
 #include "Layout2VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include "VRPawn.h"
+#include "MotionControllerComponent.h"
 #include<stack>
 
 ALayout2VRVisualization::ALayout2VRVisualization(){
@@ -352,6 +354,10 @@ void ALayout2VRVisualization::ActualizarLayout() {
 }
 
 void ALayout2VRVisualization::AplicarTraslacion(FVector Traslacion) {
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
+        NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+    }
 
 }
 
@@ -359,6 +365,77 @@ void ALayout2VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia
 
 }
 
+FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
+    FVector Punto = RightController->GetComponentTransform().GetLocation();
+    Punto = GetTransform().InverseTransformPosition(Punto);
+    FVector Vector = RightController->GetForwardVector();
+    Vector = GetTransform().InverseTransformVector(Vector);
 
+    float A = (Vector.X*Vector.X + Vector.Y*Vector.Y + Vector.Z*Vector.Z);//a/R^2
+    float B = 2*(Punto.X*Vector.X + Punto.Y*Vector.Y + Punto.Z*Vector.Z);//2*b/R^2
+    float C = (Punto.X*Punto.X + Punto.Y*Punto.Y + Punto.Z*Punto.Z)-(Radio*Radio);//c/R^2;
+    float Discriminante = B*B - 4*A*C;
+    //UE_LOG(LogClass, Log, TEXT("Punto = %f, %f, %f"), Punto.X, Punto.Y, Punto.Z);
+    //UE_LOG(LogClass, Log, TEXT("Vector = %f, %f, %f"), Vector.X, Vector.Y, Vector.Z);
+    //UE_LOG(LogClass, Log, TEXT("(A,B,C) = %f, %f, %f"), A, B, C);
+    //UE_LOG(LogClass, Log, TEXT("Determinante = %f"), Discriminante);
+    if (Discriminante < 0) {
+        return FVector::ZeroVector;
+        //return Punto + DistanciaLaser*Vector;
+        //DrawDebugLine(GetWorld(), Punto, Punto + DistanciaLaser*Vector, FColor::Red, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        //dibujar en rojo, el maximo alcance
+    }
+    else if (Discriminante > 0) {
+        float T1 = (-B + FMath::Sqrt(Discriminante)) / (2 * A);
+        float T2 = (-B - FMath::Sqrt(Discriminante)) / (2 * A);
+        //UE_LOG(LogClass, Log, TEXT("(T1,T2) = %f, %f"), T1, T2);
+        FVector P1 = Punto + T1*Vector;
+        FVector P2 = Punto + T2*Vector;
+        if (T1 >= 0 && T2 >= 0) {
+            if ((P1 - Punto).Size() < (P2 - Punto).Size()) {
+                //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+                return P1;
+            }
+            else {
+                return P2;
+                //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+            }
+        }
+        else if (T1 >= 0) {
+            return P1;
+            //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        }
+        else if (T2 >= 0) {
+            return P2;
+            //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        }
+    }
+    else{
+        float T = (-B + FMath::Sqrt(Discriminante)) / (2 * A);
+        //DrawDebugLine(GetWorld(), Punto, Punto + T*Vector, FColor::Green, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        return Punto + T*Vector;
+    } 
+    //return Punto + DistanciaLaser*Vector;
+    return FVector::ZeroVector;
+    //si retorno el vector 0, eso quiere decir que no encontre interseccion, por lo tanto, cuadno reciba este dato, debo evaluar que hacer con el
+}
 
-
+void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
+    ImpactPoint = InterseccionLinea();
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    if (ImpactPoint != FVector::ZeroVector) {
+        AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        Usuario->CambiarLaser(1);
+        Usuario->CambiarPuntoFinal(ImpactPoint);
+        //dibujar laser apropiado
+    }
+    else {
+        Usuario->CambiarLaser(2);
+        FVector Punto = RightController->GetComponentTransform().GetLocation();
+        Punto = GetTransform().InverseTransformPosition(Punto);
+        FVector Vector = RightController->GetForwardVector();
+        Vector = GetTransform().InverseTransformVector(Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaser*Vector);
+        //dibujarLaserApropiado
+    }
+}

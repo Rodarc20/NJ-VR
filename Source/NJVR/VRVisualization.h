@@ -50,6 +50,9 @@ public:
     int DataSetSeleccionado;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
+    class AVRPawn* Usuario;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UMotionControllerComponent* RightController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
