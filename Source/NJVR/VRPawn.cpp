@@ -115,6 +115,7 @@ AVRPawn::AVRPawn()
 
     Velocidad = 200.0f;
     bPadDerecho = false;
+    LaserIndice = 0;
 }
 
 // Called when the game starts or when spawned
@@ -190,6 +191,10 @@ void AVRPawn::CambiarPuntoFinal(FVector PuntoFinal) {
     //Laser->SetBeamEndPoint(0, PuntoFinal);//o target
     Laser->SetBeamTargetPoint(0, PuntoFinal, 0);//o target
     //Laser->SetBeamTargetPoint(0, GetTransform().InverseTransformPosition(PuntoFinal), 0);//o target
+}
+
+int AVRPawn::LaserActual() {
+    return LaserIndice;
 }
 
 void AVRPawn::PadDerechoPressed() {

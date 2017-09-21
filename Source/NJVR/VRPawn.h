@@ -76,8 +76,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     float Velocidad;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float LaserIndice;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void CambiarLaser(int Indice);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    int LaserActual();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void CambiarPuntoFinal(FVector PuntFinal);

@@ -55,4 +55,12 @@ public:
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void TraslacionConNodoGuia();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    FVector BuscarNodo(ANodo * &NodoEncontrado);
+    //void BuscarNodo();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void BusquedaConLaser();
+
 };
