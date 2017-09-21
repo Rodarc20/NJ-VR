@@ -61,6 +61,9 @@ public:
     //void BuscarNodo();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void BusquedaConLaser();
+    void BuscandoNodoConLaser();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void TraslacionVisualizacion();
 
 };

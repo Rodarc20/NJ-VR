@@ -21,7 +21,8 @@ AVRVisualization::AVRVisualization()
     RadioNodos = 3.0f;
     RadioNodosVirtuales = 2.0f;
     RadioAristas = 1.0f;
-    DistanciaLaser = 500.0f;
+    DistanciaLaserMaxima = 500.0f;
+    DistanciaLaser = DistanciaLaserMaxima;
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("/Script/NJVR.Nodo"));
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("Class'/Script/NJVR.NodoEsfera'"));
     static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/NodoEsfera_BP.NodoEsfera_BP_C'"));

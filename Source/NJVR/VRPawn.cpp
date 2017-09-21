@@ -188,9 +188,17 @@ void AVRPawn::CambiarLaser(int Indice) {
 }
 
 void AVRPawn::CambiarPuntoFinal(FVector PuntoFinal) {
-    //Laser->SetBeamEndPoint(0, PuntoFinal);//o target
-    Laser->SetBeamTargetPoint(0, PuntoFinal, 0);//o target
-    //Laser->SetBeamTargetPoint(0, GetTransform().InverseTransformPosition(PuntoFinal), 0);//o target
+    if (Interaction->IsOverHitTestVisibleWidget()) {
+        FHitResult HitInteraction = Interaction->GetLastHitResult();
+        if ((MotionControllerRight->GetComponentLocation() - HitInteraction.ImpactPoint).Size() < (MotionControllerRight->GetComponentLocation() - PuntoFinal).Size()) {
+            Laser->SetBeamTargetPoint(0, HitInteraction.ImpactPoint, 0);//o target
+        }
+    }
+    else {
+        //Laser->SetBeamEndPoint(0, PuntoFinal);//o target
+        Laser->SetBeamTargetPoint(0, PuntoFinal, 0);//o target
+        //Laser->SetBeamTargetPoint(0, GetTransform().InverseTransformPosition(PuntoFinal), 0);//o target
+    }
 }
 
 int AVRPawn::LaserActual() {

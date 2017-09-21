@@ -181,6 +181,9 @@ public:
 
     //Para el modo general
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float DistanciaLaserMaxima;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float DistanciaLaser;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")

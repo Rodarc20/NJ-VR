@@ -382,7 +382,7 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
     //UE_LOG(LogClass, Log, TEXT("Determinante = %f"), Discriminante);
     if (Discriminante < 0) {
         return FVector::ZeroVector;
-        //return Punto + DistanciaLaser*Vector;
+        //return Punto + DistanciaLaserMaxima*Vector;
         //DrawDebugLine(GetWorld(), Punto, Punto + DistanciaLaser*Vector, FColor::Red, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
         //dibujar en rojo, el maximo alcance
     }
@@ -416,7 +416,7 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
         //DrawDebugLine(GetWorld(), Punto, Punto + T*Vector, FColor::Green, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
         return Punto + T*Vector;
     } 
-    //return Punto + DistanciaLaser*Vector;
+    //return Punto + DistanciaLaserMaxima*Vector;
     return FVector::ZeroVector;
     //si retorno el vector 0, eso quiere decir que no encontre interseccion, por lo tanto, cuadno reciba este dato, debo evaluar que hacer con el
 }
@@ -436,7 +436,7 @@ void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio loca
         Punto = GetTransform().InverseTransformPosition(Punto);
         FVector Vector = RightController->GetForwardVector();
         Vector = GetTransform().InverseTransformVector(Vector);
-        Usuario->CambiarPuntoFinal(Punto + DistanciaLaser*Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
         //dibujarLaserApropiado, aqui funciona bien
     }
 }
@@ -445,7 +445,7 @@ FVector ALayout2VRVisualization::BuscarNodo(ANodo * &NodoEncontrado) {//en reali
     FCollisionQueryParams NodoTraceParams = FCollisionQueryParams(FName(TEXT("TraceNodo")), true, this);
     FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
     FVector Vec = RightController->GetForwardVector();
-    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaserMaxima;
     //PuntoInical = PuntoInicial + Vec * 10;//para que no se choque con lo que quiero, aun que no deberia importar
     TArray<TEnumAsByte<EObjectTypeQuery> > TiposObjetos;
     TiposObjetos.Add(EObjectTypeQuery::ObjectTypeQuery8);//Nodo
@@ -473,10 +473,10 @@ FVector ALayout2VRVisualization::BuscarNodo(ANodo * &NodoEncontrado) {//en reali
     return FVector::ZeroVector;// los casos manejarlos afuera
 }
 
-void ALayout2VRVisualization::BusquedaConLaser() {//retorna en espacio local
+void ALayout2VRVisualization::BuscandoNodoConLaser() {//retorna en espacio local
     ANodo * NodoEncontrado;
     FVector PuntoImpacto = BuscarNodo(NodoEncontrado);
-    if (NodoEncontrado) {
+    if (NodoEncontrado && !Interaction->IsOverHitTestVisibleWidget()) {//comprobamos la interaccion para que no se detecte lo que este detras del menu
         if (HitNodo && HitNodo != NodoEncontrado) {//quiza se pueda hacer con el boleano, debo ocultar si es que es diferente al de ahora,
             if (MostrarLabel) {
                 HitNodo->OcultarNombre();
@@ -512,17 +512,21 @@ void ALayout2VRVisualization::BusquedaConLaser() {//retorna en espacio local
         Usuario->CambiarPuntoFinal(ImpactPoint);
     }
     else {
-        Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaser);//debieria tener un punto por defecto, pero mejor lo dejamos asi
+        Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaserMaxima);//debieria tener un punto por defecto, pero mejor lo dejamos asi
+        //esta funcion deberia administrar le punto recbido, y verficar si acutalmente el puntero de interaccion esta sobre el menu, y tomar el adecuado para cada situacion
     }
     //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
     //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto
-    /*if (Interaction->IsOverHitTestVisibleWidget()) {
-        //FHitResult HitInterfaz = Interaction->GetLastHitResult();
-        //HitInterfaz.GetComponent();
-        if(Usuario->LaserActual)
-        Usuario->CambiarLaser(5);//pero y como lo devuelvo al otro color cuandodeje de estar en esta cosa
-    }
-    else {}*/
     //o usar esto en lugar de un trace solo que debo hacer esto antes de que haga cambios visuales, obtener el punto y evaluar,  antes de setear lo de hit nodo y dema
 }
 
+void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
+    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
+    FVector Vec = RightController->GetForwardVector();
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
+    if(Usuario->LaserActual() != 6){
+        Usuario->CambiarLaser(6);
+    }
+    Usuario->CambiarPuntoFinal(PuntoFinal);
+    SetActorLocation(PuntoFinal + OffsetToPointLaser);
+}
