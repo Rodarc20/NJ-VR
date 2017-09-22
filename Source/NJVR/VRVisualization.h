@@ -126,6 +126,10 @@ public:
     virtual void CreateNodos();
     virtual void CreateAristas();
 
+    int mod(int a, int b);
+
+    float modFloat(float a, float b);
+
     int NivelMasDenso();
 
     void NivelMasDenso(int & NivelDenso, int & CantidadNodos);

@@ -416,3 +416,22 @@ void AVRVisualization::OcultarNumeracion() {
     for (int i = 0; i < Nodos.Num(); i++)
         Nodos[i]->Numero->SetVisibility(false);
 }
+
+int AVRVisualization::mod(int a, int b) {
+    int d = a / b;
+    int m = a - b*d;
+    if (m < 0)
+        m += b;
+    return m;
+}
+
+float AVRVisualization::modFloat(float a, float b) {
+    //por ahora es solo para el exceso en resta, para el esferico nunca exceden el doblre asi que sera solo la suma para hacerlo positivo
+    if (a > b) {
+        return a - b;
+    }
+    if (a < 0) {
+        return a + b;
+    }
+    return a;
+}

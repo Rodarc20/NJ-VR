@@ -24,9 +24,9 @@ public:
 
     virtual void CreateAristas() override;
 
-    int mod(int a, int b);
+    //int mod(int a, int b);
 
-    float modFloat(float a, float b);
+    //float modFloat(float a, float b);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float Radio;

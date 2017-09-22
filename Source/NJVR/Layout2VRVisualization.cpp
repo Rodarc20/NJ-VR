@@ -354,16 +354,34 @@ void ALayout2VRVisualization::ActualizarLayout() {
     }
 }
 
+//convertir de esfericas a cartesianas deberia estar en una funcion en la que recibes solamente el nodo
 void ALayout2VRVisualization::AplicarTraslacion(FVector Traslacion) {
     for (int i = 0; i < NodosSeleccionados.Num(); i++) {
         //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
         NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
     }
+    //deberia solo actulizzar los seleccioados para que sea mas eficiente
 
 }
 
 void ALayout2VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
 
+}
+
+void ALayout2VRVisualization::AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta) {
+    UE_LOG(LogClass, Log, TEXT("DeltasEsfericos = %f, %f"), TraslacionPhi, TraslacionTheta);
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        NodosSeleccionados[i]->Theta = modFloat(NodosSeleccionados[i]->Theta + TraslacionTheta, 2*PI);
+        NodosSeleccionados[i]->Phi = FMath::Clamp(NodosSeleccionados[i]->Phi + TraslacionPhi, 0.0f, PI);
+        NodosSeleccionados[i]->Xcoordinate = Radio * FMath::Sin(NodosSeleccionados[i]->Phi) * FMath::Cos(NodosSeleccionados[i]->Theta);
+        NodosSeleccionados[i]->Ycoordinate = Radio * FMath::Sin(NodosSeleccionados[i]->Phi) * FMath::Sin(NodosSeleccionados[i]->Theta);
+        NodosSeleccionados[i]->Zcoordinate = Radio * FMath::Cos(NodosSeleccionados[i]->Phi);
+        FVector NuevaPosicion;
+        NuevaPosicion.X = NodosSeleccionados[i]->Xcoordinate;
+        NuevaPosicion.Y = NodosSeleccionados[i]->Ycoordinate;
+        NuevaPosicion.Z = NodosSeleccionados[i]->Zcoordinate;
+        NodosSeleccionados[i]->SetActorRelativeLocation(NuevaPosicion);
+    }
 }
 
 FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
@@ -423,9 +441,14 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
 
 void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
     ImpactPoint = InterseccionLinea();
-    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
     if (ImpactPoint != FVector::ZeroVector) {
-        AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        float ImpactPhi = FMath::Acos(ImpactPoint.Z / Radio);
+        float ImpactTheta = FMath::Acos(ImpactPoint.X / (Radio*FMath::Sin(ImpactPhi)));
+        UE_LOG(LogClass, Log, TEXT("ImpactEsfericos = %f, %f"), ImpactPhi, ImpactTheta);
+        UE_LOG(LogClass, Log, TEXT("NodoEsfericos = %f, %f"), NodoGuia->Phi, NodoGuia->Theta);
+        AplicarTraslacionEsferica(ImpactPhi - NodoGuia->Phi, ImpactTheta - NodoGuia->Theta);
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
         Usuario->CambiarLaser(1);
         Usuario->CambiarPuntoFinal(ImpactPoint);
         //dibujar laser apropiado
@@ -530,3 +553,4 @@ void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion g
     Usuario->CambiarPuntoFinal(PuntoFinal);
     SetActorLocation(PuntoFinal + OffsetToPointLaser);
 }
+

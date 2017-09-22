@@ -245,7 +245,7 @@ void ALayout1VRVisualization::CreateAristas() {
     }
 }
 
-int ALayout1VRVisualization::mod(int a, int b) {
+/*int ALayout1VRVisualization::mod(int a, int b) {
     int d = a / b;
     int m = a - b*d;
     if (m < 0)
@@ -262,7 +262,7 @@ float ALayout1VRVisualization::modFloat(float a, float b) {
         return a + b;
     }
     return a;
-}
+}*/
 
 void ALayout1VRVisualization::Calculos(ANodo * V) {
     //calcular hojas, altura, nivel
