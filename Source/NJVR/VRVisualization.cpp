@@ -417,6 +417,16 @@ void AVRVisualization::OcultarNumeracion() {
         Nodos[i]->Numero->SetVisibility(false);
 }
 
+void AVRVisualization::RotarVisualizacion() {
+    FRotator DeltaRotation = RightController->GetComponentRotation() - InitialRotationController;
+    SetActorRotation(InitialRotation + DeltaRotation);
+}
+
+void AVRVisualization::CalcularEscalaTemporal() {
+    float DistanciaEntreControles = (RightController->GetComponentLocation() - LeftController->GetComponentLocation()).Size();
+    EscalaTemp = Escala + (DistanciaEntreControles - DistanciaInicialControles) / DistanciaInicialControles;
+}
+
 int AVRVisualization::mod(int a, int b) {
     int d = a / b;
     int m = a - b*d;
