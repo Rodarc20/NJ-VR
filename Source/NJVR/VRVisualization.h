@@ -265,6 +265,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia();
 
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TraslacionVisualizacion();
 };
 
 //la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.

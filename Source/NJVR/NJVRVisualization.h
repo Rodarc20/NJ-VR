@@ -29,4 +29,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void RotacionRama();
 };

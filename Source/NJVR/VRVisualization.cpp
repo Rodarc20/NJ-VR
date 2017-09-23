@@ -514,6 +514,16 @@ void AVRVisualization::TraslacionConNodoGuia() {
 
 }
 
+void AVRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
+    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
+    FVector Vec = RightController->GetForwardVector();
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
+    if(Usuario->LaserActual() != 6){
+        Usuario->CambiarLaser(6);
+    }
+    Usuario->CambiarPuntoFinal(PuntoFinal);
+    SetActorLocation(PuntoFinal + OffsetToPointLaser);
+}
 
 int AVRVisualization::mod(int a, int b) {
     int d = a / b;

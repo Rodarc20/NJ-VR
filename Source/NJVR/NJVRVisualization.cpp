@@ -284,6 +284,7 @@ void ANJVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVe
 }
 
 FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local
+    //solo si esta frente al controlo, no por detras, corregir esto
     FVector Punto = RightController->GetComponentTransform().GetLocation();
     Punto = GetTransform().InverseTransformPosition(Punto);
     FVector Vector = RightController->GetForwardVector();
@@ -296,11 +297,32 @@ FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio 
     return FVector (0.0f, Punto.Y + t*Vector.Y, Punto.Z + t*Vector.Z);
 }
 
-void ANJVRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
+void ANJVRVisualization::TraslacionConNodoGuia() {
     ImpactPoint = InterseccionLineaSuperficie();
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
     if (ImpactPoint != FVector::ZeroVector) {
         AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        Usuario->CambiarLaser(1);
+        Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
+        //dibujar laser apropiado
+    }
+    else {
+        Usuario->CambiarLaser(2);
+        FVector Punto = RightController->GetComponentTransform().GetLocation();
+        Punto = GetTransform().InverseTransformPosition(Punto);
+        FVector Vector = RightController->GetForwardVector();
+        Vector = GetTransform().InverseTransformVector(Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
+        //dibujarLaserApropiado, aqui funciona bien
+    }
+}
+
+void ANJVRVisualization::RotacionRama() {
+    ImpactPoint = InterseccionLineaSuperficie();
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    if (ImpactPoint != FVector::ZeroVector) {
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        AplicarRotacionRelativaANodo(NodoGuia, ImpactPoint);
         Usuario->CambiarLaser(1);
         Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
         //dibujar laser apropiado

@@ -61,7 +61,7 @@ public:
     /*UFUNCTION(BlueprintCallable, Category = "Visualization")
     void BuscandoNodoConLaser();*/
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void TraslacionVisualizacion();
+    /*UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TraslacionVisualizacion() override;*/
 
 };

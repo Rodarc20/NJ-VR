@@ -521,7 +521,7 @@ void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio loca
     //o usar esto en lugar de un trace solo que debo hacer esto antes de que haga cambios visuales, obtener el punto y evaluar,  antes de setear lo de hit nodo y dema
 }*/
 
-void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
+/*void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
     FVector Vec = RightController->GetForwardVector();
     FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
@@ -530,5 +530,5 @@ void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion g
     }
     Usuario->CambiarPuntoFinal(PuntoFinal);
     SetActorLocation(PuntoFinal + OffsetToPointLaser);
-}
+}*/
 
