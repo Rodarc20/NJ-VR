@@ -369,7 +369,7 @@ void ALayout2VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia
 }
 
 void ALayout2VRVisualization::AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta) {
-    UE_LOG(LogClass, Log, TEXT("DeltasEsfericos = %f, %f"), TraslacionPhi, TraslacionTheta);
+    //UE_LOG(LogClass, Log, TEXT("DeltasEsfericos = %f, %f"), TraslacionPhi, TraslacionTheta);
     for (int i = 0; i < NodosSeleccionados.Num(); i++) {
         NodosSeleccionados[i]->Theta = modFloat(NodosSeleccionados[i]->Theta + TraslacionTheta, 2*PI);
         NodosSeleccionados[i]->Phi = FMath::Clamp(NodosSeleccionados[i]->Phi + TraslacionPhi, 0.0f, PI);
@@ -414,24 +414,29 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
             if ((P1 - Punto).Size() < (P2 - Punto).Size()) {
                 //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
                 return P1;
+                //return GetTransform().InverseTransformPosition(P1);
             }
             else {
                 return P2;
                 //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+                //return GetTransform().InverseTransformPosition(P2);
             }
         }
         else if (T1 >= 0) {
             return P1;
+            //return GetTransform().InverseTransformPosition(P1);
             //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
         }
         else if (T2 >= 0) {
             return P2;
+            //return GetTransform().InverseTransformPosition(P2);
             //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
         }
     }
     else{
         float T = (-B + FMath::Sqrt(Discriminante)) / (2 * A);
         //DrawDebugLine(GetWorld(), Punto, Punto + T*Vector, FColor::Green, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        //return GetTransform().InverseTransformPosition(Punto + T*Vector);
         return Punto + T*Vector;
     } 
     //return Punto + DistanciaLaserMaxima*Vector;
@@ -441,16 +446,21 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
 
 void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
     ImpactPoint = InterseccionLinea();
-    UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
     if (ImpactPoint != FVector::ZeroVector) {
+        //FVector ImpactPointRelative = GetTransform().InverseTransformPosition(ImpactPoint);
         float ImpactPhi = FMath::Acos(ImpactPoint.Z / Radio);
         float ImpactTheta = FMath::Acos(ImpactPoint.X / (Radio*FMath::Sin(ImpactPhi)));
-        UE_LOG(LogClass, Log, TEXT("ImpactEsfericos = %f, %f"), ImpactPhi, ImpactTheta);
-        UE_LOG(LogClass, Log, TEXT("NodoEsfericos = %f, %f"), NodoGuia->Phi, NodoGuia->Theta);
+        //no he convertido los puntos a espacion local
+        if (ImpactPoint.Y < 0) {
+            ImpactTheta = 2 * PI - ImpactTheta;
+        }
+        //UE_LOG(LogClass, Log, TEXT("ImpactEsfericos = %f, %f"), ImpactPhi, ImpactTheta);
+        //UE_LOG(LogClass, Log, TEXT("NodoEsfericos = %f, %f"), NodoGuia->Phi, NodoGuia->Theta);
         AplicarTraslacionEsferica(ImpactPhi - NodoGuia->Phi, ImpactTheta - NodoGuia->Theta);
         //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
         Usuario->CambiarLaser(1);
-        Usuario->CambiarPuntoFinal(ImpactPoint);
+        Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
         //dibujar laser apropiado
     }
     else {
