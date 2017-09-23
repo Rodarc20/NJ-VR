@@ -510,6 +510,11 @@ FVector AVRVisualization::InterseccionLineaSuperficie() {
     return FVector();
 }
 
+void AVRVisualization::TraslacionConNodoGuia() {
+
+}
+
+
 int AVRVisualization::mod(int a, int b) {
     int d = a / b;
     int m = a - b*d;

@@ -56,7 +56,7 @@ public:
     virtual FVector InterseccionLineaSuperficie() override;
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void TraslacionConNodoGuia();
+    virtual void TraslacionConNodoGuia() override;
 
     /*UFUNCTION(BlueprintCallable, Category = "Visualization")
     void BuscandoNodoConLaser();*/
