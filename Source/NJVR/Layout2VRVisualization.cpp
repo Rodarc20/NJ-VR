@@ -384,7 +384,7 @@ void ALayout2VRVisualization::AplicarTraslacionEsferica(float TraslacionPhi, flo
     }
 }
 
-FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
+FVector ALayout2VRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local
     FVector Punto = RightController->GetComponentTransform().GetLocation();
     Punto = GetTransform().InverseTransformPosition(Punto);
     FVector Vector = RightController->GetForwardVector();
@@ -445,7 +445,7 @@ FVector ALayout2VRVisualization::InterseccionLinea() {//retorna en espacio local
 }
 
 void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
-    ImpactPoint = InterseccionLinea();
+    ImpactPoint = InterseccionLineaSuperficie();
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
     if (ImpactPoint != FVector::ZeroVector) {
         //FVector ImpactPointRelative = GetTransform().InverseTransformPosition(ImpactPoint);
@@ -474,39 +474,7 @@ void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio loca
     }
 }
 
-FVector ALayout2VRVisualization::BuscarNodo(ANodo * &NodoEncontrado) {//en realidad dbe hacer asignaciones, o poner null si no encuentra nada
-    FCollisionQueryParams NodoTraceParams = FCollisionQueryParams(FName(TEXT("TraceNodo")), true, this);
-    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
-    FVector Vec = RightController->GetForwardVector();
-    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaserMaxima;
-    //PuntoInical = PuntoInicial + Vec * 10;//para que no se choque con lo que quiero, aun que no deberia importar
-    TArray<TEnumAsByte<EObjectTypeQuery> > TiposObjetos;
-    TiposObjetos.Add(EObjectTypeQuery::ObjectTypeQuery8);//Nodo
-    //TiposObjetos.Add(EObjectTypeQuery::ObjectTypeQuery2);//World dynamic, separado esta funcionando bien, supongo que tendre que hacer oto trace par saber si me estoy chocando con la interfaz, y no tener encuenta esta busqueda
-    //podria agregar los world static y dynamic, para asi avitar siempre encontrar algun nodo que este destrar de algun menu, y que por seleccionar en el menu tambien le de click a el
-    TArray<AActor*> vacio;
-    FHitResult Hit;
-    bool trace = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PuntoInicial, PuntoFinal, TiposObjetos, false, vacio, EDrawDebugTrace::None, Hit, true, FLinearColor::Blue);//el none es para que no se dibuje nada
-    //hit se supone que devovera al actor y el punto de impacto si encontró algo, castearlo a nodo, y listo
-    if (trace) {
-        //solo que al agregar el worldynamic ,tengo que castear y verificar
-        NodoEncontrado = Cast<ANodo>(Hit.Actor.Get());
-        /*if (NodoEncontrado) {//no estaba
-            //en que momento debo incluir la seccion del label? despues de todo esto, en otra funcion, o en este mismo codigo?
-            return Hit.ImpactPoint;
-        }*/
-        //DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 1.5f, 6, FColor::Black, false, 0.0f, 0, 0.25f);
-        
-        return Hit.ImpactPoint;//si quito toto el if anterior debo activar esta linea, y liesto
-    }
-    //y si esta funcion es solo para esto, y luego ya verifico si es tal o cual cosa, en otra parte del codigo?
-
-    //DrawDebugLine(GetWorld(), SourceNodo->GetActorLocation(), TargetNodo->GetActorLocation(), FColor::Black, false, -1.0f, 0, Radio*Escala);
-    NodoEncontrado = nullptr;
-    return FVector::ZeroVector;// los casos manejarlos afuera
-}
-
-void ALayout2VRVisualization::BuscandoNodoConLaser() {//retorna en espacio local
+/*void ALayout2VRVisualization::BuscandoNodoConLaser() {//retorna en espacio local
     ANodo * NodoEncontrado;
     FVector PuntoImpacto = BuscarNodo(NodoEncontrado);
     if (NodoEncontrado && !Interaction->IsOverHitTestVisibleWidget()) {//comprobamos la interaccion para que no se detecte lo que este detras del menu
@@ -551,7 +519,7 @@ void ALayout2VRVisualization::BuscandoNodoConLaser() {//retorna en espacio local
     //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
     //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto
     //o usar esto en lugar de un trace solo que debo hacer esto antes de que haga cambios visuales, obtener el punto y evaluar,  antes de setear lo de hit nodo y dema
-}
+}*/
 
 void ALayout2VRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();

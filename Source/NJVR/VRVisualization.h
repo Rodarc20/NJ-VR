@@ -123,7 +123,9 @@ public:
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 	
     void LoadNodos();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
+
     virtual void CreateNodos();
+
     virtual void CreateAristas();
 
     int mod(int a, int b);
@@ -251,6 +253,14 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void CalcularEscalaTemporal();
 
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    FVector BuscarNodo(ANodo * &NodoEncontrado);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void BuscandoNodoConLaser();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual FVector InterseccionLineaSuperficie();
 };
 
 //la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.

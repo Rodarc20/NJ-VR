@@ -53,17 +53,13 @@ public:
     void AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta);
     //interseccion con del laser con la esfera
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    FVector InterseccionLinea();
+    virtual FVector InterseccionLineaSuperficie() override;
 	
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void TraslacionConNodoGuia();
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    FVector BuscarNodo(ANodo * &NodoEncontrado);
-    //void BuscarNodo();
-
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void BuscandoNodoConLaser();
+    /*UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void BuscandoNodoConLaser();*/
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void TraslacionVisualizacion();

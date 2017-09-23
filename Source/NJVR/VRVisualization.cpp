@@ -427,6 +427,89 @@ void AVRVisualization::CalcularEscalaTemporal() {
     EscalaTemp = Escala + (DistanciaEntreControles - DistanciaInicialControles) / DistanciaInicialControles;
 }
 
+FVector AVRVisualization::BuscarNodo(ANodo * &NodoEncontrado) {//en realidad dbe hacer asignaciones, o poner null si no encuentra nada
+    FCollisionQueryParams NodoTraceParams = FCollisionQueryParams(FName(TEXT("TraceNodo")), true, this);
+    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
+    FVector Vec = RightController->GetForwardVector();
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaserMaxima;
+    //PuntoInical = PuntoInicial + Vec * 10;//para que no se choque con lo que quiero, aun que no deberia importar
+    TArray<TEnumAsByte<EObjectTypeQuery> > TiposObjetos;
+    TiposObjetos.Add(EObjectTypeQuery::ObjectTypeQuery8);//Nodo
+    //TiposObjetos.Add(EObjectTypeQuery::ObjectTypeQuery2);//World dynamic, separado esta funcionando bien, supongo que tendre que hacer oto trace par saber si me estoy chocando con la interfaz, y no tener encuenta esta busqueda
+    //podria agregar los world static y dynamic, para asi avitar siempre encontrar algun nodo que este destrar de algun menu, y que por seleccionar en el menu tambien le de click a el
+    TArray<AActor*> vacio;
+    FHitResult Hit;
+    bool trace = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PuntoInicial, PuntoFinal, TiposObjetos, false, vacio, EDrawDebugTrace::None, Hit, true, FLinearColor::Blue);//el none es para que no se dibuje nada
+    //hit se supone que devovera al actor y el punto de impacto si encontró algo, castearlo a nodo, y listo
+    if (trace) {
+        //solo que al agregar el worldynamic ,tengo que castear y verificar
+        NodoEncontrado = Cast<ANodo>(Hit.Actor.Get());
+        /*if (NodoEncontrado) {//no estaba
+            //en que momento debo incluir la seccion del label? despues de todo esto, en otra funcion, o en este mismo codigo?
+            return Hit.ImpactPoint;
+        }*/
+        //DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 1.5f, 6, FColor::Black, false, 0.0f, 0, 0.25f);
+        
+        return Hit.ImpactPoint;//si quito toto el if anterior debo activar esta linea, y liesto
+    }
+    //y si esta funcion es solo para esto, y luego ya verifico si es tal o cual cosa, en otra parte del codigo?
+
+    //DrawDebugLine(GetWorld(), SourceNodo->GetActorLocation(), TargetNodo->GetActorLocation(), FColor::Black, false, -1.0f, 0, Radio*Escala);
+    NodoEncontrado = nullptr;
+    return FVector::ZeroVector;// los casos manejarlos afuera
+}
+
+void AVRVisualization::BuscandoNodoConLaser() {
+    ANodo * NodoEncontrado;
+    FVector PuntoImpacto = BuscarNodo(NodoEncontrado);
+    if (NodoEncontrado && !Interaction->IsOverHitTestVisibleWidget()) {//comprobamos la interaccion para que no se detecte lo que este detras del menu
+        if (HitNodo && HitNodo != NodoEncontrado) {//quiza se pueda hacer con el boleano, debo ocultar si es que es diferente al de ahora,
+            if (MostrarLabel) {
+                HitNodo->OcultarNombre();
+                NodoEncontrado->MostrarNombre();
+            }
+            //HitNodo = NodoEncontrado; bHitNodo = true; ImpactPoint = PuntoImpacto;
+        }
+        else {
+            if (MostrarLabel) {
+                NodoEncontrado->MostrarNombre();
+            }
+            //HitNodo = NodoEncontrado; bHitNodo = true; ImpactPoint = PuntoImpacto;
+        }
+        HitNodo = NodoEncontrado;//podria dejar ests 3 lineas, y borrar las de adentro
+        bHitNodo = true;
+        ImpactPoint = PuntoImpacto;
+    }
+    else {//si no estoy golpeando algun nodo
+        if (HitNodo) {
+            if (MostrarLabel) {
+                HitNodo->OcultarNombre();
+            }
+            HitNodo = nullptr;
+            bHitNodo = false;
+            ImpactPoint = PuntoImpacto;
+        }
+        //el caso contrario, seria encontrar como lo deje con el if anterior, asi que no se hace nada
+    }
+    //todo esto podria ser una sola funcion
+    //hasta aqui he verificado si encontre algun nodo, pero no si encotnre un, menu, y tampoo he ejecutado los cambios visuales
+    //hagamos algo visual, antes de incluir los menus
+    if (bHitNodo) {//quiza la verificacion que hago sobre si hubo cambio o no de hit nodo, ayude a evitar ciertos calculos, tal vez, por ejemplo si el laser siempre esa al maximo, no tiene mucho sentido seimpre setear con el mismo valor
+        Usuario->CambiarPuntoFinal(ImpactPoint);
+    }
+    else {
+        Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaserMaxima);//debieria tener un punto por defecto, pero mejor lo dejamos asi
+        //esta funcion deberia administrar le punto recbido, y verficar si acutalmente el puntero de interaccion esta sobre el menu, y tomar el adecuado para cada situacion
+    }
+    //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
+    //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto
+    //o usar esto en lugar de un trace solo que debo hacer esto antes de que haga cambios visuales, obtener el punto y evaluar,  antes de setear lo de hit nodo y dema
+}
+
+FVector AVRVisualization::InterseccionLineaSuperficie() {
+    return FVector();
+}
+
 int AVRVisualization::mod(int a, int b) {
     int d = a / b;
     int m = a - b*d;
