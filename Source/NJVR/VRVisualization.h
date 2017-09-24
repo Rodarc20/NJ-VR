@@ -267,6 +267,48 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionVisualizacion();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarNodoPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void VisualizarNodoPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarRamaPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void RotarRamaPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarTodoPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarVisualizacionPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void RotarVisualizacionPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarNodoReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void VisualizarNodoReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarRamaReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void RotarRamaReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarVisualizacionReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void RotarVisualizacionReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarTodoReleased();
 };
 
 //la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.

@@ -4,6 +4,9 @@
 #include "Layout1VRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
+#include "VRPawn.h"
+#include "MotionControllerComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include <stack>
 #include <queue>
 
@@ -789,6 +792,112 @@ void ALayout1VRVisualization::AplicarTraslacion(FVector Traslacion) {
 
 void ALayout1VRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
 
+}
+
+void ALayout1VRVisualization::AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta) {
+    //UE_LOG(LogClass, Log, TEXT("DeltasEsfericos = %f, %f"), TraslacionPhi, TraslacionTheta);
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        NodosSeleccionados[i]->Theta = modFloat(NodosSeleccionados[i]->Theta + TraslacionTheta, 2*PI);
+        NodosSeleccionados[i]->Phi = FMath::Clamp(NodosSeleccionados[i]->Phi + TraslacionPhi, 0.0f, PI);
+        NodosSeleccionados[i]->Xcoordinate = Radio * FMath::Sin(NodosSeleccionados[i]->Phi) * FMath::Cos(NodosSeleccionados[i]->Theta);
+        NodosSeleccionados[i]->Ycoordinate = Radio * FMath::Sin(NodosSeleccionados[i]->Phi) * FMath::Sin(NodosSeleccionados[i]->Theta);
+        NodosSeleccionados[i]->Zcoordinate = Radio * FMath::Cos(NodosSeleccionados[i]->Phi);
+        FVector NuevaPosicion;
+        NuevaPosicion.X = NodosSeleccionados[i]->Xcoordinate;
+        NuevaPosicion.Y = NodosSeleccionados[i]->Ycoordinate;
+        NuevaPosicion.Z = NodosSeleccionados[i]->Zcoordinate;
+        NodosSeleccionados[i]->SetActorRelativeLocation(NuevaPosicion);
+    }
+}
+
+FVector ALayout1VRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local
+    FVector Punto = RightController->GetComponentTransform().GetLocation();
+    Punto = GetTransform().InverseTransformPosition(Punto);
+    FVector Vector = RightController->GetForwardVector();
+    Vector = GetTransform().InverseTransformVector(Vector);
+
+    float A = (Vector.X*Vector.X + Vector.Y*Vector.Y + Vector.Z*Vector.Z);//a/R^2
+    float B = 2*(Punto.X*Vector.X + Punto.Y*Vector.Y + Punto.Z*Vector.Z);//2*b/R^2
+    float C = (Punto.X*Punto.X + Punto.Y*Punto.Y + Punto.Z*Punto.Z)-(Radio*Radio);//c/R^2;
+    float Discriminante = B*B - 4*A*C;
+    //UE_LOG(LogClass, Log, TEXT("Punto = %f, %f, %f"), Punto.X, Punto.Y, Punto.Z);
+    //UE_LOG(LogClass, Log, TEXT("Vector = %f, %f, %f"), Vector.X, Vector.Y, Vector.Z);
+    //UE_LOG(LogClass, Log, TEXT("(A,B,C) = %f, %f, %f"), A, B, C);
+    //UE_LOG(LogClass, Log, TEXT("Determinante = %f"), Discriminante);
+    if (Discriminante < 0) {
+        return FVector::ZeroVector;
+        //return Punto + DistanciaLaserMaxima*Vector;
+        //DrawDebugLine(GetWorld(), Punto, Punto + DistanciaLaser*Vector, FColor::Red, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        //dibujar en rojo, el maximo alcance
+    }
+    else if (Discriminante > 0) {
+        float T1 = (-B + FMath::Sqrt(Discriminante)) / (2 * A);
+        float T2 = (-B - FMath::Sqrt(Discriminante)) / (2 * A);
+        //UE_LOG(LogClass, Log, TEXT("(T1,T2) = %f, %f"), T1, T2);
+        FVector P1 = Punto + T1*Vector;
+        FVector P2 = Punto + T2*Vector;
+        if (T1 >= 0 && T2 >= 0) {
+            if ((P1 - Punto).Size() < (P2 - Punto).Size()) {
+                //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+                return P1;
+                //return GetTransform().InverseTransformPosition(P1);
+            }
+            else {
+                return P2;
+                //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+                //return GetTransform().InverseTransformPosition(P2);
+            }
+        }
+        else if (T1 >= 0) {
+            return P1;
+            //return GetTransform().InverseTransformPosition(P1);
+            //DrawDebugLine(GetWorld(), Punto, P1, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        }
+        else if (T2 >= 0) {
+            return P2;
+            //return GetTransform().InverseTransformPosition(P2);
+            //DrawDebugLine(GetWorld(), Punto, P2, FColor::Blue, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        }
+    }
+    else{
+        float T = (-B + FMath::Sqrt(Discriminante)) / (2 * A);
+        //DrawDebugLine(GetWorld(), Punto, Punto + T*Vector, FColor::Green, false, -1.0f, 0, 1.0f);// los calculos estan perfectos
+        //return GetTransform().InverseTransformPosition(Punto + T*Vector);
+        return Punto + T*Vector;
+    } 
+    //return Punto + DistanciaLaserMaxima*Vector;
+    return FVector::ZeroVector;
+    //si retorno el vector 0, eso quiere decir que no encontre interseccion, por lo tanto, cuadno reciba este dato, debo evaluar que hacer con el
+}
+
+void ALayout1VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
+    ImpactPoint = InterseccionLineaSuperficie();
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    if (ImpactPoint != FVector::ZeroVector) {
+        //FVector ImpactPointRelative = GetTransform().InverseTransformPosition(ImpactPoint);
+        float ImpactPhi = FMath::Acos(ImpactPoint.Z / Radio);
+        float ImpactTheta = FMath::Acos(ImpactPoint.X / (Radio*FMath::Sin(ImpactPhi)));
+        //no he convertido los puntos a espacion local
+        if (ImpactPoint.Y < 0) {
+            ImpactTheta = 2 * PI - ImpactTheta;
+        }
+        //UE_LOG(LogClass, Log, TEXT("ImpactEsfericos = %f, %f"), ImpactPhi, ImpactTheta);
+        //UE_LOG(LogClass, Log, TEXT("NodoEsfericos = %f, %f"), NodoGuia->Phi, NodoGuia->Theta);
+        AplicarTraslacionEsferica(ImpactPhi - NodoGuia->Phi, ImpactTheta - NodoGuia->Theta);
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        Usuario->CambiarLaser(1);
+        Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
+        //dibujar laser apropiado
+    }
+    else {
+        Usuario->CambiarLaser(2);
+        FVector Punto = RightController->GetComponentTransform().GetLocation();
+        Punto = GetTransform().InverseTransformPosition(Punto);
+        FVector Vector = RightController->GetForwardVector();
+        Vector = GetTransform().InverseTransformVector(Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
+        //dibujarLaserApropiado, aqui funciona bien
+    }
 }
 
 //reemplazar fors por entradas directas
