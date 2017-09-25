@@ -150,7 +150,7 @@ void ALayout2VRVisualization::CreateNodos() {
     int variacion = 360 / numerocolores.Num();
     for (int k = 0; k < numerocolores.Num(); k++) {
         int h = (k*variacion) % 360;
-        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, 0.6f, 1.0f));
+        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, IntensidadColor, 1.0f));
     }
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
@@ -447,7 +447,7 @@ FVector ALayout2VRVisualization::InterseccionLineaSuperficie() {//retorna en esp
 void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio local
     ImpactPoint = InterseccionLineaSuperficie();
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
-    if (ImpactPoint != FVector::ZeroVector) {
+    if (ImpactPoint != FVector::ZeroVector) {//un punto imposible para el layout, que seria cualquier que no cumpa la ecuacion podria por eso ser el vector 0
         //FVector ImpactPointRelative = GetTransform().InverseTransformPosition(ImpactPoint);
         float ImpactPhi = FMath::Acos(ImpactPoint.Z / Radio);
         float ImpactTheta = FMath::Acos(ImpactPoint.X / (Radio*FMath::Sin(ImpactPhi)));

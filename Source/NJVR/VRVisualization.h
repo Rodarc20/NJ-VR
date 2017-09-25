@@ -112,6 +112,9 @@ public:
     ANodo* NodoGuia;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    float IntensidadColor;// 0 a 1
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     TArray<FLinearColor> Colores;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")

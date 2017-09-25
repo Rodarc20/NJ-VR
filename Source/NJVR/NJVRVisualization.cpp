@@ -140,7 +140,7 @@ void ANJVRVisualization::CreateNodos() {
     int variacion = 360 / numerocolores.Num();
     for (int k = 0; k < numerocolores.Num(); k++) {
         int h = (k*variacion) % 360;
-        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, 1.0f, 1.0f));
+        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, IntensidadColor, 1.0f));
     }
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
@@ -294,13 +294,17 @@ FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio 
         return FVector(-1.0f);
     }
     float t = -Punto.X / Vector.X;
-    return FVector (0.0f, Punto.Y + t*Vector.Y, Punto.Z + t*Vector.Z);
+    if (t >= 0) {
+        return FVector (0.0f, Punto.Y + t*Vector.Y, Punto.Z + t*Vector.Z);
+    }
+    return FVector(-1.0f);
 }
 
 void ANJVRVisualization::TraslacionConNodoGuia() {
     ImpactPoint = InterseccionLineaSuperficie();
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
-    if (ImpactPoint != FVector::ZeroVector) {
+    //if (ImpactPoint != FVector::ZeroVector) {
+    if (ImpactPoint.X != -1.0f) {//punto imposible para la el layout
         AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
         Usuario->CambiarLaser(1);
         Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));

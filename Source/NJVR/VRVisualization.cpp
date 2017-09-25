@@ -42,6 +42,7 @@ AVRVisualization::AVRVisualization()
         TipoArista = AristaClass.Class;
     }
 
+    IntensidadColor = 0.6f;
     ColorSeleccion = FLinearColor::Green;
     ColorVirtual = FLinearColor::White;
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
@@ -68,7 +69,7 @@ void AVRVisualization::BeginPlay()
         Usuario = MyVRPawn;
     }
     //FString path = FString("D:\\UnrealProjects\\NJVR\\Content\\Resources\\cbr-ilp-ir-son.xml");//de esta forma funciona
-    FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
+    //Este funciona FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml");//de esta forma tambien funciona
     //FString path = FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml");//de esta forma tambien funciona

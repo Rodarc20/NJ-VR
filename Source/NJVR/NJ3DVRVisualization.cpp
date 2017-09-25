@@ -139,7 +139,7 @@ void ANJ3DVRVisualization::CreateNodos() {
     int variacion = 360 / numerocolores.Num();
     for (int k = 0; k < numerocolores.Num(); k++) {
         int h = (k*variacion) % 360;
-        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, 1.0f, 1.0f));
+        Colores.Add(UKismetMathLibrary::HSVToRGB(h, 1.0f, IntensidadColor, 1.0f));
     }
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
