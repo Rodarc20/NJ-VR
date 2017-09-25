@@ -567,9 +567,11 @@ void AVRVisualization::TrasladarTodoPressed() {//esta es una funcion gloabl, pon
 }
 
 void AVRVisualization::TrasladarVisualizacionPressed() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
-    DistanciaLaser = (ImpactPoint - RightController->GetComponentLocation()).Size();
-    OffsetToPointLaser = GetActorLocation() - ImpactPoint;
-    bNodoGuia = true;
+    if(bHitNodo){
+        DistanciaLaser = (ImpactPoint - RightController->GetComponentLocation()).Size();
+        OffsetToPointLaser = GetActorLocation() - ImpactPoint;
+        bNodoGuia = true;
+    }
 }
 
 void AVRVisualization::RotarVisualizacionPressed() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
@@ -584,6 +586,8 @@ void AVRVisualization::TrasladarNodoReleased() {//esta es una funcion gloabl, po
     for (int i = 0; i < Aristas.Num(); i++) {
         Aristas[i]->ActualizarCollision();
     }
+    Usuario->CambiarLaser(0);
+    //Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
 }
 
 void AVRVisualization::VisualizarNodoReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
@@ -591,6 +595,7 @@ void AVRVisualization::VisualizarNodoReleased() {//esta es una funcion gloabl, p
         NodosSeleccionados[i]->OcultarNombre();
     }
     DeseleccionarTodo();
+    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::TrasladarRamaReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
@@ -599,6 +604,7 @@ void AVRVisualization::TrasladarRamaReleased() {//esta es una funcion gloabl, po
     for (int i = 0; i < Aristas.Num(); i++) {
         Aristas[i]->ActualizarCollision();
     }
+    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::RotarRamaReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
@@ -607,19 +613,23 @@ void AVRVisualization::RotarRamaReleased() {//esta es una funcion gloabl, ponerl
         Aristas[i]->ActualizarCollision();
     }
     DeseleccionarTodo();
+    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::TrasladarVisualizacionReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     bNodoGuia = false;
+    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::RotarVisualizacionReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     Rotar = false;
+    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::TrasladarTodoReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     DeseleccionarTodo();
     bNodoGuia = false;
+    Usuario->CambiarLaser(0);
 }
 
 int AVRVisualization::mod(int a, int b) {

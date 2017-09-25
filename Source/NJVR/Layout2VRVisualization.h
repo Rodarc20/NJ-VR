@@ -58,6 +58,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void InvertirRama(ANodo * NodoReferencia);
+
     /*UFUNCTION(BlueprintCallable, Category = "Visualization")
     void BuscandoNodoConLaser();*/
 

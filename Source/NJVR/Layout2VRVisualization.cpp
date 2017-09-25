@@ -7,7 +7,8 @@
 #include "VRPawn.h"
 #include "MotionControllerComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include<stack>
+#include <stack>
+#include <queue>
 
 ALayout2VRVisualization::ALayout2VRVisualization(){
 
@@ -472,6 +473,24 @@ void ALayout2VRVisualization::TraslacionConNodoGuia() {//retorna en espacio loca
         Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
         //dibujarLaserApropiado, aqui funciona bien
     }
+}
+
+void ALayout2VRVisualization::InvertirRama(ANodo * NodoReferencia) {
+    std::queue<ANodo *> Cola;
+    float ThetaRelativo = NodoReferencia->Theta;
+    Cola.push(NodoReferencia);
+    while (!Cola.empty()) {
+        ANodo * V = Cola.front();
+        Cola.pop();
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Theta = modFloat(ThetaRelativo + (ThetaRelativo - V->Sons[i]->Theta), 2 * PI);
+            V->Sons[i]->Xcoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * FMath::Cos(V->Sons[i]->Phi);
+            Cola.push(V->Sons[i]);
+        }
+    }
+    ActualizarLayout();
 }
 
 /*void ALayout2VRVisualization::BuscandoNodoConLaser() {//retorna en espacio local

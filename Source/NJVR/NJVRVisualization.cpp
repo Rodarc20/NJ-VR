@@ -324,7 +324,8 @@ void ANJVRVisualization::TraslacionConNodoGuia() {
 void ANJVRVisualization::RotacionRama() {
     ImpactPoint = InterseccionLineaSuperficie();
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
-    if (ImpactPoint != FVector::ZeroVector) {
+    //if (ImpactPoint != FVector::ZeroVector) {
+    if (ImpactPoint.X != -1.0f) {//punto imposible para la el layout
         //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
         AplicarRotacionRelativaANodo(NodoGuia, ImpactPoint);
         Usuario->CambiarLaser(1);
