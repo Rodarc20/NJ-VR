@@ -497,6 +497,10 @@ void AVRVisualization::BuscandoNodoConLaser() {
     //hagamos algo visual, antes de incluir los menus
     if (bHitNodo) {//quiza la verificacion que hago sobre si hubo cambio o no de hit nodo, ayude a evitar ciertos calculos, tal vez, por ejemplo si el laser siempre esa al maximo, no tiene mucho sentido seimpre setear con el mismo valor
         Usuario->CambiarPuntoFinal(ImpactPoint);
+        //esto no estaba
+        if (MostrarLabel && HitNodo->Nombre->IsVisible()) {
+            HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - HitNodo->Nombre->GetComponentLocation());
+        }
     }
     else {
         Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaserMaxima);//debieria tener un punto por defecto, pero mejor lo dejamos asi
@@ -505,6 +509,17 @@ void AVRVisualization::BuscandoNodoConLaser() {
     //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
     //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto
     //o usar esto en lugar de un trace solo que debo hacer esto antes de que haga cambios visuales, obtener el punto y evaluar,  antes de setear lo de hit nodo y dema
+}
+
+void AVRVisualization::VisualizarNodo() {//se llama en cada tick
+    if (NodosSeleccionados.Num()) {
+        for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+            NodosSeleccionados[i]->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - NodosSeleccionados[i]->Nombre->GetComponentLocation());
+        }
+    }
+    else {
+        BuscandoNodoConLaser();
+    }
 }
 
 FVector AVRVisualization::InterseccionLineaSuperficie() {

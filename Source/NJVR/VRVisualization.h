@@ -263,6 +263,9 @@ public:
     void BuscandoNodoConLaser();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void VisualizarNodo();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual FVector InterseccionLineaSuperficie();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")

@@ -64,15 +64,15 @@ AVRPawn::AVRPawn()
     static ConstructorHelpers::FClassFinder<UUserWidget> DocumentClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenu2VR.ControlMenu2VR_C'"));
     Document = CreateDefaultSubobject<UWidgetComponent>(TEXT("Document"));
     Document->SetWidgetSpace(EWidgetSpace::World);
-    Document->SetupAttachment(RootComponent);
-    Document->SetRelativeLocation(FVector(100.0f, 0.0f, 0.0f));
-    Document->SetRelativeRotation(FRotator(00.0f, 180.0f, 0.0f));
-    Document->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
+    Document->SetupAttachment(MotionControllerRight);
+    Document->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    Document->SetRelativeRotation(FRotator(0.0f, 1800.0f, 0.0f));
+    Document->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.10f));
     if (DocumentClass.Succeeded()) {
         Document->SetWidgetClass(DocumentClass.Class);
     }
     Document->SetDrawSize(FVector2D(425.0f, 250.0f));
-    Document->SetPivot(FVector2D(0.425f, 0.5f));
+    Document->SetPivot(FVector2D(1.0f, 0.5f));
     Document->SetVisibility(false);
     //Document->SetCollisionProfileName("Custom");
     //Document->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

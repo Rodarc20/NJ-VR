@@ -111,6 +111,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void OcultarNombre();
 
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void ActualizarRotacionNombre(FVector Direccion);
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
     UTextRenderComponent * Numero;
 

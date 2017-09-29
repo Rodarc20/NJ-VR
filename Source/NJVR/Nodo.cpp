@@ -23,7 +23,6 @@ void ANodo::BeginPlay()
 void ANodo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ANodo::CambiarColor(FLinearColor NewColor) {
@@ -42,6 +41,12 @@ void ANodo::MostrarNombre() {
 
 void ANodo::OcultarNombre() {
 
+}
+
+void ANodo::ActualizarRotacionNombre(FVector Direccion) {
+    //FRotator NewRotation = FRotationMatrix::MakeFromZ(Direccion - Nombre->GetComponentLocation()).Rotator();
+    FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion).Rotator();
+    Nombre->SetWorldRotation(NewRotation);
 }
 
 void ANodo::MostrarNumero() {
