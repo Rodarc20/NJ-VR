@@ -22,6 +22,7 @@ ALayout1VRVisualization::ALayout1VRVisualization(){
 void ALayout1VRVisualization::BeginPlay() {
     Super::BeginPlay();
     Layout(Radio);
+    //Layout5(Radio);
     ActualizarLayout();
 }
 
@@ -744,7 +745,8 @@ float ALayout1VRVisualization::EncontrarRadio1(float PhiNivelDenso, int Cantidad
 
 float ALayout1VRVisualization::EncontrarRadio2(float PhiUltimoNivel) {
     ANodo * Root = Nodos[Nodos.Num() - 1];
-    float RadioNivel = Root->Hojas*RadioNodos / (2 * PI);
+    float RadioNivel = Root->Hojas*2*RadioNodos / (2 * PI);
+    //float RadioNivel = (Root->Hojas*2*RadioNodos + Root->Hojas*1.0f)/ (2 * PI);
     float RadioArbol = RadioNivel / FMath::Sin(PhiUltimoNivel);
     return RadioArbol;
 }

@@ -130,13 +130,14 @@ void ALayout2VRVisualization::CreateNodos() {
             if (NodoInstanciado->Valid) {//aqui a los nodos reales se le debe asiganar algun colo de acerud a algun criterio, por ahora dejar asi
                 NodoInstanciado->Color = FLinearColor::Black;
                 NodoInstanciado->ColorNum = FCString::Atoi(*colorcdata);
+                NodoInstanciado->Radio = RadioNodos;
                 numerocolores.AddUnique(NodoInstanciado->ColorNum);
                 //UE_LOG(LogClass, Log, TEXT("Color = %d"), NodoInstanciado->ColorNum);
             }
             else {
                 NodoInstanciado->Color = ColorVirtual;//tambien debo cambiarle el tamaño
                 NodoInstanciado->ColorNum = FCString::Atoi(*colorcdata);
-                NodoInstanciado->Radio = 2.0f;
+                NodoInstanciado->Radio = RadioNodosVirtuales;
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
             NodoInstanciado->Escala = Escala;
@@ -202,6 +203,7 @@ void ALayout2VRVisualization::CreateAristas() {
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Escala = Escala;
+                AristaInstanciado->Radio = RadioAristas;
                 AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
                 AristaInstanciado->Actualizar();
                 AristaInstanciado->ActualizarCollision();
@@ -236,6 +238,7 @@ void ALayout2VRVisualization::CreateAristas() {
         AristaInstanciado->SourceNodo = Nodos[padre];
         AristaInstanciado->TargetNodo = Nodos[hijo];
         AristaInstanciado->Escala = Escala;
+        AristaInstanciado->Radio = RadioAristas;
         AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
         AristaInstanciado->Actualizar();
         AristaInstanciado->ActualizarCollision();

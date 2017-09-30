@@ -17,6 +17,9 @@ AVRVisualization::AVRVisualization()
 
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 
+    bHitNodo = false;
+    bNodoGuia = false;
+
     Escala = 1.0f;
     RadioNodos = 3.0f;
     RadioNodosVirtuales = 2.0f;
@@ -42,7 +45,7 @@ AVRVisualization::AVRVisualization()
         TipoArista = AristaClass.Class;
     }
 
-    IntensidadColor = 0.6f;
+    IntensidadColor = 0.4f;
     ColorSeleccion = FLinearColor::Green;
     ColorVirtual = FLinearColor::White;
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
@@ -486,10 +489,13 @@ void AVRVisualization::BuscandoNodoConLaser() {
             if (MostrarLabel) {
                 HitNodo->OcultarNombre();
             }
-            HitNodo = nullptr;
-            bHitNodo = false;
-            ImpactPoint = PuntoImpacto;
+            //HitNodo = nullptr;
+            //bHitNodo = false;
+            //ImpactPoint = PuntoImpacto;
         }
+        HitNodo = nullptr;
+        bHitNodo = false;
+        ImpactPoint = PuntoImpacto;
         //el caso contrario, seria encontrar como lo deje con el if anterior, asi que no se hace nada
     }
     //todo esto podria ser una sola funcion
@@ -517,9 +523,7 @@ void AVRVisualization::VisualizarNodo() {//se llama en cada tick
             NodosSeleccionados[i]->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - NodosSeleccionados[i]->Nombre->GetComponentLocation());
         }
     }
-    else {
-        BuscandoNodoConLaser();
-    }
+    BuscandoNodoConLaser();
 }
 
 FVector AVRVisualization::InterseccionLineaSuperficie() {

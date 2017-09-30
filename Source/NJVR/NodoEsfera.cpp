@@ -55,7 +55,7 @@ ANodoEsfera::ANodoEsfera()
 
     Nombre = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
     Nombre->SetupAttachment(RootComponent);
-    Nombre->SetTextRenderColor(FColor::White);
+    Nombre->SetTextRenderColor(FColor::Black);
     Nombre->SetWorldSize(10.0f*Escala);
     Nombre->SetVisibility(false);
     //Nombre->AddRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
@@ -63,7 +63,7 @@ ANodoEsfera::ANodoEsfera()
 
     Numero = CreateDefaultSubobject<UTextRenderComponent>(TEXT("NumeroTextRenderComponent"));
     Numero->SetupAttachment(RootComponent);
-    Numero->SetTextRenderColor(FColor::White);
+    Numero->SetTextRenderColor(FColor::Black);
     Numero->SetWorldSize(5.0f*Escala);
     Numero->SetVisibility(false);
 }
