@@ -503,14 +503,21 @@ void AVRVisualization::BuscandoNodoConLaser() {
     //hagamos algo visual, antes de incluir los menus
     if (bHitNodo) {//quiza la verificacion que hago sobre si hubo cambio o no de hit nodo, ayude a evitar ciertos calculos, tal vez, por ejemplo si el laser siempre esa al maximo, no tiene mucho sentido seimpre setear con el mismo valor
         Usuario->CambiarPuntoFinal(ImpactPoint);
+        Usuario->EfectoImpacto->SetWorldLocation(ImpactPoint);
         //esto no estaba
         if (MostrarLabel && HitNodo->Nombre->IsVisible()) {
             HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - HitNodo->Nombre->GetComponentLocation());
+        }
+        if (!Usuario->EfectoImpacto->IsActive()) {
+            Usuario->EfectoImpacto->Activate();
         }
     }
     else {
         Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaserMaxima);//debieria tener un punto por defecto, pero mejor lo dejamos asi
         //esta funcion deberia administrar le punto recbido, y verficar si acutalmente el puntero de interaccion esta sobre el menu, y tomar el adecuado para cada situacion
+        if (Usuario->EfectoImpacto->IsActive()) {
+            Usuario->EfectoImpacto->Deactivate();
+        }
     }
     //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
     //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto

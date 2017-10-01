@@ -51,7 +51,7 @@ AVRPawn::AVRPawn()
     Menu->SetupAttachment(MotionControllerLeft);
     Menu->SetDrawSize(FVector2D(300.0f, 250.0f));
     Menu->SetPivot(FVector2D(0.5f, 1.0f));
-    Menu->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    Menu->SetRelativeLocation(FVector(7.6604f, 0.0f, 6.42788f));
     Menu->SetRelativeRotation(FRotator(50.0f, 180.0f, 0.0f));
     Menu->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
     if (MenuClass.Succeeded()) {
@@ -112,6 +112,16 @@ AVRPawn::AVRPawn()
     if (LasersAsset6.Succeeded()) {
         Lasers.Add(LasersAsset6.Object);
     }
+
+    EfectoImpacto = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EfectoImpacto"));
+    EfectoImpacto->SetupAttachment(MotionControllerRight);
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoImpactoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpact.LaserImpact'"));
+    if (EfectoImpactoAsset.Succeeded()) {
+        EfectoImpacto->SetTemplate(EfectoImpactoAsset.Object);
+    }
+    EfectoImpacto->SetRelativeLocation(FVector::ZeroVector);
+    EfectoImpacto->Deactivate();
+
 
     Velocidad = 200.0f;
     bPadDerecho = false;

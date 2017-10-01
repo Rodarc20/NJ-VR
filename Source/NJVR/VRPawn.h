@@ -65,6 +65,9 @@ public:
     UParticleSystemComponent * Laser;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UParticleSystemComponent * EfectoImpacto;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UFloatingPawnMovement * Movimiento;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
