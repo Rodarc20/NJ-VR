@@ -148,7 +148,14 @@ void AVRPawn::Tick(float DeltaTime)
     float MY = GetInputAxisValue("MoveRight");
     float MZ = GetInputAxisValue("MoveUp");
     if (bPadDerecho && (MX != 0.0f || MY != 0.0f || MZ != 0.0f)) {
-        FVector Desplazamiento = GetActorForwardVector() * MX + GetActorRightVector() * MY + GetActorUpVector() * MZ;
+        //FVector Desplazamiento = GetActorForwardVector() * MX + GetActorRightVector() * MY + GetActorUpVector() * MZ;
+        //FVector Desplazamiento = VRCamera->GetForwardVector() * MX + VRCamera->GetRightVector() * MY + VRCamera->GetUpVector() * MZ;
+        FVector Adelante = VRCamera->GetForwardVector();
+        Adelante.Z = 0;
+        FVector Derecha = VRCamera->GetRightVector();
+        Derecha.Z = 0;
+        FVector Desplazamiento = Adelante.GetSafeNormal() * MX + Derecha.GetSafeNormal() * MY + GetActorUpVector() * MZ;
+        //AddMovementInput(Des)
         SetActorLocation(GetActorLocation() + Desplazamiento.GetSafeNormal() * Velocidad * DeltaTime);
     }
 
