@@ -26,10 +26,14 @@ void ANodo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
     if (Contenido->IsVisible() && Usuario) {
-        FVector NewLocation = GetActorLocation() + (Usuario->VRCamera->GetComponentLocation() - GetActorLocation()).GetSafeNormal()*10;
-        Contenido->SetWorldLocation(NewLocation);
-        FRotator NewRotation = FRotationMatrix::MakeFromX(Usuario->VRCamera->GetComponentLocation() - Contenido->GetComponentLocation()).Rotator();
+        /*FVector NewLocation = GetActorLocation() + (Usuario->VRCamera->GetComponentLocation() - GetActorLocation()).GetSafeNormal()*10;
+        Contenido->SetWorldLocation(NewLocation);*/
+        FRotator NewRotation = FRotationMatrix::MakeFromX(Usuario->VRCamera->GetComponentLocation() - PuntoReferenciaContenido->GetComponentLocation()).Rotator();
+        PuntoReferenciaContenido->SetWorldRotation(NewRotation);
+        NewRotation = FRotationMatrix::MakeFromX(Usuario->VRCamera->GetComponentLocation() - Contenido->GetComponentLocation()).Rotator();
         Contenido->SetWorldRotation(NewRotation);
+        LineaContenido->SetWorldLocation(GetActorLocation() + (Contenido->GetComponentLocation() - GetActorLocation()).GetSafeNormal()*Radio*2);
+        LineaContenido->SetBeamTargetPoint(0, Contenido->GetComponentLocation(), 0);//o target
     }
 }
 
@@ -51,9 +55,11 @@ void ANodo::OcultarNombre() {
 
 }
 
-void ANodo::ActualizarRotacionNombre(FVector Direccion) {
-    //FRotator NewRotation = FRotationMatrix::MakeFromZ(Direccion - Nombre->GetComponentLocation()).Rotator();
-    FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion).Rotator();
+void ANodo::ActualizarRotacionNombre(FVector Direccion) {//deberia actualizarse solo, cuando este activo por alguna razon
+    FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion - NodoMesh->GetComponentLocation()).Rotator();
+    NodoMesh->SetWorldRotation(NewRotation);
+    NewRotation = FRotationMatrix::MakeFromX(Direccion - Nombre->GetComponentLocation()).Rotator();
+    //NewRotation = FRotationMatrix::MakeFromX(Direccion).Rotator();
     Nombre->SetWorldRotation(NewRotation);
 }
 

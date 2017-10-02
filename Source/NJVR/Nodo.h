@@ -134,6 +134,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UWidgetComponent * Contenido;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    USceneComponent * PuntoReferenciaContenido; // debe tener este componente ya que en cualquier tipo de nodo, podre cambiar el color del mesh
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UParticleSystemComponent * LineaContenido;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void MostrarNumero();
 

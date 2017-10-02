@@ -511,7 +511,8 @@ void AVRVisualization::BuscandoNodoConLaser() {
         Usuario->EfectoImpacto->SetWorldLocation(ImpactPoint);
         //esto no estaba
         if (MostrarLabel && HitNodo->Nombre->IsVisible()) {
-            HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - HitNodo->Nombre->GetComponentLocation());
+            //HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - HitNodo->Nombre->GetComponentLocation());
+            HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation());
         }
         if(Usuario->LaserActual() != 1){
             Usuario->CambiarLaser(1);

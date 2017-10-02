@@ -55,7 +55,7 @@ ANodoEsfera::ANodoEsfera()
     }
 
     Nombre = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
-    Nombre->SetupAttachment(RootComponent);
+    Nombre->SetupAttachment(NodoMesh);
     Nombre->SetTextRenderColor(FColor::Black);
     Nombre->SetWorldSize(10.0f*Escala);
     Nombre->SetVisibility(false);
@@ -70,13 +70,18 @@ ANodoEsfera::ANodoEsfera()
 
     //static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenu2VR.ControlMenu2VR_C'"));
     //static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprint'/Game/Visualization/Blueprints/Menu/ContenidoNodo.ContenidoNodo'"));
+    PuntoReferenciaContenido = CreateDefaultSubobject<USceneComponent>(TEXT("PuntoReferenciaContenido"));
+    PuntoReferenciaContenido->SetupAttachment(RootComponent);
+    PuntoReferenciaContenido->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    PuntoReferenciaContenido->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+
     static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ContenidoNodo.ContenidoNodo_C'"));
     Contenido = CreateDefaultSubobject<UWidgetComponent>(TEXT("Contenido"));
     Contenido->SetWidgetSpace(EWidgetSpace::World);
-    Contenido->SetupAttachment(RootComponent);
+    Contenido->SetupAttachment(PuntoReferenciaContenido);
     //modificar las posiciones
-    Contenido->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-    Contenido->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    Contenido->SetRelativeLocation(FVector(20.0f, -30.0f, 0.0f));
+    Contenido->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
     Contenido->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.10f));
     if (ContenidoClass.Succeeded()) {
         Contenido->SetWidgetClass(ContenidoClass.Class);
@@ -107,6 +112,16 @@ ANodoEsfera::ANodoEsfera()
     EfectoResaltadoContenido->SetRelativeLocation(FVector::ZeroVector);
     EfectoResaltadoContenido->bAutoActivate = false;
 
+    LineaContenido = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LineaContenido"));
+    LineaContenido->SetupAttachment(RootComponent);
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpactRotacion.LaserImpactRotacion'"));
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> LineaContenidoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserBeam/LineaNegro.LineaNegro'"));
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/NodoVImpactRotacion.NodoVImpactRotacion'"));
+    if (LineaContenidoAsset.Succeeded()) {
+        LineaContenido->SetTemplate(LineaContenidoAsset.Object);
+    }
+    LineaContenido->SetRelativeLocation(FVector::ZeroVector);
+    LineaContenido->bAutoActivate = false;
 }
 
 void ANodoEsfera::Actualizar() {
@@ -137,27 +152,35 @@ void ANodoEsfera::OcultarNumero() {
 void ANodoEsfera::MostrarContenido() {
     Contenido->SetVisibility(true);
     ActivarResaltadoContenido();
+    LineaContenido->SetVisibility(true);
+    LineaContenido->ActivateSystem();
     //aqui deberia aplicar lo de cambiar texto y demas
 }
 
 void ANodoEsfera::OcultarContenido() {
     Contenido->SetVisibility(false);
     DesactivarResaltadoContenido();
+    LineaContenido->SetVisibility(false);
+    LineaContenido->DeactivateSystem();
 }
 
 void ANodoEsfera::ActivarResaltado() {
+    EfectoResaltado->SetVisibility(true);
     EfectoResaltado->ActivateSystem();
 }
 
 void ANodoEsfera::DesactivarResaltado() {
+    EfectoResaltado->SetVisibility(false);
     EfectoResaltado->DeactivateSystem();
 }
 
 void ANodoEsfera::ActivarResaltadoContenido() {
+    EfectoResaltadoContenido->SetVisibility(true);
     EfectoResaltadoContenido->ActivateSystem();
 }
 
 void ANodoEsfera::DesactivarResaltadoContenido() {
+    EfectoResaltadoContenido->SetVisibility(false);
     EfectoResaltadoContenido->DeactivateSystem();
 }
 
