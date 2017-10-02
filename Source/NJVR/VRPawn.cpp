@@ -66,7 +66,7 @@ AVRPawn::AVRPawn()
     Document->SetWidgetSpace(EWidgetSpace::World);
     Document->SetupAttachment(MotionControllerRight);
     Document->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-    Document->SetRelativeRotation(FRotator(0.0f, 1800.0f, 0.0f));
+    Document->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
     Document->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.10f));
     if (DocumentClass.Succeeded()) {
         Document->SetWidgetClass(DocumentClass.Class);
@@ -115,7 +115,7 @@ AVRPawn::AVRPawn()
 
     EfectoImpacto = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EfectoImpacto"));
     EfectoImpacto->SetupAttachment(MotionControllerRight);
-    static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoImpactoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpact.LaserImpact'"));
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoImpactoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpactRotacion.LaserImpactRotacion'"));
     if (EfectoImpactoAsset.Succeeded()) {
         EfectoImpacto->SetTemplate(EfectoImpactoAsset.Object);
     }
@@ -193,6 +193,7 @@ void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AVRPawn::CambiarLaser(int Indice) {
     if (Indice < Lasers.Num()) {
+        LaserIndice = Indice;
         Laser->SetTemplate(Lasers[Indice]);
     }
 }

@@ -2,6 +2,7 @@
 
 #include "NJVR.h"
 #include "NodoEsfera.h"
+#include "Blueprint/UserWidget.h" 
 
 
 // establece los valores por defecto
@@ -66,12 +67,55 @@ ANodoEsfera::ANodoEsfera()
     Numero->SetTextRenderColor(FColor::Black);
     Numero->SetWorldSize(5.0f*Escala);
     Numero->SetVisibility(false);
+
+    //static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenu2VR.ControlMenu2VR_C'"));
+    //static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprint'/Game/Visualization/Blueprints/Menu/ContenidoNodo.ContenidoNodo'"));
+    static ConstructorHelpers::FClassFinder<UUserWidget> ContenidoClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ContenidoNodo.ContenidoNodo_C'"));
+    Contenido = CreateDefaultSubobject<UWidgetComponent>(TEXT("Contenido"));
+    Contenido->SetWidgetSpace(EWidgetSpace::World);
+    Contenido->SetupAttachment(RootComponent);
+    //modificar las posiciones
+    Contenido->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    Contenido->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    Contenido->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.10f));
+    if (ContenidoClass.Succeeded()) {
+        Contenido->SetWidgetClass(ContenidoClass.Class);
+    }
+    Contenido->SetDrawSize(FVector2D(425.0f, 250.0f));
+    Contenido->SetPivot(FVector2D(1.0f, 0.5f));
+    Contenido->SetVisibility(false);
+
+    EfectoResaltado = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EfectoResaltado"));
+    EfectoResaltado->SetupAttachment(RootComponent);
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpactRotacion.LaserImpactRotacion'"));
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/NodoImpactRotacion.NodoImpactRotacion'"));
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/NodoVImpactRotacion.NodoVImpactRotacion'"));
+    if (EfectoResaltadoAsset.Succeeded()) {
+        EfectoResaltado->SetTemplate(EfectoResaltadoAsset.Object);
+    }
+    EfectoResaltado->SetRelativeLocation(FVector::ZeroVector);
+    EfectoResaltado->bAutoActivate = false;
+
+    EfectoResaltadoContenido = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EfectoResaltadoContenido"));
+    EfectoResaltadoContenido->SetupAttachment(RootComponent);
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/LaserImpactRotacion.LaserImpactRotacion'"));
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoContenidoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/NodoImpactColor.NodoImpactColor'"));
+    //static ConstructorHelpers::FObjectFinder<UParticleSystem> EfectoResaltadoAsset(TEXT("ParticleSystem'/Game/Visualization/ParticleSystems/LaserImpact/NodoVImpactRotacion.NodoVImpactRotacion'"));
+    if (EfectoResaltadoContenidoAsset.Succeeded()) {
+        EfectoResaltadoContenido->SetTemplate(EfectoResaltadoContenidoAsset.Object);
+    }
+    EfectoResaltadoContenido->SetRelativeLocation(FVector::ZeroVector);
+    EfectoResaltadoContenido->bAutoActivate = false;
+
 }
 
 void ANodoEsfera::Actualizar() {
     NodoCollision->SetSphereRadius(Radio*Escala);//esta linea podria ser costosa, sacarla afuera solo deberia ejecutarse cuando se suele el boton de la escala, creo que deberia teer dos funcinces de acutalizacion
     NodoMesh->SetWorldScale3D(FVector(2 * Radio / 100 * Escala));
     CambiarColor(Color);
+    if (!Valid) {
+        EfectoResaltado->SetRelativeScale3D(FVector(0.7));
+    }
 }
 
 void ANodoEsfera::MostrarNombre() {
@@ -88,4 +132,34 @@ void ANodoEsfera::MostrarNumero() {
 
 void ANodoEsfera::OcultarNumero() {
     Numero->SetVisibility(false);
+}
+
+void ANodoEsfera::MostrarContenido() {
+    Contenido->SetVisibility(true);
+    ActivarResaltadoContenido();
+    //aqui deberia aplicar lo de cambiar texto y demas
+}
+
+void ANodoEsfera::OcultarContenido() {
+    Contenido->SetVisibility(false);
+    DesactivarResaltadoContenido();
+}
+
+void ANodoEsfera::ActivarResaltado() {
+    EfectoResaltado->ActivateSystem();
+}
+
+void ANodoEsfera::DesactivarResaltado() {
+    EfectoResaltado->DeactivateSystem();
+}
+
+void ANodoEsfera::ActivarResaltadoContenido() {
+    EfectoResaltadoContenido->ActivateSystem();
+}
+
+void ANodoEsfera::DesactivarResaltadoContenido() {
+    EfectoResaltadoContenido->DeactivateSystem();
+}
+
+void ANodoEsfera::DeterminarResaltado() {
 }

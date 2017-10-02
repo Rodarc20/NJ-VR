@@ -144,7 +144,9 @@ void ANJVRVisualization::CreateNodos() {
     }
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
+        Nodos[i]->Usuario = Usuario;
         if (Nodos[i]->Valid) {
+            //Nodos[i]->ContenidoString = ObtenerContenidoNodo(Nodos[i]);
             Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
             Nodos[i]->Actualizar();
         }

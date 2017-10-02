@@ -2,6 +2,7 @@
 
 #include "NJVR.h"
 #include "Nodo.h"
+#include "VRPawn.h"
 
 
 // Sets default values
@@ -10,6 +11,7 @@ ANodo::ANodo()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
     Color = FLinearColor::White;
+
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +25,12 @@ void ANodo::BeginPlay()
 void ANodo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    if (Contenido->IsVisible() && Usuario) {
+        FVector NewLocation = GetActorLocation() + (Usuario->VRCamera->GetComponentLocation() - GetActorLocation()).GetSafeNormal()*10;
+        Contenido->SetWorldLocation(NewLocation);
+        FRotator NewRotation = FRotationMatrix::MakeFromX(Usuario->VRCamera->GetComponentLocation() - Contenido->GetComponentLocation()).Rotator();
+        Contenido->SetWorldRotation(NewRotation);
+    }
 }
 
 void ANodo::CambiarColor(FLinearColor NewColor) {
@@ -55,4 +63,25 @@ void ANodo::MostrarNumero() {
 
 void ANodo::OcultarNumero() {
 
+}
+
+void ANodo::MostrarContenido() {
+}
+
+void ANodo::OcultarContenido() {
+}
+
+void ANodo::ActivarResaltado() {
+}
+
+void ANodo::ActivarResaltadoContenido() {
+}
+
+void ANodo::DesactivarResaltadoContenido() {
+}
+
+void ANodo::DesactivarResaltado() {
+}
+
+void ANodo::DeterminarResaltado() {
 }

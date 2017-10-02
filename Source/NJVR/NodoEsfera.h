@@ -25,6 +25,21 @@ public:
     virtual void MostrarNumero() override;
 
     virtual void OcultarNumero() override;
+
+    virtual void MostrarContenido() override;
+
+    virtual void OcultarContenido() override;
+
+    virtual void ActivarResaltado() override;
+
+    virtual void DesactivarResaltado() override;
+
+    virtual void ActivarResaltadoContenido() override;
+
+    virtual void DesactivarResaltadoContenido() override;
+
+    virtual void DeterminarResaltado() override;
+
     //UPROPERTY(VisibleAnywhere, Category = "Visualization")
     //USphereComponent * NodoCollision;
 	

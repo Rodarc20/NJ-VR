@@ -3,6 +3,8 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Nodo.generated.h"
 
 UCLASS()
@@ -24,6 +26,10 @@ public:
 
     //este conjunto de variables deberia ser privados,
     //id del vertice
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
+    class AVRPawn* Usuario;
+
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     int Id;
     
@@ -49,6 +55,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     FString Url;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    FString ContenidoString;
     //el color que tiene
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     int ColorNum;
@@ -117,11 +125,41 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
     UTextRenderComponent * Numero;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UParticleSystemComponent * EfectoResaltado;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UParticleSystemComponent * EfectoResaltadoContenido;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetComponent * Contenido;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void MostrarNumero();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void OcultarNumero();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void MostrarContenido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void OcultarContenido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void ActivarResaltado();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void ActivarResaltadoContenido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void DesactivarResaltadoContenido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void DesactivarResaltado();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void DeterminarResaltado();
 
     //para layouts propios
 

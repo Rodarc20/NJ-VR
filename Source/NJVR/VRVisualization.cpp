@@ -472,12 +472,16 @@ void AVRVisualization::BuscandoNodoConLaser() {
                 HitNodo->OcultarNombre();
                 NodoEncontrado->MostrarNombre();
             }
+            HitNodo->DesactivarResaltado();
+            NodoEncontrado->ActivarResaltado();
             //HitNodo = NodoEncontrado; bHitNodo = true; ImpactPoint = PuntoImpacto;
         }
         else {
             if (MostrarLabel) {
                 NodoEncontrado->MostrarNombre();
             }
+            if(!NodoEncontrado->EfectoResaltado->IsActive())
+                NodoEncontrado->ActivarResaltado();
             //HitNodo = NodoEncontrado; bHitNodo = true; ImpactPoint = PuntoImpacto;
         }
         HitNodo = NodoEncontrado;//podria dejar ests 3 lineas, y borrar las de adentro
@@ -489,6 +493,7 @@ void AVRVisualization::BuscandoNodoConLaser() {
             if (MostrarLabel) {
                 HitNodo->OcultarNombre();
             }
+            HitNodo->DesactivarResaltado();
             //HitNodo = nullptr;
             //bHitNodo = false;
             //ImpactPoint = PuntoImpacto;
@@ -508,16 +513,22 @@ void AVRVisualization::BuscandoNodoConLaser() {
         if (MostrarLabel && HitNodo->Nombre->IsVisible()) {
             HitNodo->ActualizarRotacionNombre(Usuario->VRCamera->GetComponentLocation() - HitNodo->Nombre->GetComponentLocation());
         }
-        if (!Usuario->EfectoImpacto->IsActive()) {
-            Usuario->EfectoImpacto->Activate();
+        if(Usuario->LaserActual() != 1){
+            Usuario->CambiarLaser(1);
         }
+        /*if (!Usuario->EfectoImpacto->IsActive()) {//para el caso del puntero, no lo usao ahora
+            //Usuario->EfectoImpacto->ActivateSystem();
+        }*/
     }
     else {
         Usuario->CambiarPuntoFinal(RightController->GetComponentLocation() + RightController->GetForwardVector()*DistanciaLaserMaxima);//debieria tener un punto por defecto, pero mejor lo dejamos asi
         //esta funcion deberia administrar le punto recbido, y verficar si acutalmente el puntero de interaccion esta sobre el menu, y tomar el adecuado para cada situacion
-        if (Usuario->EfectoImpacto->IsActive()) {
-            Usuario->EfectoImpacto->Deactivate();
+        if(Usuario->LaserActual() != 0){
+            Usuario->CambiarLaser(0);
         }
+        /*if (Usuario->EfectoImpacto->IsActive()) {
+            //Usuario->EfectoImpacto->DeactivateSystem();
+        }*/
     }
     //creo que la parte de interacion con el menu, deberia estar manajedo por el pawn, asi dentro de la funcion cambiar punto final, evaluo o verifico que no este primero algun menu
     //la pregunta es como hare con los clicks digamos para el contenido, si estoy buscando algun nodo, quiza igual deberia evitar que de algun click, si tengo algun overlap en ferente, evaluar la mejor forma de hacer todo esto
