@@ -638,21 +638,25 @@ void AVRVisualization::VisualizarNodoReleased() {//esta es una funcion gloabl, p
 }
 
 void AVRVisualization::TrasladarRamaReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
-    DeseleccionarRama(NodoGuia);//con el deseleccionar todo tambien bastaria
-    bNodoGuia = false;
-    for (int i = 0; i < Aristas.Num(); i++) {
-        Aristas[i]->ActualizarCollision();
+    if(bNodoGuia){
+        DeseleccionarRama(NodoGuia);//con el deseleccionar todo tambien bastaria
+        bNodoGuia = false;
+        for (int i = 0; i < Aristas.Num(); i++) {
+            Aristas[i]->ActualizarCollision();
+        }
+        Usuario->CambiarLaser(0);
     }
-    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::RotarRamaReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
-    bNodoGuia = false;
-    for (int i = 0; i < Aristas.Num(); i++) {
-        Aristas[i]->ActualizarCollision();
+    if(bNodoGuia){
+        bNodoGuia = false;
+        for (int i = 0; i < Aristas.Num(); i++) {
+            Aristas[i]->ActualizarCollision();
+        }
+        DeseleccionarTodo();
+        Usuario->CambiarLaser(0);
     }
-    DeseleccionarTodo();
-    Usuario->CambiarLaser(0);
 }
 
 void AVRVisualization::TrasladarVisualizacionReleased() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
