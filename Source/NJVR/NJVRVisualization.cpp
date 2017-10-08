@@ -238,6 +238,7 @@ void ANJVRVisualization::AplicarTraslacion(FVector Traslacion) {
     for (int i = 0; i < NodosSeleccionados.Num(); i++) {
         //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
         NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+        //produce errores graciososNodosSeleccionados[i]->SetActorRelativeLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
     }
 
 }
