@@ -67,7 +67,7 @@ void AAristaCilindroEsferica::Actualizar() {
     FVector TargetRL = TargetNodo->GetRootComponent()->RelativeLocation;
     float RadioEsfera = SourceRL.Size();
     float DeltaPhi = TargetNodo->Phi - SourceNodo->Phi;
-    FVector P1;
+    FVector P1;//se supone que ya esta en relativo
     P1.X = RadioEsfera * FMath::Sin(SourceNodo->Phi + DeltaPhi/2) * FMath::Cos(SourceNodo->Theta);
     P1.Y = RadioEsfera * FMath::Sin(SourceNodo->Phi + DeltaPhi/2) * FMath::Sin(SourceNodo->Theta);
     P1.Z = RadioEsfera * FMath::Cos(SourceNodo->Phi + DeltaPhi/2);
@@ -97,20 +97,26 @@ void AAristaCilindroEsferica::Actualizar() {
     //AristaMedioMesh->SetRelativeLocation(FVector::ZeroVector);
     AristaMedioMesh->SetRelativeLocation(P2L + (P1L - P2L)/2);
     AristaMedioMesh->SetRelativeRotation(NewRotation);
-    Distancia = (P1-P2).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
-    AristaMedioMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    //Distancia = (P1-P2).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos, esto deberia estar en relativo es decir usar los PL
+    Distancia = (P1L-P2L).Size();//
+    //AristaMedioMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    AristaMedioMesh->SetRelativeScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
      
     NewRotation = FRotationMatrix::MakeFromZ(P1L - SNL).Rotator();
     AristaInicioMesh->SetRelativeLocation(SNL + (P1L - SNL)/2);
     AristaInicioMesh->SetRelativeRotation(NewRotation);
+    //Distancia = (P1-SNL).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
     Distancia = (P1L-SNL).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
-    AristaInicioMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    //AristaInicioMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    AristaInicioMesh->SetRelativeScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
     
     NewRotation = FRotationMatrix::MakeFromZ(TNL - P2L).Rotator();
     AristaFinMesh->SetRelativeLocation(P2L + (TNL - P2L)/2);
     AristaFinMesh->SetRelativeRotation(NewRotation);
+    //Distancia = (TNL-P2).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
     Distancia = (TNL-P2L).Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos
-    AristaFinMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    //AristaFinMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    AristaFinMesh->SetRelativeScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
 }
 
 void AAristaCilindroEsferica::ActualizarCollision() {
