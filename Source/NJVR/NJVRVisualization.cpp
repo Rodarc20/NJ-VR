@@ -286,7 +286,7 @@ void ANJVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVe
 
 }
 
-FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local
+FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local, esto pero quiza sea conveniete que retorne en espacio glloba, convertir estarepuesta despues
     //solo si esta frente al controlo, no por detras, corregir esto
     FVector Punto = RightController->GetComponentTransform().GetLocation();
     Punto = GetTransform().InverseTransformPosition(Punto);
@@ -297,18 +297,20 @@ FVector ANJVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio 
         return FVector(-1.0f);
     }
     float t = -Punto.X / Vector.X;
-    if (t >= 0) {
+    if (t >= 0) {//estoy asumiend que el plano es x=0, pero como es en espacio gloabl cuando roto da problemas
         return FVector (0.0f, Punto.Y + t*Vector.Y, Punto.Z + t*Vector.Z);
     }
     return FVector(-1.0f);
 }
 
 void ANJVRVisualization::TraslacionConNodoGuia() {
-    ImpactPoint = InterseccionLineaSuperficie();
+    ImpactPoint = InterseccionLineaSuperficie();//esta en espacio local, uil para usar el vector con x-1 para indicar que no encontre interseccion
     //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
     //if (ImpactPoint != FVector::ZeroVector) {
     if (ImpactPoint.X != -1.0f) {//punto imposible para la el layout
-        AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());//qui es donde esta mal
+        AplicarTraslacion(GetTransform().TransformPosition(ImpactPoint) - NodoGuia->GetActorLocation());//modo correcto
+        //aun que no se si tanta transofmracion esta bien, tal vez sea mas facil si Intersecicion linea devuelve en global
         Usuario->CambiarLaser(1);
         Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
         //dibujar laser apropiado
