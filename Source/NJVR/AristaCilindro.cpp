@@ -52,10 +52,11 @@ void AAristaCilindro::Actualizar() {
     //SetActorRelativeRotation(NewRotation);// debria ser world?
     SetActorRotation(NewRotation);
 
-    Distancia = Diferencia.Size()-1;//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos y la escala
+    Distancia = GetTransform().InverseTransformVector(Diferencia).Size();
+    //Distancia = Diferencia.Size();//el -1 deberia sser otro valor dianmico en funcion del tamaño de los nodos y la escala
     //AristaCollision->SetCapsuleHalfHeight(Distancia/2);//modificar el tamaño del componete que hace la coslision, en este aso el capsule componente hace que actualizar el overlap aumente, en ese caso como no lo necesito por el momento al realizar traslaciones, esto puede estar desactivado hasta que lo necesite en laguna interaccion, y llamar a este cambio recien cuado suelte el boton de traslado
-    //AristaMesh->SetWorldScale3D(FVector(2*Radio*Escala/2, 2*Radio*Escala/2, Distancia/6));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
-    AristaMesh->SetRelativeScale3D(FVector(2*Radio*Escala/2, 2*Radio*Escala/2, Distancia/6));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
+    //AristaMesh->SetWorldScale3D(FVector(2*Radio*Escala/2, 2*Radio*Escala/2, Distancia/6));//funciona bien para el largo de la arsita, pero no para el grosor
+    AristaMesh->SetRelativeScale3D(FVector(2*Radio*Escala/2, 2*Radio*Escala/2, Distancia/6));//funciona bien para el grosor de la arista pero no para el largo
     //AristaMesh->SetWorldScale3D(FVector(2*Radio*Escala/100, 2*Radio*Escala/100, Distancia/100));//0.06f//este valor se debe calcular en base al radio,  y escalas, esta funcoin toma el diametro, por lo tnto seria algo como 2*radio/100
 }
 
