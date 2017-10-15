@@ -65,10 +65,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void Calculos2();
 
+    void Calc();
+
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
 
-    void Calc();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ExpandirLayout();

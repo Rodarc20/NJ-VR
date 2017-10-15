@@ -253,7 +253,7 @@ void ALayout2VRVisualization::CreateAristas() {
 void ALayout2VRVisualization::Calculos(ANodo * V) {//quien sera la raiz. tener cuidado con esto para layouts pequeños o esferitas
 }
 
-void ALayout2VRVisualization::Calculos2(int & hojas, int & nivelMax) {
+void ALayout2VRVisualization::Calculos2(int & hojas, int & nivelMax) {//este calculos 2 es diferente al calculos2 de layout 1, por eso no puedo generalzar aun,
     std::stack<ANodo *> pila;
     //la raiz es el ultimo nodo
     ANodo * Root = Nodos[Nodos.Num() - 1];

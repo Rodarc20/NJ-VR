@@ -269,8 +269,8 @@ float ALayout1VRVisualization::modFloat(float a, float b) {
     return a;
 }*/
 
-void ALayout1VRVisualization::Calculos(ANodo * V) {
-    //calcular hojas, altura, nivel
+void ALayout1VRVisualization::Calculos(ANodo * V) {//lo uso dentro de claculos 2, por alguna razon
+    //calcular hojas, altura,
     if (V->Sons.Num() == 0) {//deberia usar si es virtual o no
         V->Hojas = 1;
         V->Altura = 0;
@@ -288,7 +288,7 @@ void ALayout1VRVisualization::Calculos(ANodo * V) {
     //si el arbol tiene 4 niveles, el valor de altura de la raiz es 3
 }
 
-void ALayout1VRVisualization::Calculos2() {
+void ALayout1VRVisualization::Calculos2() {//calcula hojas y altura, de otra forma
     ANodo * Root = Nodos[Nodos.Num() - 1];
     Calculos(Root->Parent);
     Root->Altura = Root->Parent->Altura;
@@ -368,7 +368,8 @@ void ALayout1VRVisualization::Layout(float NewRadio) {//en este algoritmo puedo 
     }
 }
 
-void ALayout1VRVisualization::Layout5(float NewRadio) {//en este algoritmo puedo asignar el nivel
+void ALayout1VRVisualization::Layout5(float NewRadio) {
+    //parece que solo necesito la cantidad de hojas, pero siempre es mejor tener todos los datos
     TQueue<ANodo *> Cola;
     //la raiz es el ultimo nodo
     ANodo * Root = Nodos[Nodos.Num() - 1];
@@ -430,7 +431,7 @@ void ALayout1VRVisualization::Layout5(float NewRadio) {//en este algoritmo puedo
     }
 }
 
-void ALayout1VRVisualization::ActualizarLayout() {
+void ALayout1VRVisualization::ActualizarLayout() {//este actulizar deberia ser general
     for (int i = 0; i < Nodos.Num(); i++) {
         FVector NuevaPosicion;
         NuevaPosicion.X = Nodos[i]->Xcoordinate;
