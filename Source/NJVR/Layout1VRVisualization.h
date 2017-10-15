@@ -40,8 +40,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout(float NewRadio);
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout5(float NewRadio);
     //Ubica el nivel mas denso de todo el arbol en el ecuador
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout3(float NewRadio);

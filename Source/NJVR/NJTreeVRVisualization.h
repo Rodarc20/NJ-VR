@@ -25,6 +25,9 @@ public:
 
     virtual void CreateAristas() override;
 	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float DistanciaArista;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout();
 

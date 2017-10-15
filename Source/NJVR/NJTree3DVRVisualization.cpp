@@ -13,6 +13,14 @@
 
 ANJTree3DVRVisualization::ANJTree3DVRVisualization(){
 
+    RadioNodos = 2.0f;
+    RadioNodosVirtuales = 1.0f;
+    RadioAristas = 0.75f;
+    DistanciaArista = 20.0f;
+    PhiValido = PI / 4;
+    PhiInvalido = PI / 2;//virutlaies a nivel del piso
+    //PhiInvalido = PI * 3 / 8;//virutlaies a nivel del piso
+    //PhiInvalido = 3 * PI / 4;//reultado gracioso
 }
 
 void ANJTree3DVRVisualization::BeginPlay() {
@@ -256,11 +264,6 @@ void ANJTree3DVRVisualization::Layout() {
     //int NivelDenso, CantidadNodosNivelDenso;
     //NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
     //NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
-    float DistanciaArista = 20.0f;
-    float PhiValido = PI / 4;
-    float PhiInvalido = PI / 2;//virutlaies a nivel del piso
-    //float PhiInvalido = PI * 3 / 8;//virutlaies a nivel del piso
-    //float PhiInvalido = 3 * PI / 4;//reultado gracioso
     //
     Root->Theta = 0;
     Root->Phi = PI/2;//el phi y theta son relativos respecto al padre del nodo
@@ -288,10 +291,6 @@ void ANJTree3DVRVisualization::Layout() {
     Root->Parent->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
     Root->Parent->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
     Root->Parent->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Parent->Phi);
-
-    /*Root->Parent->Zcoordinate = 0;
-    Root->Parent->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Cos(Root->Parent->Theta);
-    Root->Parent->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Parent->Theta);*/
     WTemp += Root->Parent->WTam;
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
@@ -309,10 +308,6 @@ void ANJTree3DVRVisualization::Layout() {
         Root->Sons[i]->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
         Root->Sons[i]->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
         Root->Sons[i]->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Sons[i]->Phi);
-
-        /*Root->Sons[i]->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Cos(Root->Sons[i]->Theta);
-        Root->Sons[i]->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Theta);
-        Root->Sons[i]->Zcoordinate = 0;*/
         WTemp += Root->Sons[i]->WTam;
         Cola.Enqueue(Root->Sons[i]);
     }
@@ -336,9 +331,6 @@ void ANJTree3DVRVisualization::Layout() {
             V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
             V->Sons[i]->Zcoordinate = V->Zcoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Phi);
 
-            /*V->Sons[i]->Zcoordinate = 0;
-            V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Theta);*/
             WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
         }

@@ -25,6 +25,15 @@ public:
 
     virtual void CreateAristas() override;
 	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float DistanciaArista;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float PhiValido;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float PhiInvalido;
+
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void Layout();
 

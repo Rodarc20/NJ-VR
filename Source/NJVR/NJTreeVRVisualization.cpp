@@ -12,7 +12,10 @@
 
 
 ANJTreeVRVisualization::ANJTreeVRVisualization(){
-
+    DistanciaArista = 20.0f;
+    RadioNodos = 2.0f;
+    RadioNodosVirtuales = 1.0f;
+    RadioAristas = 0.75f;
 }
 
 void ANJTreeVRVisualization::BeginPlay() {
@@ -256,7 +259,6 @@ void ANJTreeVRVisualization::Layout() {
     //int NivelDenso, CantidadNodosNivelDenso;
     //NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
     //NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
-    float DistanciaArista = 20.0f;
     //
     Root->Theta = 0;
     Root->Phi = 0;
