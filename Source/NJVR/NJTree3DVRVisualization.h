@@ -14,6 +14,30 @@ class NJVR_API ANJTree3DVRVisualization : public AVRVisualization
 {
 	GENERATED_BODY()
 	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+    ANJTree3DVRVisualization();
+
+    virtual void CreateNodos() override;
+
+    virtual void CreateAristas() override;
+	
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void Layout();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void ActualizarLayout();
+	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void Calculos(ANodo * V);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void Calculos2();
+
+    void Calc();
 	
 	
 	
