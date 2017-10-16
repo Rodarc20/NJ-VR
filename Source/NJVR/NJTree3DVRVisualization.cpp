@@ -18,14 +18,16 @@ ANJTree3DVRVisualization::ANJTree3DVRVisualization(){
     RadioAristas = 0.75f;
     DistanciaArista = 20.0f;
     PhiValido = PI / 4;
-    PhiInvalido = PI / 2;//virutlaies a nivel del piso
+    //PhiInvalido = PI / 2;//virutlaies a nivel del piso
+    PhiInvalido = PI / 4;//virutlaies a nivel del piso
     //PhiInvalido = PI * 3 / 8;//virutlaies a nivel del piso
     //PhiInvalido = 3 * PI / 4;//reultado gracioso
 }
 
 void ANJTree3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
-    Layout();
+    //Layout();
+    LayoutEsferico();
     ActualizarLayout();
 }
 
@@ -329,6 +331,82 @@ void ANJTree3DVRVisualization::Layout() {
 
             V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
             V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = V->Zcoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Phi);
+
+            WTemp += V->Sons[i]->WTam;
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ANJTree3DVRVisualization::LayoutEsferico() {
+    //parece que solo necesito la cantidad de hojas, pero siempre es mejor tener todos los datos
+    TQueue<ANodo *> Cola;
+    //la raiz es el ultimo nodo
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    Calculos2();
+    Calc();//no estaba antes
+    //agregado para el nuevo radio
+    //int NivelDenso, CantidadNodosNivelDenso;
+    //NivelMasDenso(NivelDenso, CantidadNodosNivelDenso);
+    //NewRadio = EncontrarRadio1(DeltaPhi * NivelDenso, CantidadNodosNivelDenso); 
+    //
+    Root->Theta = 0;
+    Root->Phi = PI/2;//el phi y theta son relativos respecto al padre del nodo
+    //en realidad PHI0 sginifica nivel del sulo, pero neceito poner un phi para poder hacer calculos igual para todos, o tendria que hacer muchas diferencias
+    Root->WTam = 2*PI;
+    Root->WInicio = 0;
+    Root->Xcoordinate = 0;
+    Root->Ycoordinate = 0;
+    Root->Zcoordinate = 0;
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+    //float DeltaPhi = PI / Root->Altura/2;//para usar la mitad de una esfera masomenos
+    float DeltaPhi = PI / Root->Altura;
+    float WTemp = Root->WInicio;
+    //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
+
+    Root->Parent->Phi = Root->Phi + DeltaPhi;
+    Root->Parent->WTam = 2*PI * (float(Root->Parent->Hojas) / Root->Hojas);
+    Root->Parent->WInicio = WTemp;
+    Root->Parent->Theta = Root->Parent->WInicio + Root->Parent->WTam / 2;
+
+    Root->Parent->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Parent->Phi);
+    WTemp += Root->Parent->WTam;
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        //Root->Sons[i]->Phi = Root->Phi + DeltaPhi;//estaba dividido por 2
+        Root->Sons[i]->Phi = Root->Phi + DeltaPhi;
+        Root->Sons[i]->WTam = 2*PI * (float(Root->Sons[i]->Hojas) / Root->Hojas);
+        Root->Sons[i]->WInicio = WTemp;
+        Root->Sons[i]->Theta =Root->Sons[i]->WInicio + Root->Sons[i]->WTam / 2;
+
+        Root->Sons[i]->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Sons[i]->Phi);
+        WTemp += Root->Sons[i]->WTam;
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = V->Phi + DeltaPhi;
+            V->Sons[i]->WTam = 2*PI * (float(V->Sons[i]->Hojas) / Root->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = V->Sons[i]->WInicio + V->Sons[i]->WTam / 2;
+            //si el phi es mayor a PI/2 entonces debo tomar el theta como negativo, pero solo para el calculo, de las posiciones, nada mas
+            /*if (V->Sons[i]->Phi > PI) {//para la cruvatura hacia adentro
+                V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(-1 * V->Sons[i]->Theta);
+                V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(-1 * V->Sons[i]->Theta);
+            }
+            else {*/
+                V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+                V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            //}
             V->Sons[i]->Zcoordinate = V->Zcoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Phi);
 
             WTemp += V->Sons[i]->WTam;
