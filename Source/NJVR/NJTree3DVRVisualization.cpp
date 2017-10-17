@@ -17,17 +17,18 @@ ANJTree3DVRVisualization::ANJTree3DVRVisualization(){
     RadioNodosVirtuales = 1.0f;
     RadioAristas = 0.75f;
     DistanciaArista = 20.0f;
-    PhiValido = PI / 4;
-    //PhiInvalido = PI / 2;//virutlaies a nivel del piso
-    PhiInvalido = PI / 4;//virutlaies a nivel del piso
+    //PhiValido = PI / 4;
+    PhiValido = 0;
+    PhiInvalido = PI / 2;//virutlaies a nivel del piso
+    //PhiInvalido = PI / 4;//virutlaies a nivel del piso
     //PhiInvalido = PI * 3 / 8;//virutlaies a nivel del piso
     //PhiInvalido = 3 * PI / 4;//reultado gracioso
 }
 
 void ANJTree3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
-    //Layout();
-    LayoutEsferico();
+    Layout();
+    //LayoutEsferico();
     ActualizarLayout();
 }
 
@@ -399,14 +400,14 @@ void ANJTree3DVRVisualization::LayoutEsferico() {
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Theta = V->Sons[i]->WInicio + V->Sons[i]->WTam / 2;
             //si el phi es mayor a PI/2 entonces debo tomar el theta como negativo, pero solo para el calculo, de las posiciones, nada mas
-            /*if (V->Sons[i]->Phi > PI) {//para la cruvatura hacia adentro
+            if (V->Sons[i]->Phi > PI) {//para la cruvatura hacia adentro
                 V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(-1 * V->Sons[i]->Theta);
                 V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(-1 * V->Sons[i]->Theta);
             }
-            else {*/
+            else {
                 V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
                 V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            //}
+            }
             V->Sons[i]->Zcoordinate = V->Zcoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Phi);
 
             WTemp += V->Sons[i]->WTam;
