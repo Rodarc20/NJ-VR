@@ -38,6 +38,9 @@ public:
     void Layout();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void Layout2();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void LayoutEsferico();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")

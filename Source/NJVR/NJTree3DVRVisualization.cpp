@@ -27,7 +27,8 @@ ANJTree3DVRVisualization::ANJTree3DVRVisualization(){
 
 void ANJTree3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
-    Layout();
+    //Layout();
+    Layout2();
     //LayoutEsferico();
     ActualizarLayout();
 }
@@ -325,6 +326,97 @@ void ANJTree3DVRVisualization::Layout() {
             }
             else {
                 V->Sons[i]->Phi = PhiInvalido;
+            }
+            V->Sons[i]->WTam = 2*PI * (float(V->Sons[i]->Hojas) / Root->Hojas);
+            V->Sons[i]->WInicio = WTemp;
+            V->Sons[i]->Theta = V->Sons[i]->WInicio + V->Sons[i]->WTam / 2;
+
+            V->Sons[i]->Ycoordinate = V->Ycoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Xcoordinate = V->Xcoordinate + DistanciaArista * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = V->Zcoordinate + DistanciaArista * FMath::Cos(V->Sons[i]->Phi);
+
+            WTemp += V->Sons[i]->WTam;
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ANJTree3DVRVisualization::Layout2() {
+    TQueue<ANodo *> Cola;
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+    float Phi1 = PI/4;
+    //float Phi1 = 3*PI/4;
+    float Phi2 = PI/2;
+    //float Phi3 = 3*PI/4;
+    float Phi3 = PI/4;
+    Calculos2();
+    Calc();//no estaba antes
+    Root->Theta = 0;
+    Root->Phi = PI/2;//el phi y theta son relativos respecto al padre del nodo
+    //en realidad PHI0 sginifica nivel del sulo, pero neceito poner un phi para poder hacer calculos igual para todos, o tendria que hacer muchas diferencias
+    Root->WTam = 2*PI;
+    Root->WInicio = 0;
+    Root->Xcoordinate = 0;
+    Root->Ycoordinate = 0;
+    Root->Zcoordinate = 0;
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+    //float DeltaPhi = PI / Root->Altura;
+    float WTemp = Root->WInicio;
+    //debo tener en cuenta al padre para hacer los calculos, ya que esto esta como arbol sin raiz
+
+    if (Root->Parent->Valid) {
+        Root->Parent->Phi = Phi3;
+    }
+    else {
+        if(!Root->Parent->Sons[0]->Valid && !Root->Parent->Sons[1]->Valid)
+            Root->Parent->Phi = Phi1;
+        else
+            Root->Parent->Phi = Phi2;
+    }
+    Root->Parent->WTam = 2*PI * (float(Root->Parent->Hojas) / Root->Hojas);
+    Root->Parent->WInicio = WTemp;
+    Root->Parent->Theta = Root->Parent->WInicio + Root->Parent->WTam / 2;
+
+    Root->Parent->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Parent->Phi);
+    WTemp += Root->Parent->WTam;
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        //Root->Sons[i]->Phi = Root->Phi + DeltaPhi;//estaba dividido por 2
+        if (Root->Sons[i]->Valid) {
+            Root->Sons[i]->Phi = Phi3;
+        }
+        else {
+            if(!Root->Sons[i]->Sons[0]->Valid && !Root->Sons[i]->Sons[1]->Valid)
+                Root->Sons[i]->Phi = Phi1;
+            else
+                Root->Sons[i]->Phi = Phi2;
+        }
+        Root->Sons[i]->WTam = 2*PI * (float(Root->Sons[i]->Hojas) / Root->Hojas);
+        Root->Sons[i]->WInicio = WTemp;
+        Root->Sons[i]->Theta =Root->Sons[i]->WInicio + Root->Sons[i]->WTam / 2;
+
+        Root->Sons[i]->Ycoordinate = Root->Ycoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Xcoordinate = Root->Xcoordinate + DistanciaArista * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Zcoordinate = Root->Zcoordinate + DistanciaArista * FMath::Cos(Root->Sons[i]->Phi);
+        WTemp += Root->Sons[i]->WTam;
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        WTemp = V->WInicio;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            if (V->Sons[i]->Valid) {
+                V->Sons[i]->Phi = Phi3;
+            }
+            else {
+                if(!V->Sons[i]->Sons[0]->Valid && !V->Sons[i]->Sons[1]->Valid)
+                    V->Sons[i]->Phi = Phi1;
+                else
+                    V->Sons[i]->Phi = Phi2;
             }
             V->Sons[i]->WTam = 2*PI * (float(V->Sons[i]->Hojas) / Root->Hojas);
             V->Sons[i]->WInicio = WTemp;
