@@ -44,6 +44,7 @@ void ANJTreeVRVisualization::CreateNodos() {
     FString yorigen = nodeyorigen->GetAttribute("value");
     float OrigenY = FCString::Atof(*yorigen) * -1;
     //tengo todos los vertices en ese array
+    UE_LOG(LogClass, Log, TEXT("va bien %d"), 111);
     TArray<int> numerocolores;
     for (int i = 0; i < XMLvertexs.Num(); ++i) {
         //obteniendo el id

@@ -55,6 +55,8 @@ AVRVisualization::AVRVisualization()
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/AMTesis.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/LeafShapes.xml"));
     DataSetSeleccionado = 0;
 }
 
@@ -106,7 +108,7 @@ void AVRVisualization::Tick(float DeltaTime)
 void AVRVisualization::LoadNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
     if (GEngine) {
-        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
     }
     TArray<FXmlNode *> XMLnodos = rootnode->GetChildrenNodes();
     TArray<FXmlNode*> XMLvertexs;
