@@ -15,7 +15,7 @@ ANJTreeVRVisualization::ANJTreeVRVisualization(){
     DistanciaArista = 20.0f;
     RadioNodos = 2.0f;
     RadioNodosVirtuales = 1.0f;
-    RadioAristas = 0.75f;
+    RadioAristas = 0.5f;
 }
 
 void ANJTreeVRVisualization::BeginPlay() {
