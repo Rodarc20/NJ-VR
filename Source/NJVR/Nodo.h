@@ -43,6 +43,17 @@ public:
 
     //la corrdenada x
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    float X;//esta es la coordenada original obtenida del xml, es posible que esto se mapee en otro eje, o en otra posición
+
+    //la coordenada y
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    float Y;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
+    float Z;
+
+    //la corrdenada x
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     float Xcoordinate;//esta es la coordenada original obtenida del xml, es posible que esto se mapee en otro eje, o en otra posición
 
     //la coordenada y
@@ -193,6 +204,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     int Casilla;//para el layout2
 
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    FMatrix Frame;//para el H3
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
+    float RadioFrame;//para el H3, rp
 };
 
 //La colision por defecto de esta calse esta como WorldDynamic, sin mebargo le creare su propio perfil llamado Nodo, para rastrear de forma especifica de acruerdo a la necesiadad, y esta coo overlap all dynamic, sin collision physica
