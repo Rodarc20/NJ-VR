@@ -39,6 +39,10 @@ public:
 
     void Calc();
 
+    void CalcularRadio(ANodo * V);
+
+    void CalcularRadioMin(ANodo * V);
+
     void CalcularRadioHemiesfera(ANodo * V);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
@@ -46,6 +50,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void LayoutDistanciaReducida();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentada();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentadaAnguloReducido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentadaHijoAnguloReducido();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
