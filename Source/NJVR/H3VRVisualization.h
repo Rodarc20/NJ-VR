@@ -42,7 +42,10 @@ public:
     void CalcularRadioHemiesfera(ANodo * V);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout();
+    void LayoutBase();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaReducida();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
