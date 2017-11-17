@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NJVR.h"
-#include "H3VRVisualization.h"
+#include "NJVR3DVRVisualization.h"
 #include "Nodo.h"
 #include "Arista.h"
 #include "VRPawn.h"
@@ -9,20 +9,22 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include <stack>
 #include <queue>
-#include <math.h>
 
-AH3VRVisualization::AH3VRVisualization() {
+ANJVR3DVRVisualization::ANJVR3DVRVisualization() {
     RadioHoja = 6.0f;
 }
 
-void AH3VRVisualization::BeginPlay() {
+void ANJVR3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
-    LayoutBase();
+    //LayoutBase();
     //LayoutDistanciaReducida();
+    //LayoutDistanciaAumentada();
+    //LayoutDistanciaAumentadaAnguloReducido();
+    LayoutDistanciaAumentadaHijoAnguloReducido();
     ActualizarLayout();
 }
 
-void AH3VRVisualization::CreateNodos() {
+void ANJVR3DVRVisualization::CreateNodos() {
     FXmlNode * rootnode = XmlSource.GetRootNode();
     //if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
@@ -161,7 +163,7 @@ void AH3VRVisualization::CreateNodos() {
 
 }
 
-void AH3VRVisualization::CreateAristas() {
+void ANJVR3DVRVisualization::CreateAristas() {
     int count = 0;
     UWorld * const World = GetWorld();
     if (World) {//este if deberia estar afuera
@@ -245,7 +247,7 @@ void AH3VRVisualization::CreateAristas() {
     }
 }
 
-void AH3VRVisualization::Calculos(ANodo * V) {//lo uso dentro de claculos 2, por alguna razon
+void ANJVR3DVRVisualization::Calculos(ANodo * V) {//lo uso dentro de claculos 2, por alguna razon
     //calcular hojas, altura,
     if (V->Sons.Num() == 0) {//deberia usar si es virtual o no
         V->Hojas = 1;
@@ -264,7 +266,7 @@ void AH3VRVisualization::Calculos(ANodo * V) {//lo uso dentro de claculos 2, por
     //si el arbol tiene 4 niveles, el valor de altura de la raiz es 3
 }
 
-void AH3VRVisualization::Calculos2() {//calcula hojas y altura, de otra forma
+void ANJVR3DVRVisualization::Calculos2() {//calcula hojas y altura, de otra forma
     ANodo * Root = Nodos[Nodos.Num() - 1];
     Calculos(Root->Parent);
     Root->Altura = Root->Parent->Altura;
@@ -277,7 +279,7 @@ void AH3VRVisualization::Calculos2() {//calcula hojas y altura, de otra forma
     Root->Altura++;
 }
 
-void AH3VRVisualization::Calc() {//para hallar niveles
+void ANJVR3DVRVisualization::Calc() {//para hallar niveles
     std::stack<ANodo *> pila;
     //la raiz es el ultimo nodo
     ANodo * Root = Nodos[Nodos.Num() - 1];
@@ -301,7 +303,7 @@ void AH3VRVisualization::Calc() {//para hallar niveles
     }
 }
 
-void AH3VRVisualization::CalcularRadio(ANodo * V) {
+void ANJVR3DVRVisualization::CalcularRadio(ANodo * V) {
     //rp es el Radio Frame
     if (V->Valid) {
         V->RadioFrame = 6.0f;//un poco mas del doble del diametro de los nodos
@@ -318,7 +320,25 @@ void AH3VRVisualization::CalcularRadio(ANodo * V) {
     }
 }
 
-void AH3VRVisualization::CalcularRadioHemiesfera(ANodo * V) {
+void ANJVR3DVRVisualization::CalcularRadioMin(ANodo * V) {
+    //rp es el Radio Frame
+    if (V->Valid) {
+        V->RadioFrame = 6.0f;//un poco mas del doble del diametro de los nodos
+        //V->RadioFrame = 1.0f;//un poco mas del doble del diametro de los nodos
+        //UE_LOG(LogClass, Log, TEXT("Valid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
+    }
+    else{
+        CalcularRadioMin(V->Sons[0]);
+        CalcularRadioMin(V->Sons[1]);
+        //V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 2;//funciona bien apra el conjunto pequeño
+        V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 4;//funciona bien apra el conjunto pequeño
+        //V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 0.5;
+        //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
+    }
+}
+
+
+void ANJVR3DVRVisualization::CalcularRadioHemiesfera(ANodo * V) {
     //rp es el Radio Frame
     if (V->Valid) {
         V->RadioFrame = RadioHoja;
@@ -327,15 +347,13 @@ void AH3VRVisualization::CalcularRadioHemiesfera(ANodo * V) {
     else{
         CalcularRadioHemiesfera(V->Sons[0]);
         CalcularRadioHemiesfera(V->Sons[1]);
-        //float HAp = PI*V->Sons[0]->RadioFrame*V->Sons[0]->RadioFrame + PI*V->Sons[1]->RadioFrame*V->Sons[1]->RadioFrame;
-        //V->RadioFrame = FMath::Sqrt(HAp/(2*PI));
-        float HAp = 2*PI*(std::cosh(V->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(V->Sons[1]->RadioFrame)-1);
-        V->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
+        float HAp = PI*V->Sons[0]->RadioFrame*V->Sons[0]->RadioFrame + PI*V->Sons[1]->RadioFrame*V->Sons[1]->RadioFrame;
+        V->RadioFrame = FMath::Sqrt(HAp/(2*PI));
         //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
 }
 
-void AH3VRVisualization::LayoutBase() {
+void ANJVR3DVRVisualization::LayoutBase() {
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes
@@ -346,11 +364,9 @@ void AH3VRVisualization::LayoutBase() {
     CalcularRadioHemiesfera(Root->Sons[0]);
     CalcularRadioHemiesfera(Root->Sons[1]);
     CalcularRadioHemiesfera(Root->Parent);
-    //float HAp = PI*Root->Sons[0]->RadioFrame*Root->Sons[0]->RadioFrame + PI*Root->Sons[1]->RadioFrame*Root->Sons[1]->RadioFrame;
-    //HAp += PI*Root->Parent->RadioFrame*Root->Parent->RadioFrame;
-    float HAp = 2*PI*(std::cosh(Root->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(Root->Sons[1]->RadioFrame)-1);
-    HAp += 2*PI*(std::cosh(Root->Parent->RadioFrame)-1);
-    Root->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
+    float HAp = PI*Root->Sons[0]->RadioFrame*Root->Sons[0]->RadioFrame + PI*Root->Sons[1]->RadioFrame*Root->Sons[1]->RadioFrame;
+    HAp += PI*Root->Parent->RadioFrame*Root->Parent->RadioFrame;
+    Root->RadioFrame = FMath::Sqrt(HAp/(2*PI));
     //fin clculo radios
 
     Root->Theta = 0;
@@ -447,7 +463,7 @@ void AH3VRVisualization::LayoutBase() {
 }
 //probar otros enoque para la asignacion del radio, quiza que vata de abajo hacia arriba, asi todas las hojas, tienen la arista de la misma distancia con su padre.
 //corregir el erro que aparece por ejemplo con el conjunto 5, leafshapte que no posee una orientacioncorrecta.
-void AH3VRVisualization::LayoutDistanciaReducida() {
+void ANJVR3DVRVisualization::LayoutDistanciaReducida() {
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes
@@ -538,12 +554,115 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
 
             V->Sons[i]->Phi = PhiTotal - V->Sons[i]->Phi;//bastaria con asignar defrente Pi?4
             V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
-            //V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            //V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            //V->Sons[i]->Z= V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
-            V->Sons[i]->X= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Y= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Z= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Z= V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
+            if (i & 1) {
+                RotacionY = MatrizRotacionY(V->Sons[i]->Phi);
+            }
+            else {
+                RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            }
+            //RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            //RotacionX = MatrizRotacionX(2 * PI - V->Sons[i]->Phi);
+            RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            /*if (V->Nivel & 1) {
+                RotacionZ = MatrizRotacionZ(PI / 2);
+            }
+            else {
+                RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            }*/
+            TraslacionV = MatrizTraslacion(V->Sons[i]->X, V->Sons[i]->Y, V->Sons[i]->Z);
+            V->Sons[i]->Frame = MultiplicacionMatriz(V->Frame, MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY));
+            //V->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionX), RotacionZ);
+            V->Sons[i]->Xcoordinate = V->Sons[i]->Frame.M[0][3];
+            V->Sons[i]->Ycoordinate = V->Sons[i]->Frame.M[1][3];
+            V->Sons[i]->Zcoordinate = V->Sons[i]->Frame.M[2][3];
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ANJVR3DVRVisualization::LayoutDistanciaAumentada() {
+    TQueue<ANodo *> Cola;
+    Calculos2();
+    Calc();//no estaba antes
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+
+    //calculamos los radios
+    //float DeltaRadio = RadioHoja / (Root->Altura + 1);
+    CalcularRadio(Root->Sons[0]);
+    CalcularRadio(Root->Sons[1]);
+    CalcularRadio(Root->Parent);
+    Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //fin clculo radios
+
+    Root->Theta = 0;
+    Root->Phi = 0;
+    Root->Xcoordinate = 0.0f;//esta es la posicion general dentro de la visualizacion, 
+    Root->Ycoordinate = 0.0f;
+    Root->Zcoordinate = 0.0f;
+    Root->X = 0.0f;//esta es la posicion relativa respecto al padre
+    Root->Y = 0.0f;
+    Root->Z = 0.0f;
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+
+    FMatrix RotacionY;
+    FMatrix RotacionZ;
+    FMatrix TraslacionV;
+    //por ahora los tres primeros se dividiran de forma equitativa, pero despues ya no, sera en base a sus proporciones, 
+    //sa debe realizar el calculo de los frames
+    Root->Parent->Phi = 0;
+    Root->Parent->Theta = 0;
+    Root->Parent->X = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Y = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Z = Root->RadioFrame * FMath::Cos(Root->Parent->Phi);
+    RotacionY = MatrizRotacionY(Root->Parent->Phi);//3*PI/2 siempre sera este valor
+    RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+    TraslacionV = MatrizTraslacion(Root->Parent->X, Root->Parent->Y, Root->Parent->Z);
+    Root->Parent->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+    Root->Parent->Xcoordinate = Root->Parent->Frame.M[0][3];
+    Root->Parent->Ycoordinate = Root->Parent->Frame.M[1][3];
+    Root->Parent->Zcoordinate = Root->Parent->Frame.M[2][3];
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Root->Sons[i]->Phi = 2*PI/3;
+        Root->Sons[i]->Theta = (i & 1) * PI;
+        Root->Sons[i]->X = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Y = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Z = Root->RadioFrame * FMath::Cos(Root->Sons[i]->Phi);
+        //RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        if (i & 1) {
+            RotacionY = MatrizRotacionY(Root->Sons[i]->Phi);
+        }
+        else {
+            RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        }
+        RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+        TraslacionV = MatrizTraslacion(Root->Sons[i]->X, Root->Sons[i]->Y, Root->Sons[i]->Z);
+        Root->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+        Root->Sons[i]->Xcoordinate = Root->Sons[i]->Frame.M[0][3];
+        Root->Sons[i]->Ycoordinate = Root->Sons[i]->Frame.M[1][3];
+        Root->Sons[i]->Zcoordinate = Root->Sons[i]->Frame.M[2][3];
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        UE_LOG(LogClass, Log, TEXT("Nodo id = %d, RadioFrame: %f"), V->Id, V->RadioFrame);
+        float PhiTotal = 0.0f;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            //V->Sons[i]->Phi = FMath::Atan(V->Sons[i]->RadioFrame / V->RadioFrame);
+            V->Sons[i]->Phi = PI / 4;
+            PhiTotal += V->Sons[i]->Phi;
+        }
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = PhiTotal - V->Sons[i]->Phi;//bastaria con asignar defrente Pi?4
+            V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
+            V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Z= V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
             if (i & 1) {
                 RotacionY = MatrizRotacionY(V->Sons[i]->Phi);
             }
@@ -571,7 +690,222 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
 }
 
 
-void AH3VRVisualization::ActualizarLayout() {//este actulizar deberia ser general
+void ANJVR3DVRVisualization::LayoutDistanciaAumentadaAnguloReducido() {
+    TQueue<ANodo *> Cola;
+    Calculos2();
+    Calc();//no estaba antes
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+
+    //calculamos los radios
+    float DeltaPhi = PI/4 / (Root->Altura + 1);
+    CalcularRadio(Root->Sons[0]);
+    CalcularRadio(Root->Sons[1]);
+    CalcularRadio(Root->Parent);
+    Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //fin clculo radios
+
+    Root->Theta = 0;
+    Root->Phi = 0;
+    Root->Xcoordinate = 0.0f;//esta es la posicion general dentro de la visualizacion, 
+    Root->Ycoordinate = 0.0f;
+    Root->Zcoordinate = 0.0f;
+    Root->X = 0.0f;//esta es la posicion relativa respecto al padre
+    Root->Y = 0.0f;
+    Root->Z = 0.0f;
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+
+    FMatrix RotacionY;
+    FMatrix RotacionZ;
+    FMatrix TraslacionV;
+    //por ahora los tres primeros se dividiran de forma equitativa, pero despues ya no, sera en base a sus proporciones, 
+    //sa debe realizar el calculo de los frames
+    Root->Parent->Phi = 0;
+    Root->Parent->Theta = 0;
+    Root->Parent->X = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Y = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Z = Root->RadioFrame * FMath::Cos(Root->Parent->Phi);
+    RotacionY = MatrizRotacionY(Root->Parent->Phi);//3*PI/2 siempre sera este valor
+    RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+    TraslacionV = MatrizTraslacion(Root->Parent->X, Root->Parent->Y, Root->Parent->Z);
+    Root->Parent->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+    Root->Parent->Xcoordinate = Root->Parent->Frame.M[0][3];
+    Root->Parent->Ycoordinate = Root->Parent->Frame.M[1][3];
+    Root->Parent->Zcoordinate = Root->Parent->Frame.M[2][3];
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Root->Sons[i]->Phi = 2*PI/3;
+        Root->Sons[i]->Theta = (i & 1) * PI;
+        Root->Sons[i]->X = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Y = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Z = Root->RadioFrame * FMath::Cos(Root->Sons[i]->Phi);
+        //RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        if (i & 1) {
+            RotacionY = MatrizRotacionY(Root->Sons[i]->Phi);
+        }
+        else {
+            RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        }
+        RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+        TraslacionV = MatrizTraslacion(Root->Sons[i]->X, Root->Sons[i]->Y, Root->Sons[i]->Z);
+        Root->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+        Root->Sons[i]->Xcoordinate = Root->Sons[i]->Frame.M[0][3];
+        Root->Sons[i]->Ycoordinate = Root->Sons[i]->Frame.M[1][3];
+        Root->Sons[i]->Zcoordinate = Root->Sons[i]->Frame.M[2][3];
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        UE_LOG(LogClass, Log, TEXT("Nodo id = %d, RadioFrame: %f"), V->Id, V->RadioFrame);
+        float PhiTotal = 0.0f;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            //V->Sons[i]->Phi = FMath::Atan(V->Sons[i]->RadioFrame / V->RadioFrame);
+            V->Sons[i]->Phi = PI / 4 - DeltaPhi*V->Nivel;
+            PhiTotal += V->Sons[i]->Phi;
+        }
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = PI/4 - DeltaPhi*V->Nivel;//bastaria con asignar defrente Pi?4
+            V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
+            V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Z= V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
+            if (i & 1) {
+                RotacionY = MatrizRotacionY(V->Sons[i]->Phi);
+            }
+            else {
+                RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            }
+            //RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            //RotacionX = MatrizRotacionX(2 * PI - V->Sons[i]->Phi);
+            RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            /*if (V->Nivel & 1) {
+                RotacionZ = MatrizRotacionZ(PI / 2);
+            }
+            else {
+                RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            }*/
+            TraslacionV = MatrizTraslacion(V->Sons[i]->X, V->Sons[i]->Y, V->Sons[i]->Z);
+            V->Sons[i]->Frame = MultiplicacionMatriz(V->Frame, MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY));
+            //V->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionX), RotacionZ);
+            V->Sons[i]->Xcoordinate = V->Sons[i]->Frame.M[0][3];
+            V->Sons[i]->Ycoordinate = V->Sons[i]->Frame.M[1][3];
+            V->Sons[i]->Zcoordinate = V->Sons[i]->Frame.M[2][3];
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ANJVR3DVRVisualization::LayoutDistanciaAumentadaHijoAnguloReducido() {
+    TQueue<ANodo *> Cola;
+    Calculos2();
+    Calc();//no estaba antes
+    ANodo * Root = Nodos[Nodos.Num() - 1];
+
+    //calculamos los radios
+    float DeltaPhi = PI/4 / (Root->Altura + 1);
+    /*CalcularRadio(Root->Sons[0]);
+    CalcularRadio(Root->Sons[1]);
+    CalcularRadio(Root->Parent);*/
+    CalcularRadioMin(Root->Sons[0]);
+    CalcularRadioMin(Root->Sons[1]);
+    CalcularRadioMin(Root->Parent);
+    Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //fin clculo radios
+
+    Root->Theta = 0;
+    Root->Phi = 0;
+    Root->Xcoordinate = 0.0f;//esta es la posicion general dentro de la visualizacion, 
+    Root->Ycoordinate = 0.0f;
+    Root->Zcoordinate = 0.0f;
+    Root->X = 0.0f;//esta es la posicion relativa respecto al padre
+    Root->Y = 0.0f;
+    Root->Z = 0.0f;
+    UE_LOG(LogClass, Log, TEXT("Root id = %d, (%f,%f,%f)"), Root->Id, Root->Xcoordinate, Root->Ycoordinate, Root->Zcoordinate);
+
+    FMatrix RotacionY;
+    FMatrix RotacionZ;
+    FMatrix TraslacionV;
+    //por ahora los tres primeros se dividiran de forma equitativa, pero despues ya no, sera en base a sus proporciones, 
+    //sa debe realizar el calculo de los frames
+    Root->Parent->Phi = 0;
+    Root->Parent->Theta = 0;
+    Root->Parent->X = Root->Parent->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    Root->Parent->Y = Root->Parent->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    Root->Parent->Z = Root->Parent->RadioFrame * FMath::Cos(Root->Parent->Phi);
+    RotacionY = MatrizRotacionY(Root->Parent->Phi);//3*PI/2 siempre sera este valor
+    RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+    TraslacionV = MatrizTraslacion(Root->Parent->X, Root->Parent->Y, Root->Parent->Z);
+    Root->Parent->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+    Root->Parent->Xcoordinate = Root->Parent->Frame.M[0][3];
+    Root->Parent->Ycoordinate = Root->Parent->Frame.M[1][3];
+    Root->Parent->Zcoordinate = Root->Parent->Frame.M[2][3];
+    Cola.Enqueue(Root->Parent);
+    for (int i = 0; i < Root->Sons.Num(); i++) {
+        Root->Sons[i]->Phi = 2*PI/3;
+        Root->Sons[i]->Theta = (i & 1) * PI;
+        Root->Sons[i]->X = Root->Sons[i]->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        Root->Sons[i]->Y = Root->Sons[i]->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        Root->Sons[i]->Z = Root->Sons[i]->RadioFrame * FMath::Cos(Root->Sons[i]->Phi);
+        //RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        if (i & 1) {
+            RotacionY = MatrizRotacionY(Root->Sons[i]->Phi);
+        }
+        else {
+            RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
+        }
+        RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+        TraslacionV = MatrizTraslacion(Root->Sons[i]->X, Root->Sons[i]->Y, Root->Sons[i]->Z);
+        Root->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
+        Root->Sons[i]->Xcoordinate = Root->Sons[i]->Frame.M[0][3];
+        Root->Sons[i]->Ycoordinate = Root->Sons[i]->Frame.M[1][3];
+        Root->Sons[i]->Zcoordinate = Root->Sons[i]->Frame.M[2][3];
+        Cola.Enqueue(Root->Sons[i]);
+    }
+
+    while (!Cola.IsEmpty()) {
+        ANodo * V;
+        Cola.Dequeue(V);
+        UE_LOG(LogClass, Log, TEXT("Nodo id = %d, RadioFrame: %f"), V->Id, V->RadioFrame);
+        float PhiTotal = 0.0f;
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            //V->Sons[i]->Phi = FMath::Atan(V->Sons[i]->RadioFrame / V->RadioFrame);
+            V->Sons[i]->Phi = PI / 4 - DeltaPhi*V->Nivel;
+            PhiTotal += V->Sons[i]->Phi;
+        }
+        for (int i = 0; i < V->Sons.Num(); i++) {
+            V->Sons[i]->Phi = PI/4 - DeltaPhi*V->Nivel;//bastaria con asignar defrente Pi?4
+            V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
+            V->Sons[i]->X= V->Sons[i]->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Y= V->Sons[i]->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Z= V->Sons[i]->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
+            if (i & 1) {
+                RotacionY = MatrizRotacionY(V->Sons[i]->Phi);
+            }
+            else {
+                RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            }
+            //RotacionY = MatrizRotacionY(2 * PI - V->Sons[i]->Phi);
+            //RotacionX = MatrizRotacionX(2 * PI - V->Sons[i]->Phi);
+            RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            /*if (V->Nivel & 1) {
+                RotacionZ = MatrizRotacionZ(PI / 2);
+            }
+            else {
+                RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
+            }*/
+            TraslacionV = MatrizTraslacion(V->Sons[i]->X, V->Sons[i]->Y, V->Sons[i]->Z);
+            V->Sons[i]->Frame = MultiplicacionMatriz(V->Frame, MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY));
+            //V->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionX), RotacionZ);
+            V->Sons[i]->Xcoordinate = V->Sons[i]->Frame.M[0][3];
+            V->Sons[i]->Ycoordinate = V->Sons[i]->Frame.M[1][3];
+            V->Sons[i]->Zcoordinate = V->Sons[i]->Frame.M[2][3];
+            Cola.Enqueue(V->Sons[i]);
+        }
+    }
+}
+
+void ANJVR3DVRVisualization::ActualizarLayout() {//este actulizar deberia ser general
     for (int i = 0; i < Nodos.Num(); i++) {
         FVector NuevaPosicion;
         NuevaPosicion.X = Nodos[i]->Xcoordinate;
@@ -588,7 +922,7 @@ void AH3VRVisualization::ActualizarLayout() {//este actulizar deberia ser genera
 }
 
 
-FMatrix AH3VRVisualization::MatrizTraslacion(float x, float y, float z) {
+FMatrix ANJVR3DVRVisualization::MatrizTraslacion(float x, float y, float z) {
     FMatrix Traslacion;
     Traslacion.M[0][0] = 1;
     Traslacion.M[0][1] = 0;
@@ -609,7 +943,7 @@ FMatrix AH3VRVisualization::MatrizTraslacion(float x, float y, float z) {
     return Traslacion;
 }
 
-FMatrix AH3VRVisualization::MatrizRotacionX(float angle) {
+FMatrix ANJVR3DVRVisualization::MatrizRotacionX(float angle) {
     FMatrix RotX;
     RotX.M[0][0] = cos(angle);
     RotX.M[0][1] = 0;
@@ -630,7 +964,7 @@ FMatrix AH3VRVisualization::MatrizRotacionX(float angle) {
     return RotX;
 }
 
-FMatrix AH3VRVisualization::MatrizRotacionY(float angle) {
+FMatrix ANJVR3DVRVisualization::MatrizRotacionY(float angle) {
     FMatrix RotY;
     RotY.M[0][0] = 1;
     RotY.M[0][1] = 0;
@@ -651,7 +985,7 @@ FMatrix AH3VRVisualization::MatrizRotacionY(float angle) {
     return RotY;
 }
 
-FMatrix AH3VRVisualization::MatrizRotacionZ(float angle) {
+FMatrix ANJVR3DVRVisualization::MatrizRotacionZ(float angle) {
     FMatrix RotZ;//en este caso la matriz z es la identidad por que theta de V es 0 y eso al realziar calculos es la matriz identdad;
     RotZ.M[0][0] = cos(angle);
     RotZ.M[0][1] = -sin(angle);
@@ -672,7 +1006,7 @@ FMatrix AH3VRVisualization::MatrizRotacionZ(float angle) {
     return RotZ;
 }
 
-FMatrix AH3VRVisualization::MultiplicacionMatriz(FMatrix a, FMatrix b) {
+FMatrix ANJVR3DVRVisualization::MultiplicacionMatriz(FMatrix a, FMatrix b) {
     FMatrix c;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -685,25 +1019,11 @@ FMatrix AH3VRVisualization::MultiplicacionMatriz(FMatrix a, FMatrix b) {
     return c;
 }
 
-void AH3VRVisualization::ImprimirMatriz(FMatrix m) {
+void ANJVR3DVRVisualization::ImprimirMatriz(FMatrix m) {
     for (int i = 0; i < 4; i++) {
         UE_LOG(LogClass, Log, TEXT("[%.4f,%.4f,%.4f,%.4f]"), m.M[i][0], m.M[i][1], m.M[i][2], m.M[i][3]);
     }
 }
 
 
-float AH3VRVisualization::ConvertirADistanciaEuclideana(float x) {
-    double y = std::cosh(x / 2);
-    return std::sqrt(1.0 - 1.0 / (y*y));
-}
-
-bool AH3VRVisualization::IsFinite(FMatrix M) {
-    bool res = true;
-    for (int i = 0; res && i < 4; i++) {
-        for (int j = 0; res && j < 4; j++) {
-            res &= std::isfinite(M.M[i][j]);
-        }
-    }
-    return res;
-}
 

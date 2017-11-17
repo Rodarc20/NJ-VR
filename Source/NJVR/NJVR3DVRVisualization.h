@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "VRVisualization.h"
-#include "H3VRVisualization.generated.h"
+#include "NJVR3DVRVisualization.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NJVR_API AH3VRVisualization : public AVRVisualization
+class NJVR_API ANJVR3DVRVisualization : public AVRVisualization
 {
 	GENERATED_BODY()
 	
@@ -19,7 +19,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-    AH3VRVisualization();
+    ANJVR3DVRVisualization();
 
     virtual void CreateNodos() override;
 
@@ -41,6 +41,8 @@ public:
 
     void CalcularRadio(ANodo * V);
 
+    void CalcularRadioMin(ANodo * V);
+
     void CalcularRadioHemiesfera(ANodo * V);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
@@ -48,6 +50,15 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void LayoutDistanciaReducida();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentada();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentadaAnguloReducido();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutDistanciaAumentadaHijoAnguloReducido();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
@@ -63,9 +74,9 @@ public:
     FMatrix MultiplicacionMatriz(FMatrix a, FMatrix b);
 
     void ImprimirMatriz(FMatrix m);
-
-    float ConvertirADistanciaEuclideana(float x);
 	
-    bool IsFinite(FMatrix M);
+	
+	
+	
 	
 };
