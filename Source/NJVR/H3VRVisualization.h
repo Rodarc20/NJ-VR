@@ -67,5 +67,7 @@ public:
     float ConvertirADistanciaEuclideana(float x);
 	
     bool IsFinite(FMatrix M);
+
+    float K;
 	
 };
