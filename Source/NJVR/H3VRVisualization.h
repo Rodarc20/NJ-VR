@@ -47,6 +47,9 @@ public:
     void LayoutBase();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutBase2();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void LayoutDistanciaReducida();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
@@ -69,5 +72,8 @@ public:
     bool IsFinite(FMatrix M);
 
     float K;
+
+    float CalcularDeltaPhi(float RadioHijo, float RadioPadre);
+
 	
 };

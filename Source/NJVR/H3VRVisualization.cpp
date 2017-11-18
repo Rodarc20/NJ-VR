@@ -341,7 +341,7 @@ void AH3VRVisualization::CalcularRadioHemiesfera(ANodo * V) {
     }
 }
 
-void AH3VRVisualization::LayoutBase() {
+void AH3VRVisualization::LayoutBase() {//esta produciendo un layout bueno
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes
@@ -429,10 +429,11 @@ void AH3VRVisualization::LayoutBase() {
         for (int i = 0; i < V->Sons.Num(); i++) {
             //V->Sons[i]->Phi = FMath::Atan(V->Sons[i]->RadioFrame / V->RadioFrame);
             V->Sons[i]->Phi = PI / 4;
+            //V->Sons[i]->Phi = CalcularDeltaPhi(V->Sons[i]->RadioFrame, V->RadioFrame);
             PhiTotal += V->Sons[i]->Phi;
         }
         for (int i = 0; i < V->Sons.Num(); i++) {
-            V->Sons[i]->Phi = PhiTotal - V->Sons[i]->Phi;//bastaria con asignar defrente Pi?4
+            //V->Sons[i]->Phi = PhiTotal - V->Sons[i]->Phi;//bastaria con asignar defrente Pi?4
             V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
             //V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
             //V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
@@ -728,3 +729,7 @@ bool AH3VRVisualization::IsFinite(FMatrix M) {
     return res;
 }
 
+
+float AH3VRVisualization::CalcularDeltaPhi(float RadioHijo, float RadioPadre) {
+    return std::atan(std::tanh(RadioHijo / K) / std::sinh(RadioPadre / K));
+}
