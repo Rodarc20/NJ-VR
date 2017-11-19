@@ -58,6 +58,7 @@ AVRVisualization::AVRVisualization()
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/AMTesis.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/LeafShapes.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/BrocadoL8.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/pendigits-orig_norm9-VectorCostFunction2.0.dm.xml"));
     DataSetSeleccionado = 0;
 }
 
