@@ -43,6 +43,8 @@ public:
 
     void CalcularRadioHemiesfera(ANodo * V);
 
+    void CalcularRadioHemiesferaH3(ANodo * V);
+
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void LayoutBase();
 
@@ -50,10 +52,13 @@ public:
     void LayoutBase2();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void LayoutDistanciaReducida();
+    void LayoutBaseH3();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void ActualizarLayoutH3();
 
     FMatrix MatrizTraslacion(float x, float y, float z);
 
@@ -71,7 +76,17 @@ public:
 	
     bool IsFinite(FMatrix M);
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float K;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float HemisphereAreaScale;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float LeafArea;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float EscalaSalida;
 
     float CalcularDeltaPhi(float RadioHijo, float RadioPadre);
 

@@ -12,16 +12,21 @@
 #include <math.h>
 
 AH3VRVisualization::AH3VRVisualization() {
-    RadioHoja = 6.0f;
+    RadioHoja = 0.5f;
     K = 2.0f;
+    HemisphereAreaScale = 7.2f;
+    LeafArea = 0.005f;
+    EscalaSalida = 100.0f;
 }
 
 void AH3VRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutBase();
-    LayoutBase2();
-    //LayoutDistanciaReducida();
-    ActualizarLayout();
+    //LayoutBase2();
+    LayoutBaseH3();
+
+    //ActualizarLayout();
+    ActualizarLayoutH3();
 }
 
 void AH3VRVisualization::CreateNodos() {
@@ -324,7 +329,8 @@ void AH3VRVisualization::CalcularRadioHemiesfera(ANodo * V) {
     //rp es el Radio Frame
     if (V->Valid) {
         //V->RadioFrame = RadioHoja;
-        V->RadioFrame = K * std::asinh(std::sqrt(0.005f / (2*PI * K * K)));
+        //V->RadioFrame = K * std::asinh(std::sqrt(0.005f / (2*PI * K * K)));
+        V->RadioFrame = K * std::asinh(std::sqrt(LeafArea / (2*PI * K * K)));
         //UE_LOG(LogClass, Log, TEXT("Valid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
     else{
@@ -336,7 +342,8 @@ void AH3VRVisualization::CalcularRadioHemiesfera(ANodo * V) {
         //V->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
         float HAp = 2*PI*(std::cosh(V->Sons[0]->RadioFrame/K)-1) + 2*PI*(std::cosh(V->Sons[1]->RadioFrame/K)-1);
         //HAp *= 100.0f;
-        HAp *= 7.2f;
+        //HAp *= 7.2f;
+        HAp *= HemisphereAreaScale;
         V->RadioFrame = K*std::asinh(FMath::Sqrt(HAp/(2*PI*K*K)));
         //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
@@ -361,8 +368,8 @@ void AH3VRVisualization::LayoutBase() {//esta produciendo un layout bueno
     //fin clculo radios
     float HAp = 2*PI*(std::cosh(Root->Sons[0]->RadioFrame/K)-1) + 2*PI*(std::cosh(Root->Sons[1]->RadioFrame/K)-1);
     HAp += 2*PI*(std::cosh(Root->Parent->RadioFrame/K)-1);
-    //HAp *= 100.0f;
-    HAp *= 7.2f;
+    HAp *= HemisphereAreaScale;
+    //HAp *= 7.2f;
     Root->RadioFrame = K*std::asinh(FMath::Sqrt(HAp/(2*PI*K*K)));
 
     Root->Theta = 0;
@@ -470,6 +477,7 @@ void AH3VRVisualization::LayoutBase() {//esta produciendo un layout bueno
 
 
 void AH3VRVisualization::LayoutBase2() {//esta produciendo un layout bueno
+    //usar escala salida con valor 100
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes
@@ -488,8 +496,8 @@ void AH3VRVisualization::LayoutBase2() {//esta produciendo un layout bueno
     //fin clculo radios
     float HAp = 2*PI*(std::cosh(Root->Sons[0]->RadioFrame/K)-1) + 2*PI*(std::cosh(Root->Sons[1]->RadioFrame/K)-1);
     HAp += 2*PI*(std::cosh(Root->Parent->RadioFrame/K)-1);
-    //HAp *= 100.0f;
-    HAp *= 7.2f;
+    HAp *= HemisphereAreaScale;
+    //HAp *= 7.2f;
     Root->RadioFrame = K*std::asinh(FMath::Sqrt(HAp/(2*PI*K*K)));
 
     Root->Theta = 0;
@@ -604,26 +612,47 @@ void AH3VRVisualization::LayoutBase2() {//esta produciendo un layout bueno
     }
 }
 
-//probar otros enoque para la asignacion del radio, quiza que vata de abajo hacia arriba, asi todas las hojas, tienen la arista de la misma distancia con su padre.
-//corregir el erro que aparece por ejemplo con el conjunto 5, leafshapte que no posee una orientacioncorrecta.
-void AH3VRVisualization::LayoutDistanciaReducida() {
+void AH3VRVisualization::CalcularRadioHemiesferaH3(ANodo * V) {
+    //rp es el Radio Frame
+    if (V->Valid) {
+        V->RadioFrame = RadioHoja;
+        //V->RadioFrame = K * std::asinh(std::sqrt(0.005f / (2*PI * K * K)));
+        //V->RadioFrame = std::asinh(std::sqrt(LeafArea / (2*PI)));
+        //V->RadioFrame = std::asinh(std::sqrt(1.0f / (2*PI)));
+        //V->RadioFrame = std::asinh(std::sqrt(0.5f / (2*PI)));
+        //UE_LOG(LogClass, Log, TEXT("Valid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
+    }
+    else{
+        CalcularRadioHemiesfera(V->Sons[0]);
+        CalcularRadioHemiesfera(V->Sons[1]);
+        //float HAp = PI*V->Sons[0]->RadioFrame*V->Sons[0]->RadioFrame + PI*V->Sons[1]->RadioFrame*V->Sons[1]->RadioFrame;
+        //V->RadioFrame = FMath::Sqrt(HAp/(2*PI));
+        //float HAp = 2*PI*(std::cosh(V->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(V->Sons[1]->RadioFrame)-1);
+        //V->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
+        float HAp = 2*PI*(std::cosh(V->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(V->Sons[1]->RadioFrame)-1);
+        //HAp *= 100.0f;
+        //HAp *= 7.2f;
+        V->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
+        //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
+    }
+}
+
+void AH3VRVisualization::LayoutBaseH3() {//esta produciendo un layout bueno
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes
     ANodo * Root = Nodos[Nodos.Num() - 1];
 
     //calculamos los radios
-    //float DeltaRadio = RadioHoja / (Root->Altura + 1);
     float DeltaRadio = RadioHoja / Root->Altura + 1;
-    CalcularRadioHemiesfera(Root->Sons[0]);
-    CalcularRadioHemiesfera(Root->Sons[1]);
-    CalcularRadioHemiesfera(Root->Parent);
-    float HAp = PI*Root->Sons[0]->RadioFrame*Root->Sons[0]->RadioFrame + PI*Root->Sons[1]->RadioFrame*Root->Sons[1]->RadioFrame;
-    HAp += PI*Root->Parent->RadioFrame*Root->Parent->RadioFrame;
-    Root->RadioFrame = FMath::Sqrt(HAp/(2*PI));
-
-    Root->RadioFrame = RadioHoja - DeltaRadio*Root->Nivel;
+    CalcularRadioHemiesferaH3(Root->Sons[0]);
+    CalcularRadioHemiesferaH3(Root->Sons[1]);
+    CalcularRadioHemiesferaH3(Root->Parent);
     //fin clculo radios
+    float HAp = 2*PI*(std::cosh(Root->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(Root->Sons[1]->RadioFrame)-1);
+    HAp += 2*PI*(std::cosh(Root->Parent->RadioFrame)-1);
+    Root->RadioFrame = std::asinh(FMath::Sqrt(HAp/(2*PI)));
+    //Root->RadioFrame = 0.1f;
 
     Root->Theta = 0;
     Root->Phi = 0;
@@ -641,13 +670,20 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
     //por ahora los tres primeros se dividiran de forma equitativa, pero despues ya no, sera en base a sus proporciones, 
     //sa debe realizar el calculo de los frames
 
-    Root->Parent->RadioFrame = RadioHoja - DeltaRadio*Root->Parent->Nivel;
-
+    //Root->Parent->RadioFrame = 0.1f;
+    //Root->Sons[0]->RadioFrame = 0.1f;
+    //Root->Sons[1]->RadioFrame = 0.1f;
     Root->Parent->Phi = 0;
     Root->Parent->Theta = 0;
     Root->Parent->X = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
     Root->Parent->Y = Root->RadioFrame * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
     Root->Parent->Z = Root->RadioFrame * FMath::Cos(Root->Parent->Phi);
+    //Root->Parent->X = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    //Root->Parent->Y = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    //Root->Parent->Z = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Cos(Root->Parent->Phi);
+    //Root->Parent->X = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Parent->RadioFrame) * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
+    //Root->Parent->Y = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Parent->RadioFrame) * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
+    //Root->Parent->Z = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Parent->RadioFrame) * FMath::Cos(Root->Parent->Phi);
     RotacionY = MatrizRotacionY(Root->Parent->Phi);//3*PI/2 siempre sera este valor
     RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
     TraslacionV = MatrizTraslacion(Root->Parent->X, Root->Parent->Y, Root->Parent->Z);
@@ -657,21 +693,24 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
     Root->Parent->Zcoordinate = Root->Parent->Frame.M[2][3];
     Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
-
-        Root->Sons[i]->RadioFrame = RadioHoja - DeltaRadio*Root->Sons[i]->Nivel;
-
         Root->Sons[i]->Phi = 2*PI/3;
         Root->Sons[i]->Theta = (i & 1) * PI;
+        //Root->Sons[i]->X = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Sons[i]->RadioFrame) * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        //Root->Sons[i]->Y = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Sons[i]->RadioFrame) * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        //Root->Sons[i]->Z = ConvertirADistanciaEuclideana(Root->RadioFrame + Root->Sons[i]->RadioFrame) * FMath::Cos(Root->Sons[i]->Phi);
+        //Root->Sons[i]->X = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
+        //Root->Sons[i]->Y = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
+        //Root->Sons[i]->Z = ConvertirADistanciaEuclideana(Root->RadioFrame) * FMath::Cos(Root->Sons[i]->Phi);
         Root->Sons[i]->X = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
         Root->Sons[i]->Y = Root->RadioFrame * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
         Root->Sons[i]->Z = Root->RadioFrame * FMath::Cos(Root->Sons[i]->Phi);
-        //RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
         if (i & 1) {
             RotacionY = MatrizRotacionY(Root->Sons[i]->Phi);
         }
         else {
             RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
         }
+        //RotacionY = MatrizRotacionY(2 * PI - Root->Sons[i]->Phi);
         RotacionZ = MatrizRotacionZ(2 * PI - PI / 2);
         TraslacionV = MatrizTraslacion(Root->Sons[i]->X, Root->Sons[i]->Y, Root->Sons[i]->Z);
         Root->Sons[i]->Frame = MultiplicacionMatriz(MultiplicacionMatriz(TraslacionV, RotacionZ), RotacionY);
@@ -686,23 +725,25 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
         Cola.Dequeue(V);
         UE_LOG(LogClass, Log, TEXT("Nodo id = %d, RadioFrame: %f"), V->Id, V->RadioFrame);
         float PhiTotal = 0.0f;
+        //V->RadioFrame = 0.1f;
         for (int i = 0; i < V->Sons.Num(); i++) {
             //V->Sons[i]->Phi = FMath::Atan(V->Sons[i]->RadioFrame / V->RadioFrame);
-            V->Sons[i]->Phi = PI / 4;
+            //V->Sons[i]->Phi = PI / 4;
+            V->Sons[i]->Phi = CalcularDeltaPhi(V->Sons[i]->RadioFrame, V->RadioFrame);
             PhiTotal += V->Sons[i]->Phi;
         }
         for (int i = 0; i < V->Sons.Num(); i++) {
-
-            V->Sons[i]->RadioFrame = RadioHoja - DeltaRadio*V->Sons[i]->Nivel;
-
             V->Sons[i]->Phi = PhiTotal - V->Sons[i]->Phi;//bastaria con asignar defrente Pi?4
             V->Sons[i]->Theta = (i & 1) * PI;// +(V->Nivel & 1) * (PI / 2);//si es el primer hijo, le toca Theta 0, si es el segundo le toca Theta PI, y a ello dependeindo del nivel se le agrega La variacion de theta
-            //V->Sons[i]->X= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            //V->Sons[i]->Y= V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            //V->Sons[i]->Z= V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
-            V->Sons[i]->X= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Y= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Z= ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->X = V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Y = V->RadioFrame * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Z = V->RadioFrame * FMath::Cos(V->Sons[i]->Phi);
+            //V->Sons[i]->X = ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            //V->Sons[i]->Y = ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            //V->Sons[i]->Z = ConvertirADistanciaEuclideana(V->RadioFrame) * FMath::Cos(V->Sons[i]->Phi);
+            //V->Sons[i]->X = ConvertirADistanciaEuclideana(V->Sons[i]->RadioFrame + V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            //V->Sons[i]->Y = ConvertirADistanciaEuclideana(V->Sons[i]->RadioFrame + V->RadioFrame) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            //V->Sons[i]->Z = ConvertirADistanciaEuclideana(V->Sons[i]->RadioFrame + V->RadioFrame) * FMath::Cos(V->Sons[i]->Phi);
             if (i & 1) {
                 RotacionY = MatrizRotacionY(V->Sons[i]->Phi);
             }
@@ -729,15 +770,47 @@ void AH3VRVisualization::LayoutDistanciaReducida() {
     }
 }
 
-
 void AH3VRVisualization::ActualizarLayout() {//este actulizar deberia ser general
     for (int i = 0; i < Nodos.Num(); i++) {
         FVector NuevaPosicion;
         NuevaPosicion.X = Nodos[i]->Xcoordinate;
         NuevaPosicion.Y = Nodos[i]->Ycoordinate;
         NuevaPosicion.Z = Nodos[i]->Zcoordinate;
-        UE_LOG(LogClass, Log, TEXT("NodoHyp id = %d, (%f,%f,%f)"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z);
-        NuevaPosicion *= 100;
+        UE_LOG(LogClass, Log, TEXT("NodoHyp id = %d, (%f,%f,%f), RadioFrame = %f"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z, Nodos[i]->RadioFrame);
+        NuevaPosicion *= EscalaSalida;
+        //Nodos[i]->SetActorLocation(NuevaPosicion);
+        Nodos[i]->SetActorRelativeLocation(NuevaPosicion);
+    }
+    for (int i = 0; i < Aristas.Num(); i++) {
+        Aristas[i]->Actualizar();
+    }
+
+}
+
+void AH3VRVisualization::ActualizarLayoutH3() {//este actulizar deberia ser general
+    for (int i = 0; i < Nodos.Num(); i++) {
+        FVector NuevaPosicion;
+        if(Nodos[i]->Xcoordinate < 0.0f){
+            NuevaPosicion.X = -1*ConvertirADistanciaEuclideana(-1*Nodos[i]->Xcoordinate);
+        }
+        else {
+            NuevaPosicion.X = ConvertirADistanciaEuclideana(Nodos[i]->Xcoordinate);
+        }
+        if(Nodos[i]->Ycoordinate < 0.0f){
+            NuevaPosicion.Y = -1*ConvertirADistanciaEuclideana(-1*Nodos[i]->Ycoordinate);
+        }
+        else {
+            NuevaPosicion.Y = ConvertirADistanciaEuclideana(Nodos[i]->Ycoordinate);
+        }
+        if(Nodos[i]->Zcoordinate < 0.0f){
+            NuevaPosicion.Z = -1*ConvertirADistanciaEuclideana(-1*Nodos[i]->Zcoordinate);
+        }
+        else {
+            NuevaPosicion.Z = ConvertirADistanciaEuclideana(Nodos[i]->Zcoordinate);
+        }
+        
+        UE_LOG(LogClass, Log, TEXT("NodoHyp id = %d, (%f,%f,%f), RadioFrame = %f"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z, Nodos[i]->RadioFrame);
+        NuevaPosicion *= EscalaSalida;//escala de salida adecuada es 200
         //Nodos[i]->SetActorLocation(NuevaPosicion);
         Nodos[i]->SetActorRelativeLocation(NuevaPosicion);
     }
