@@ -18,9 +18,9 @@ void ANJVR3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutBase();
     //LayoutDistanciaReducida();
-    //LayoutDistanciaAumentada();
+    LayoutDistanciaAumentada();
     //LayoutDistanciaAumentadaAnguloReducido();
-    LayoutDistanciaAumentadaHijoAnguloReducido();
+    //LayoutDistanciaAumentadaHijoAnguloReducido();
     ActualizarLayout();
 }
 

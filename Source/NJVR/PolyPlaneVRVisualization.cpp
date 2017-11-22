@@ -347,17 +347,49 @@ void APolyPlaneVRVisualization::Layout() {//en este algoritmo puedo asignar el n
     Root->Parent->Xcoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Cos(Root->Parent->Theta);
     Root->Parent->Ycoordinate = Radio * FMath::Sin(Root->Parent->Phi) * FMath::Sin(Root->Parent->Theta);
     Root->Parent->Zcoordinate = Radio * FMath::Cos(Root->Parent->Phi);
-    Cola.Enqueue(Root->Parent);
     for (int i = 0; i < Root->Sons.Num(); i++) {
         Root->Sons[i]->Phi = 2*PI/3;
-        Root->Sons[i]->Theta = (i & 1) * PI;
+        Root->Sons[i]->Theta = 7*PI/8 + PI*(i & 1);
         Root->Sons[i]->Xcoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Cos(Root->Sons[i]->Theta);
         Root->Sons[i]->Ycoordinate = Radio * FMath::Sin(Root->Sons[i]->Phi) * FMath::Sin(Root->Sons[i]->Theta);
         Root->Sons[i]->Zcoordinate = Radio * FMath::Cos(Root->Sons[i]->Phi);
-        Cola.Enqueue(Root->Sons[i]);
     }
     //deberia hacer esto primero para que lo que quede en la cola, sea lo que pase por los subplanos
+    Root->Parent->Sons[0]->Phi = PI/4;
+    Root->Parent->Sons[0]->Theta = 3*PI/4;
+    Root->Parent->Sons[0]->Xcoordinate = Radio * 2 * FMath::Sin(Root->Parent->Sons[0]->Phi) * FMath::Cos(Root->Parent->Sons[0]->Theta);
+    Root->Parent->Sons[0]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Parent->Sons[0]->Phi) * FMath::Sin(Root->Parent->Sons[0]->Theta);
+    Root->Parent->Sons[0]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Parent->Sons[0]->Phi);
 
+    Root->Parent->Sons[1]->Phi = PI/4;
+    Root->Parent->Sons[1]->Theta = 7*PI/4;
+    Root->Parent->Sons[1]->Xcoordinate = Radio * 2  * FMath::Sin(Root->Parent->Sons[1]->Phi) * FMath::Cos(Root->Parent->Sons[1]->Theta);
+    Root->Parent->Sons[1]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Parent->Sons[1]->Phi) * FMath::Sin(Root->Parent->Sons[1]->Theta);
+    Root->Parent->Sons[1]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Parent->Sons[1]->Phi);
+
+    Root->Sons[0]->Sons[0]->Phi = PI/2;
+    Root->Sons[0]->Sons[0]->Theta = PI;
+    Root->Sons[0]->Sons[0]->Xcoordinate = Radio * 2  * FMath::Sin(Root->Sons[0]->Sons[0]->Phi) * FMath::Cos(Root->Sons[0]->Sons[0]->Theta);
+    Root->Sons[0]->Sons[0]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Sons[0]->Sons[0]->Phi) * FMath::Sin(Root->Sons[0]->Sons[0]->Theta);
+    Root->Sons[0]->Sons[0]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Sons[0]->Sons[0]->Phi);
+
+    Root->Sons[0]->Sons[1]->Phi = 3*PI/4;
+    Root->Sons[0]->Sons[1]->Theta = 3*PI/4;
+    Root->Sons[0]->Sons[1]->Xcoordinate = Radio * 2  * FMath::Sin(Root->Sons[0]->Sons[1]->Phi) * FMath::Cos(Root->Sons[0]->Sons[1]->Theta);
+    Root->Sons[0]->Sons[1]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Sons[0]->Sons[1]->Phi) * FMath::Sin(Root->Sons[0]->Sons[1]->Theta);
+    Root->Sons[0]->Sons[1]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Sons[0]->Sons[1]->Phi);
+
+    Root->Sons[1]->Sons[0]->Phi = PI/2;
+    Root->Sons[1]->Sons[0]->Theta = 0;
+    Root->Sons[1]->Sons[0]->Xcoordinate = Radio * 2  * FMath::Sin(Root->Sons[1]->Sons[0]->Phi) * FMath::Cos(Root->Sons[1]->Sons[0]->Theta);
+    Root->Sons[1]->Sons[0]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Sons[1]->Sons[0]->Phi) * FMath::Sin(Root->Sons[1]->Sons[0]->Theta);
+    Root->Sons[1]->Sons[0]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Sons[1]->Sons[0]->Phi);
+
+    Root->Sons[1]->Sons[1]->Phi = 3*PI/4;
+    Root->Sons[1]->Sons[1]->Theta = 3*PI/4;
+    Root->Sons[1]->Sons[1]->Xcoordinate = Radio * 2  * FMath::Sin(Root->Sons[1]->Sons[1]->Phi) * FMath::Cos(Root->Sons[1]->Sons[1]->Theta);
+    Root->Sons[1]->Sons[1]->Ycoordinate = Radio * 2  * FMath::Sin(Root->Sons[1]->Sons[1]->Phi) * FMath::Sin(Root->Sons[1]->Sons[1]->Theta);
+    Root->Sons[1]->Sons[1]->Zcoordinate = Radio * 2  * FMath::Cos(Root->Sons[1]->Sons[1]->Phi);
 }
 
 
@@ -387,9 +419,9 @@ void APolyPlaneVRVisualization::LayoutSubPlanoVertical(ANodo * Node, float PhiIn
             V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Phi = WTemp + V->Sons[i]->WTam / 2;
-            V->Sons[i]->Xcoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->Xcoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Cos(V->Sons[i]->Phi);
             WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
         }
@@ -422,9 +454,9 @@ void APolyPlaneVRVisualization::LayoutSubPlanoHorizontal(ANodo * Node, float The
             V->Sons[i]->WTam = V->WTam * (float(V->Sons[i]->Hojas) / V->Hojas);
             V->Sons[i]->WInicio = WTemp;
             V->Sons[i]->Theta = WTemp + V->Sons[i]->WTam / 2;
-            V->Sons[i]->Xcoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
-            V->Sons[i]->Ycoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
-            V->Sons[i]->Zcoordinate = Radio * (V->Sons[i]->Nivel - Node->Nivel + 1) * FMath::Cos(V->Sons[i]->Phi);
+            V->Sons[i]->Xcoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Sin(V->Sons[i]->Phi) * FMath::Cos(V->Sons[i]->Theta);
+            V->Sons[i]->Ycoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Sin(V->Sons[i]->Phi) * FMath::Sin(V->Sons[i]->Theta);
+            V->Sons[i]->Zcoordinate = Radio * (V->Sons[i]->Nivel /*- Node->Nivel + 1*/) * FMath::Cos(V->Sons[i]->Phi);
             WTemp += V->Sons[i]->WTam;
             Cola.Enqueue(V->Sons[i]);
         }
