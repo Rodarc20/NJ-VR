@@ -12,15 +12,17 @@
 
 ANJVR3DVRVisualization::ANJVR3DVRVisualization() {
     RadioHoja = 6.0f;
+    DeltaDistanciaArista = 2.0f;
+    //DeltaDistanciaArista = 0.5f;
 }
 
 void ANJVR3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutBase();
     //LayoutDistanciaReducida();
-    LayoutDistanciaAumentada();
-    //LayoutDistanciaAumentadaAnguloReducido();
-    //LayoutDistanciaAumentadaHijoAnguloReducido();
+    //LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
+    LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+    //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
     ActualizarLayout();
 }
 
@@ -156,7 +158,10 @@ void ANJVR3DVRVisualization::CreateNodos() {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
         Nodos[i]->Usuario = Usuario;
         if (Nodos[i]->Valid) {
-            Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            if (bColorear)
+                Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            else
+                Nodos[i]->Color = ColorReal;
             Nodos[i]->Actualizar();
         }
     }
@@ -313,8 +318,9 @@ void ANJVR3DVRVisualization::CalcularRadio(ANodo * V) {
     else{
         CalcularRadio(V->Sons[0]);
         CalcularRadio(V->Sons[1]);
-        V->RadioFrame = FMath::Max(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 2;//funciona bien apra el conjunto pequeño
+        //V->RadioFrame = FMath::Max(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 2;//funciona bien apra el conjunto pequeño
         //V->RadioFrame = FMath::Max(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 0.5;//par los otros conjuntos
+        V->RadioFrame = FMath::Max(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + DeltaDistanciaArista;//par los otros conjuntos
         //que deberia depender de la altura o numero de ivevels, y la arista mas grande que deseo obtener
         //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
@@ -331,8 +337,9 @@ void ANJVR3DVRVisualization::CalcularRadioMin(ANodo * V) {
         CalcularRadioMin(V->Sons[0]);
         CalcularRadioMin(V->Sons[1]);
         //V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 2;//funciona bien apra el conjunto pequeño
-        V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 4;//funciona bien apra el conjunto pequeño
+        //V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 4;//funciona bien apra el conjunto peuqeño
         //V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + 0.5;
+        V->RadioFrame = FMath::Min(V->Sons[0]->RadioFrame, V->Sons[1]->RadioFrame) + DeltaDistanciaArista;
         //UE_LOG(LogClass, Log, TEXT("InValid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
 }
@@ -595,6 +602,7 @@ void ANJVR3DVRVisualization::LayoutDistanciaAumentada() {
     CalcularRadio(Root->Sons[1]);
     CalcularRadio(Root->Parent);
     Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + DeltaDistanciaArista;
     //fin clculo radios
 
     Root->Theta = 0;
@@ -702,6 +710,7 @@ void ANJVR3DVRVisualization::LayoutDistanciaAumentadaAnguloReducido() {
     CalcularRadio(Root->Sons[1]);
     CalcularRadio(Root->Parent);
     Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + DeltaDistanciaArista;
     //fin clculo radios
 
     Root->Theta = 0;
@@ -811,6 +820,7 @@ void ANJVR3DVRVisualization::LayoutDistanciaAumentadaHijoAnguloReducido() {
     CalcularRadioMin(Root->Sons[1]);
     CalcularRadioMin(Root->Parent);
     Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + 2.0f;
+    //Root->RadioFrame = FMath::Max3(Root->Sons[0]->RadioFrame, Root->Sons[1]->RadioFrame, Root->Parent->RadioFrame) + DeltaDistanciaArista;
     //fin clculo radios
 
     Root->Theta = 0;

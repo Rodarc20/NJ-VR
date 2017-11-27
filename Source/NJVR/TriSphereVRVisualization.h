@@ -59,6 +59,9 @@ public:
     std::vector<Region> Regiones;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    int Divisiones;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float Radio;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")

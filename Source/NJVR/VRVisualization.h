@@ -58,6 +58,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Referencias")
     class UMotionControllerComponent* LeftController;
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - ElementosVisuales")
+    bool bColorear;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - ElementosVisuales")
+    bool bInstanciarAristas;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool bHitNodo;
 
@@ -122,6 +128,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     FLinearColor ColorVirtual;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    FLinearColor ColorReal;
 
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 	

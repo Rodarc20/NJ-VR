@@ -16,14 +16,19 @@ AH3VRVisualization::AH3VRVisualization() {
     K = 2.0f;
     HemisphereAreaScale = 7.2f;
     LeafArea = 0.005f;
-    EscalaSalida = 100.0f;
+    EscalaSalida = 200.0f;
+//valores por defecto para las escalas 1.25, 0.75, 0.25
+    RadioNodos = 1.25;
+    RadioNodosVirtuales = 0.75;
+    RadioAristas = 0.25;
+
 }
 
 void AH3VRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutBase();
-    //LayoutBase2();
-    LayoutBaseH3();
+    LayoutBase2();
+    //LayoutBaseH3();
 
     //ActualizarLayout();
     ActualizarLayoutH3();
@@ -623,8 +628,8 @@ void AH3VRVisualization::CalcularRadioHemiesferaH3(ANodo * V) {
         //UE_LOG(LogClass, Log, TEXT("Valid Nodo = %d, RadioFrame %f"), V->Id, V->RadioFrame);
     }
     else{
-        CalcularRadioHemiesfera(V->Sons[0]);
-        CalcularRadioHemiesfera(V->Sons[1]);
+        CalcularRadioHemiesferaH3(V->Sons[0]);
+        CalcularRadioHemiesferaH3(V->Sons[1]);
         //float HAp = PI*V->Sons[0]->RadioFrame*V->Sons[0]->RadioFrame + PI*V->Sons[1]->RadioFrame*V->Sons[1]->RadioFrame;
         //V->RadioFrame = FMath::Sqrt(HAp/(2*PI));
         //float HAp = 2*PI*(std::cosh(V->Sons[0]->RadioFrame)-1) + 2*PI*(std::cosh(V->Sons[1]->RadioFrame)-1);
@@ -637,7 +642,7 @@ void AH3VRVisualization::CalcularRadioHemiesferaH3(ANodo * V) {
     }
 }
 
-void AH3VRVisualization::LayoutBaseH3() {//esta produciendo un layout bueno
+void AH3VRVisualization::LayoutBaseH3() {// layout del paper h3
     TQueue<ANodo *> Cola;
     Calculos2();
     Calc();//no estaba antes

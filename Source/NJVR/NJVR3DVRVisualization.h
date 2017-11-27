@@ -29,6 +29,9 @@ public:
     float RadioHoja;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float DeltaDistanciaArista;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float AreaHoja;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")

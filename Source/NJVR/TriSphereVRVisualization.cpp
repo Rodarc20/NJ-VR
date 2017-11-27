@@ -16,13 +16,14 @@ bool MenorTriangulo(Triangulo a, Triangulo b) {
 
 ATriSphereVRVisualization::ATriSphereVRVisualization() {
     Radio = 20.0f;
+    Divisiones = 3;
 }
 void ATriSphereVRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutTD();
-    GenerarIcosaedro(1);
-    DividirTriangulos();
-    DividirTriangulos();
+    GenerarIcosaedro(Divisiones);
+    //DividirTriangulos();
+    //DividirTriangulos();
     //DividirTriangulos();
 
     OrdenarTriangulos();
@@ -551,6 +552,10 @@ void ATriSphereVRVisualization::GenerarIcosaedro(int Precision) {
     //LlenarVectorsConIdTriangulos();
     for (int i = 0; i < Triangulos.size(); i++) {
         CalcularCentroTriangulo(Triangulos[i]);
+    }
+    while (Precision) {
+        DividirTriangulos();
+        Precision--;
     }
 }
 
