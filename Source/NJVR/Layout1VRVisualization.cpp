@@ -158,7 +158,10 @@ void ALayout1VRVisualization::CreateNodos() {
         Nodos[i]->Parent = Nodos[Nodos[i]->ParentId];
         Nodos[i]->Usuario = Usuario;
         if (Nodos[i]->Valid) {
-            Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            if (bColorear)
+                Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            else
+                Nodos[i]->Color = ColorReal;
             Nodos[i]->Actualizar();
         }
     }

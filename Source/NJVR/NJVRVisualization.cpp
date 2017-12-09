@@ -147,7 +147,10 @@ void ANJVRVisualization::CreateNodos() {
         Nodos[i]->Usuario = Usuario;
         if (Nodos[i]->Valid) {
             //Nodos[i]->ContenidoString = ObtenerContenidoNodo(Nodos[i]);
-            Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            if (bColorear)
+                Nodos[i]->Color = Colores[Nodos[i]->ColorNum];
+            else
+                Nodos[i]->Color = ColorReal;
             Nodos[i]->Actualizar();
         }
     }
