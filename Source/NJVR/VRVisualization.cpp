@@ -51,7 +51,8 @@ AVRVisualization::AVRVisualization()
     ColorSeleccion = FLinearColor::Green;
     //ColorVirtual = FLinearColor::White;
     ColorVirtual = FLinearColor(0.515625, 0.515625, 0.515625, 1.000000);
-    ColorReal = FLinearColor(0.0, 0.014444, 0.104616, 1.000000);
+    //ColorReal = FLinearColor(0.0, 0.014444, 0.104616, 1.000000);
+    ColorReal = FLinearColor(0.0, 0.024449, 0.177083, 1.000000);
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
