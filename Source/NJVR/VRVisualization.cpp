@@ -102,12 +102,12 @@ void AVRVisualization::BeginPlay()
         else
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("No cargado."));
     }
-    /*if (cargado) {
+    if (cargado) {
         //LoadNodos();
         CreateNodos();
         if(bInstanciarAristas)
             CreateAristas();
-    }*/
+    }
 
 	
 }

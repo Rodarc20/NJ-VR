@@ -21,15 +21,15 @@ void ANJVR3DVRVisualization::BeginPlay() {
     //LayoutBase();
     //LayoutDistanciaReducida();
     //LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
-    //LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+    LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
 
     //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
-    //ActualizarLayout();
+    ActualizarLayout();
 }
 
 void ANJVR3DVRVisualization::CreateNodos() {
-    //FXmlNode * rootnode = XmlSource.GetRootNode();
-    FXmlNode * rootnode = XmlSourceP->GetRootNode();
+    FXmlNode * rootnode = XmlSource.GetRootNode();
+    //FXmlNode * rootnode = XmlSourceP->GetRootNode();
     //if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
     //}
