@@ -58,6 +58,19 @@ AVRPawn::AVRPawn()
         Menu->SetWidgetClass(MenuClass.Class);
     }
 
+    static ConstructorHelpers::FClassFinder<UUserWidget> DataSetsClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenuLoadVR.ControlMenuLoadVR_C'"));
+    DataSets = CreateDefaultSubobject<UWidgetComponent>(TEXT("DataSets"));
+    DataSets->SetWidgetSpace(EWidgetSpace::World);
+    DataSets->SetupAttachment(MotionControllerLeft);
+    DataSets->SetDrawSize(FVector2D(200.0f, 50.0f));
+    DataSets->SetPivot(FVector2D(0.5f, 1.0f));
+    DataSets->SetRelativeLocation(FVector(0.0f, 7.0f, 6.42788f));
+    DataSets->SetRelativeRotation(FRotator(50.0f, 180.0f, 0.0f));
+    DataSets->SetRelativeScale3D(FVector(0.15f, 0.15f, 0.15f));
+    if (DataSetsClass.Succeeded()) {
+        DataSets->SetWidgetClass(DataSetsClass.Class);
+    }
+
     Interaction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Interaction"));
     Interaction->SetupAttachment(MotionControllerRight);
 

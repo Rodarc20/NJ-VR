@@ -133,12 +133,27 @@ public:
     FLinearColor ColorReal;
 
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
+
+    FXmlFile * XmlSourceP;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 	
     void LoadNodos();//solo esto por que solo me interesa leer la informacion de los vertex, para saber quienes son hijos y padres, por eso tal vez no se trabaje como unity o si, probar
 
     virtual void CreateNodos();
 
     virtual void CreateAristas();
+
+    void DestroyNodos();
+
+    void DestroyAristas();
+    
+    virtual void AplicarLayout();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void CargarDataSet(int indice);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void LimpiarVisualizacion();
+
 
     int mod(int a, int b);
 
@@ -243,6 +258,13 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void OcultarNumeracion();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void ColorGeneral();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void ColorClase();
+
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization - Auxiliar")
     bool bGripIzquierdo;

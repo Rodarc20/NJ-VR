@@ -52,7 +52,8 @@ AVRVisualization::AVRVisualization()
     //ColorVirtual = FLinearColor::White;
     ColorVirtual = FLinearColor(0.515625, 0.515625, 0.515625, 1.000000);
     //ColorReal = FLinearColor(0.0, 0.014444, 0.104616, 1.000000);
-    ColorReal = FLinearColor(0.0, 0.024449, 0.177083, 1.000000);
+    //ColorReal = FLinearColor(0.0, 0.024449, 0.177083, 1.000000);
+    ColorReal = FLinearColor(0.0, 0.027326, 0.197917, 1.000000);
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
@@ -68,6 +69,8 @@ AVRVisualization::AVRVisualization()
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/message4.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/rssnewsfeed.xml"));
     DataSetSeleccionado = 0;
+
+    XmlSourceP = new FXmlFile;
 }
 
 // Called when the game starts or when spawned
@@ -99,12 +102,12 @@ void AVRVisualization::BeginPlay()
         else
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("No cargado."));
     }
-    if (cargado) {
+    /*if (cargado) {
         //LoadNodos();
         CreateNodos();
         if(bInstanciarAristas)
             CreateAristas();
-    }
+    }*/
 
 	
 }
@@ -347,6 +350,54 @@ void AVRVisualization::CreateAristas() {
 
 }
 
+void AVRVisualization::DestroyNodos() {
+    for (int i = 0; i < Nodos.Num(); i++) {
+        Nodos[i]->Destroy();
+    }
+    Nodos.Empty();
+}
+
+void AVRVisualization::DestroyAristas() {
+    for (int i = 0; i < Aristas.Num(); i++) {
+        Aristas[i]->Destroy();
+    }
+    Aristas.Empty();
+}
+
+void AVRVisualization::AplicarLayout() {
+}
+
+void AVRVisualization::CargarDataSet(int indice) {
+    DataSetSeleccionado = indice;
+    XmlSourceP = new FXmlFile;
+    //XmlSource.Clear();
+    bool cargado = XmlSourceP->LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    //bool cargado = XmlSource.LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    if (GEngine) {
+        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Dataset %d", indice));
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Probando."));
+        if(cargado)
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Cargado."));
+        else
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("No cargado."));
+    }
+    //DestroyAristas();
+    //DestroyNodos();
+    if (cargado) {
+        //LoadNodos();
+        CreateNodos();
+        if(bInstanciarAristas)
+            CreateAristas();
+        AplicarLayout();
+    }
+}
+
+void AVRVisualization::LimpiarVisualizacion() {
+    XmlSourceP->~FXmlFile();
+    DestroyAristas();
+    DestroyNodos();
+}
+
 int AVRVisualization::NivelMasDenso() {//de todo el arbol
     int NivelDensoMaximo = 0;
     int CantidadNodosMaximo = 0;
@@ -571,6 +622,20 @@ void AVRVisualization::MostrarNumeracion() {
 void AVRVisualization::OcultarNumeracion() {
     for (int i = 0; i < Nodos.Num(); i++)
         Nodos[i]->Numero->SetVisibility(false);
+}
+
+void AVRVisualization::ColorGeneral() {
+    for (int i = 0; i < Nodos.Num(); i++) {
+        if(Nodos[i]->Valid)
+            Nodos[i]->CambiarColor(ColorReal);
+    }
+}
+
+void AVRVisualization::ColorClase() {
+    for (int i = 0; i < Nodos.Num(); i++) {
+        if(Nodos[i]->Valid)
+            Nodos[i]->CambiarColor(Nodos[i]->Color);
+    }
 }
 
 void AVRVisualization::RotarVisualizacion() {

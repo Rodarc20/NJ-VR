@@ -59,6 +59,9 @@ public:
     UWidgetComponent * Document;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetComponent * DataSets;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UWidgetInteractionComponent * Interaction;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")

@@ -24,6 +24,8 @@ public:
     virtual void CreateNodos() override;
 
     virtual void CreateAristas() override;
+
+    virtual void AplicarLayout() override;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float RadioHoja;

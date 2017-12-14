@@ -21,13 +21,15 @@ void ANJVR3DVRVisualization::BeginPlay() {
     //LayoutBase();
     //LayoutDistanciaReducida();
     //LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
-    LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+    //LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+
     //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
-    ActualizarLayout();
+    //ActualizarLayout();
 }
 
 void ANJVR3DVRVisualization::CreateNodos() {
-    FXmlNode * rootnode = XmlSource.GetRootNode();
+    //FXmlNode * rootnode = XmlSource.GetRootNode();
+    FXmlNode * rootnode = XmlSourceP->GetRootNode();
     //if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, rootnode->GetTag());
     //}
@@ -250,6 +252,11 @@ void ANJVR3DVRVisualization::CreateAristas() {
         Aristas.Add(AristaInstanciado);
         count++;
     }
+}
+
+void ANJVR3DVRVisualization::AplicarLayout() {
+    LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+    ActualizarLayout();
 }
 
 void ANJVR3DVRVisualization::Calculos(ANodo * V) {//lo uso dentro de claculos 2, por alguna razon
