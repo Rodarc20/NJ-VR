@@ -13,6 +13,7 @@ enum class EVRVisualizationTask : uint8 {
     ETraslationTask UMETA(DisplayName = "Trasladar"),
     ERotationTask UMETA(DisplayName = "Rotar"),
     EScaleTask UMETA(DisplayName = "Escalar"),
+    EColorTask UMETA(DisplayName = "Colorear"),
     EVisualizationTask UMETA(DisplayName = "Visualizar"),
     ENoTask UMETA(DisplayName = "Ninguno")
 };
@@ -202,6 +203,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void DeseleccionarRama(ANodo * NodoSeleccionado);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void ColorearRama(ANodo * NodoSeleccionado, FLinearColor NuevoColor);
     
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void SeleccionarTodo();

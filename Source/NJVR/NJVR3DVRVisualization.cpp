@@ -20,8 +20,8 @@ void ANJVR3DVRVisualization::BeginPlay() {
     Super::BeginPlay();
     //LayoutBase();
     //LayoutDistanciaReducida();
-    LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
-    //LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
+    //LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
+    LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
 
     //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
     ActualizarLayout();

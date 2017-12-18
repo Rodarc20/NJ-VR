@@ -60,11 +60,11 @@ AVRVisualization::AVRVisualization()
     PaletaColores.Add(UKismetMathLibrary::HSVToRGB(0.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
     PaletaColores.Add(UKismetMathLibrary::HSVToRGB(56.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
     PaletaColores.Add(UKismetMathLibrary::HSVToRGB(35.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
-    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(132.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
-    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(181.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(125.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(190.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
     PaletaColores.Add(UKismetMathLibrary::HSVToRGB(283.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
-    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(173.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
-    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(75.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(149.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(90.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
 
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
@@ -563,6 +563,19 @@ void AVRVisualization::DeseleccionarRama(ANodo * NodoSeleccionado) {
         NodoSeleccionado->Selected = false;
         NodoSeleccionado->CambiarColor(NodoSeleccionado->Color);
         NodosSeleccionados.Remove(NodoSeleccionado);
+        for (int i = 0; i < NodoSeleccionado->Sons.Num(); i++) {
+            Cola.Enqueue(NodoSeleccionado->Sons[i]);
+        }
+    }
+}
+
+void AVRVisualization::ColorearRama(ANodo * NodoSeleccionado, FLinearColor NuevoColor) {
+    TQueue<ANodo*> Cola;
+    Cola.Enqueue(NodoSeleccionado);
+    while (!Cola.IsEmpty()) {
+        Cola.Dequeue(NodoSeleccionado);
+        if(NodoSeleccionado->Valid)
+            NodoSeleccionado->CambiarColor(NuevoColor);
         for (int i = 0; i < NodoSeleccionado->Sons.Num(); i++) {
             Cola.Enqueue(NodoSeleccionado->Sons[i]);
         }
