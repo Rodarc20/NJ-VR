@@ -54,6 +54,18 @@ AVRVisualization::AVRVisualization()
     //ColorReal = FLinearColor(0.0, 0.014444, 0.104616, 1.000000);
     //ColorReal = FLinearColor(0.0, 0.024449, 0.177083, 1.000000);
     ColorReal = FLinearColor(0.0, 0.027326, 0.197917, 1.000000);
+
+
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(231.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(0.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(56.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(35.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(132.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(181.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(283.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(173.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+    PaletaColores.Add(UKismetMathLibrary::HSVToRGB(75.0f, 1.0f, IntensidadColor, 1.0f));//el primero indica el color
+
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
@@ -63,7 +75,7 @@ AVRVisualization::AVRVisualization()
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/AMTesis.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/LeafShapes.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/BrocadoL8.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/pendigits-orig_norm9-VectorCostFunction2.0.dm.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/pendigits-orig.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son-int.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/medicas12clases.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/message4.xml"));
@@ -369,10 +381,10 @@ void AVRVisualization::AplicarLayout() {
 
 void AVRVisualization::CargarDataSet(int indice) {
     DataSetSeleccionado = indice;
-    XmlSourceP = new FXmlFile;
+    //XmlSourceP = new FXmlFile;
     //XmlSource.Clear();
-    bool cargado = XmlSourceP->LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
-    //bool cargado = XmlSource.LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    //bool cargado = XmlSourceP->LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
+    bool cargado = XmlSource.LoadFile(DataSets[DataSetSeleccionado], EConstructMethod::ConstructFromFile);//para construirlo como archivo
     if (GEngine) {
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Dataset %d", indice));
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Probando."));
@@ -393,7 +405,7 @@ void AVRVisualization::CargarDataSet(int indice) {
 }
 
 void AVRVisualization::LimpiarVisualizacion() {
-    XmlSourceP->~FXmlFile();
+    //XmlSourceP->~FXmlFile();
     DestroyAristas();
     DestroyNodos();
 }
@@ -889,6 +901,10 @@ void AVRVisualization::TrasladarTodoReleased() {//esta es una funcion gloabl, po
     DeseleccionarTodo();
     bNodoGuia = false;
     Usuario->CambiarLaser(0);
+}
+
+void AVRVisualization::AsignarColorPincel(int IndicePaletaColores) {
+    ColorPincel = PaletaColores[IndicePaletaColores];
 }
 
 int AVRVisualization::mod(int a, int b) {

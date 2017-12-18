@@ -132,6 +132,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
     FLinearColor ColorReal;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    FLinearColor ColorPincel;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Elementos Visuales")
+    TArray<FLinearColor> PaletaColores;
+
     FXmlFile XmlSource;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
 
     FXmlFile * XmlSourceP;// o podria tener un puntero e ir genereando nuevos FXmlFile, todo debepnde, eso por que el contructor podria recibir el path, al ser creado, 
@@ -346,6 +352,10 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TrasladarTodoReleased();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void AsignarColorPincel(int IndicePaletaColores);//esto deberia ser un linear color dado por un color picker o algo asi
+
 };
 
 //la escala funcionara independiete de todo el sistema anterior, para que pueda ser usado como apoyo en las otras tares, por ejemplo si es dificl selecionar un nodo, al escalar podri ser mas facil, pero no quiero cambiar de modos solo para eso.

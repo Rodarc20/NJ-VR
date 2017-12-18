@@ -71,6 +71,20 @@ AVRPawn::AVRPawn()
         DataSets->SetWidgetClass(DataSetsClass.Class);
     }
 
+    static ConstructorHelpers::FClassFinder<UUserWidget> MenuColorClass(TEXT("WidgetBlueprintGeneratedClass'/Game/Visualization/Blueprints/Menu/ControlMenuColorVR.ControlMenuColorVR_C'"));
+    MenuColores= CreateDefaultSubobject<UWidgetComponent>(TEXT("MenuColor"));
+    MenuColores->SetWidgetSpace(EWidgetSpace::World);
+    MenuColores->SetupAttachment(MotionControllerLeft);
+    MenuColores->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    MenuColores->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
+    MenuColores->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.10f));
+    if (MenuColorClass.Succeeded()) {
+        MenuColores->SetWidgetClass(MenuColorClass.Class);
+    }
+    MenuColores->SetDrawSize(FVector2D(250.0f, 250.0f));
+    MenuColores->SetPivot(FVector2D(1.0f, 0.5f));
+    //MenuColores->SetVisibility(false);
+
     Interaction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Interaction"));
     Interaction->SetupAttachment(MotionControllerRight);
 

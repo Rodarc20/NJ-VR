@@ -62,6 +62,9 @@ public:
     UWidgetComponent * DataSets;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UWidgetComponent * MenuColores;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
     UWidgetInteractionComponent * Interaction;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
