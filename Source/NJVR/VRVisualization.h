@@ -328,6 +328,9 @@ public:
     virtual void RotarRamaPressed();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void ColorearRamaPressed();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TrasladarTodoPressed();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")

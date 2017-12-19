@@ -838,6 +838,12 @@ void AVRVisualization::RotarRamaPressed() {//esta es una funcion gloabl, ponerlo
     }
 }
 
+void AVRVisualization::ColorearRamaPressed() {
+    if (bHitNodo) {
+        ColorearRama(HitNodo, ColorPincel);
+    }
+}
+
 void AVRVisualization::TrasladarTodoPressed() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     SeleccionarTodo();
     if (bHitNodo) {
