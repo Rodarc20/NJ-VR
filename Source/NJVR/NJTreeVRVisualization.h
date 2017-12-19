@@ -25,6 +25,10 @@ public:
 
     virtual void CreateAristas() override;
 	
+    virtual void AplicarTraslacion(FVector Traslacion) override;
+	
+    virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) override;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
     float DistanciaArista;
 
@@ -41,4 +45,15 @@ public:
     void Calculos2();
 
     void Calc();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    void RotacionRama() override;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual FVector InterseccionLineaSuperficie() override;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TraslacionConNodoGuia() override;
+
+
 };

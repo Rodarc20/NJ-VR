@@ -311,6 +311,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia();
+    
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void RotacionRama();
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionVisualizacion();

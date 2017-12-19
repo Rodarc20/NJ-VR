@@ -795,6 +795,9 @@ void AVRVisualization::TraslacionConNodoGuia() {
 
 }
 
+void AVRVisualization::RotacionRama() {
+}
+
 void AVRVisualization::TraslacionVisualizacion() {//esta es una funcion gloabl, ponerlo en la clase padre, analizar estas cosas
     FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
     FVector Vec = RightController->GetForwardVector();

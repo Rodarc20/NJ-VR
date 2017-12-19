@@ -388,3 +388,117 @@ void ANJTreeVRVisualization::Calc() {//para hallar niveles
         }
     }
 }
+
+void ANJTreeVRVisualization::AplicarTraslacion(FVector Traslacion) {
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
+        NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+        //produce errores graciososNodosSeleccionados[i]->SetActorRelativeLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+    }
+
+}
+
+void ANJTreeVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) {
+    //debo llenar el vector de seleccionados antes, pero sin el resaltado que hace la tarea seleccion, esete arreglo se mantiene mientras este moviendo la rama, luego la vacion cuadno suelte el trrigger
+    PuntoReferencia = GetActorTransform().TransformPosition(PuntoReferencia);
+    //UE_LOG(LogClass, Log, TEXT("PuntoReferencai x = %f, y = %f, z = %f"), PuntoReferencia.X, PuntoReferencia.Y, PuntoReferencia.Z);
+    ANodo* NodoCentro = NodoReferencia->Parent;
+    //este trasnforma debo convertirlo a relativo, seguramente lo estoy recibiendo como worldspace
+    //calcular el angulo del vector hacia el punto de referencia, con respecto al vetor hacia el padre, esto deberia ser en en el plano relativo, para trabajr sobre un solo plano
+    FVector CentroToNodoReference = NodoReferencia->GetActorTransform().GetLocation() - NodoCentro->GetActorTransform().GetLocation();
+    FVector CentroToPointReference = PuntoReferencia - NodoCentro->GetActorTransform().GetLocation();
+    //CentroToNodoReference = CentroToNodoReference.GetClampedToSize(1.0f, 1.0f);//en teoria no necesito esto
+    //CentroToPointReference = CentroToPointReference.GetClampedToSize(1.0f, 1.0f);
+    //calcular el angulo que se agreaga
+    float DeltaAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CentroToPointReference.GetClampedToSize(1.0f, 1.0f), CentroToNodoReference.GetClampedToSize(1.0f, 1.0f))));
+    float DeltaSing = FVector::CrossProduct(CentroToPointReference.GetClampedToSize(1.0f, 1.0f), CentroToNodoReference.GetClampedToSize(1.0f, 1.0f)).X;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
+    if (DeltaSing >= 0) {
+        DeltaAngle = 360-DeltaAngle;
+    }
+    FRotator VariacionRotation(0.0f, 0.0f, DeltaAngle);//esta es la varaicion en teoria, ahora debo agregarla a los demas, no se si va en angle, o en algun otro
+    //esta es la variacion respecto al vector del hacia el apdre del nodo centro, esta variacion, es la que se debe aplicar a los otros, 
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        FVector CentroToNodo = NodosSeleccionados[i]->GetActorTransform().GetLocation() - NodoCentro->GetActorTransform().GetLocation();
+        float Angle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CentroToNodo.GetClampedToSize(1.0f, 1.0f), FVector::RightVector)));
+        float Sing = FVector::CrossProduct(CentroToNodo.GetClampedToSize(1.0f, 1.0f), FVector::RightVector).X;//esto es por que el signo es impotante para saber si fue un angulo mayor de 180 o no
+        if (Sing >= 0) {
+            Angle = 360 - Angle;
+        }
+        float NewAngle = (Angle + DeltaAngle);
+        if (NewAngle >= 360) {
+            NewAngle -= 360;
+        }
+        //UE_LOG(LogClass, Log, TEXT("DeltaAngle = %f, Angle = %f, NewAngle = %f"), DeltaAngle, Angle, NewAngle);
+        FVector NewRelativeLocation(0.0f, CentroToNodo.Size()*FMath::Cos(FMath::DegreesToRadians(NewAngle)), CentroToNodo.Size()*FMath::Sin(FMath::DegreesToRadians(NewAngle)));
+        //UE_LOG(LogClass, Log, TEXT("NewRealtiveLocation x = %f, y = %f, z = %f"), NewRelativeLocation.X, NewRelativeLocation.Y, NewRelativeLocation.Z);
+        FTransform NewTransform = NodosSeleccionados[i]->GetActorTransform();
+        //UE_LOG(LogClass, Log, TEXT("oldLocation x = %f, y = %f, z = %f"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
+        NewTransform.SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation);
+        //UE_LOG(LogClass, Log, TEXT("newLocation x = %f, y = %f, z = %f"), NewTransform.GetLocation().X, NewTransform.GetLocation().Y, NewTransform.GetLocation().Z);
+        NodosSeleccionados[i]->SetActorTransform(NewTransform);
+        //NodosSeleccionados[i]->SetActorTransform(NodosSeleccionados[i]->GetActorTransform().SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation));
+    }
+
+}
+
+FVector ANJTreeVRVisualization::InterseccionLineaSuperficie() {//retorna en espacio local, esto pero quiza sea conveniete que retorne en espacio glloba, convertir estarepuesta despues
+    //solo si esta frente al controlo, no por detras, corregir esto
+    FVector Punto = RightController->GetComponentTransform().GetLocation();
+    Punto = GetTransform().InverseTransformPosition(Punto);
+    FVector Vector = RightController->GetForwardVector();
+    Vector = GetTransform().InverseTransformVector(Vector);
+
+    if (Vector.X == 0) {
+        return FVector(-1.0f);
+    }
+    float t = -Punto.X / Vector.X;
+    if (t >= 0) {//estoy asumiend que el plano es x=0, pero como es en espacio gloabl cuando roto da problemas
+        return FVector (0.0f, Punto.Y + t*Vector.Y, Punto.Z + t*Vector.Z);
+    }
+    return FVector(-1.0f);
+}
+
+void ANJTreeVRVisualization::TraslacionConNodoGuia() {
+    ImpactPoint = InterseccionLineaSuperficie();//esta en espacio local, uil para usar el vector con x-1 para indicar que no encontre interseccion
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    //if (ImpactPoint != FVector::ZeroVector) {
+    if (ImpactPoint.X != -1.0f) {//punto imposible para la el layout
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());//qui es donde esta mal
+        AplicarTraslacion(GetTransform().TransformPosition(ImpactPoint) - NodoGuia->GetActorLocation());//modo correcto
+        //aun que no se si tanta transofmracion esta bien, tal vez sea mas facil si Intersecicion linea devuelve en global
+        Usuario->CambiarLaser(1);
+        Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
+        //dibujar laser apropiado
+    }
+    else {
+        Usuario->CambiarLaser(2);
+        FVector Punto = RightController->GetComponentTransform().GetLocation();
+        Punto = GetTransform().InverseTransformPosition(Punto);
+        FVector Vector = RightController->GetForwardVector();
+        Vector = GetTransform().InverseTransformVector(Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
+        //dibujarLaserApropiado, aqui funciona bien
+    }
+}
+
+void ANJTreeVRVisualization::RotacionRama() {
+    ImpactPoint = InterseccionLineaSuperficie();
+    //UE_LOG(LogClass, Log, TEXT("Impact = %f, %f, %f"), ImpactPoint.X, ImpactPoint.Y, ImpactPoint.Z);
+    //if (ImpactPoint != FVector::ZeroVector) {
+    if (ImpactPoint.X != -1.0f) {//punto imposible para la el layout
+        //AplicarTraslacion(ImpactPoint - NodoGuia->GetActorLocation());
+        AplicarRotacionRelativaANodo(NodoGuia, ImpactPoint);
+        Usuario->CambiarLaser(1);
+        Usuario->CambiarPuntoFinal(GetTransform().TransformPosition(ImpactPoint));
+        //dibujar laser apropiado
+    }
+    else {
+        Usuario->CambiarLaser(2);
+        FVector Punto = RightController->GetComponentTransform().GetLocation();
+        Punto = GetTransform().InverseTransformPosition(Punto);
+        FVector Vector = RightController->GetForwardVector();
+        Vector = GetTransform().InverseTransformVector(Vector);
+        Usuario->CambiarPuntoFinal(Punto + DistanciaLaserMaxima*Vector);
+        //dibujarLaserApropiado, aqui funciona bien
+    }
+}
