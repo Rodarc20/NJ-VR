@@ -30,8 +30,8 @@ void AH3VRVisualization::BeginPlay() {
     LayoutBase2();
     //LayoutBaseH3();
 
-    //ActualizarLayout();
-    ActualizarLayoutH3();
+    ActualizarLayout();
+    //ActualizarLayoutH3();
 }
 
 void AH3VRVisualization::CreateNodos() {
@@ -827,6 +827,35 @@ void AH3VRVisualization::ActualizarLayoutH3() {//este actulizar deberia ser gene
     }
 
 }
+
+void AH3VRVisualization::AplicarTraslacion(FVector Traslacion) {
+    for (int i = 0; i < NodosSeleccionados.Num(); i++) {
+        //NodosSeleccionados[i]->AddActorLocalOffset(Traslacion);//no esoty seguro si esto funcone
+        NodosSeleccionados[i]->SetActorLocation(NodosSeleccionados[i]->GetActorLocation() + Traslacion);
+    }
+    //se debe actualizar las matrices o frames de cada nodo y a los que se afecten
+}
+
+void AH3VRVisualization::TraslacionConNodoGuia() {
+    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
+    FVector Vec = RightController->GetForwardVector();
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
+    if(Usuario->LaserActual() != 6){
+        Usuario->CambiarLaser(6);
+    }
+    Usuario->CambiarPuntoFinal(PuntoFinal);
+    AplicarTraslacion(PuntoFinal - NodoGuia->GetActorLocation());
+}
+
+void AH3VRVisualization::TrasladarRamaPressed() {//para el traslado en 3d
+    if (bHitNodo) {
+        SeleccionarRama(HitNodo);
+        NodoGuia = HitNodo;
+        bNodoGuia = true;
+        DistanciaLaser = (ImpactPoint - RightController->GetComponentLocation()).Size();
+    }
+}
+
 
 
 FMatrix AH3VRVisualization::MatrizTraslacion(float x, float y, float z) {

@@ -24,4 +24,10 @@ public:
 	
     virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) override;
 	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TraslacionConNodoGuia() override;
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarRamaPressed() override;
+	
 };

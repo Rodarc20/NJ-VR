@@ -2,6 +2,7 @@
 
 #include "NJVR.h"
 #include "NJ3DVRVisualization.h"
+#include "VRPawn.h"
 #include "Nodo.h"
 #include "Arista.h"
 
@@ -289,6 +290,26 @@ void ANJ3DVRVisualization::AplicarRotacionRelativaANodo(ANodo* NodoReferencia, F
         //NodosSeleccionados[i]->SetActorTransform(NodosSeleccionados[i]->GetActorTransform().SetLocation(NodoCentro->GetActorTransform().GetLocation() + NewRelativeLocation));
     }
 
+}
+
+void ANJ3DVRVisualization::TraslacionConNodoGuia() {
+    FVector PuntoInicial = RightController->GetComponentLocation();//lo mismo que en teorioa, GetComponentTransfor().GetLocation();
+    FVector Vec = RightController->GetForwardVector();
+    FVector PuntoFinal = PuntoInicial + Vec*DistanciaLaser;
+    if(Usuario->LaserActual() != 6){
+        Usuario->CambiarLaser(6);
+    }
+    Usuario->CambiarPuntoFinal(PuntoFinal);
+    AplicarTraslacion(PuntoFinal - NodoGuia->GetActorLocation());
+}
+
+void ANJ3DVRVisualization::TrasladarRamaPressed() {//para el traslado en 3d
+    if (bHitNodo) {
+        SeleccionarRama(HitNodo);
+        NodoGuia = HitNodo;
+        bNodoGuia = true;
+        DistanciaLaser = (ImpactPoint - RightController->GetComponentLocation()).Size();
+    }
 }
 
 

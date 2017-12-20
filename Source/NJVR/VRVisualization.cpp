@@ -599,7 +599,7 @@ void AVRVisualization::DeseleccionarTodo() {
 }
 
 void AVRVisualization::AplicarTraslacion(FVector Traslacion) {
-
+    //algunso layouts requieres hacer mas cosas para la traslacion por eso aun no esta genral, por ejemplo, en el h3 la traslacion requiere modificar las matrices de cada nodo
 }
 
 /*void AVRVisualization::AplicarEscala(float NuevaEscala) {
