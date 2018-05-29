@@ -16,6 +16,16 @@ class NJVR_API ANodoEsfera : public ANodo
 public:
     ANodoEsfera();
 
+    //Mesh del nodo
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
+    UStaticMeshComponent * NodoMesh; // debe tener este componente ya que en cualquier tipo de nodo, podre cambiar el color del mesh
+
+    UPROPERTY(VisibleAnywhere, Category = "Visualization")
+    USphereComponent * NodoCollision;// el detector de colisiones es diferente en cada nodo por lo tanto se manejan con funciones diferentes, este deberia ser un UShape para poder generalizar, pero por ahora lo dejameros a decision de las subclases
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
+    UMaterialInstanceDynamic * NodoMaterialDynamic;
+
     virtual void Actualizar() override;
 
     virtual void MostrarNombre() override;
@@ -40,8 +50,9 @@ public:
 
     virtual void DeterminarResaltado() override;
 
-    //UPROPERTY(VisibleAnywhere, Category = "Visualization")
-    //USphereComponent * NodoCollision;
+    virtual void CambiarColor(FLinearColor NewColor) override;
+
+    virtual void ActualizarRotacionNombre(FVector Direccion) override;
 	
 	
 };
