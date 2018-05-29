@@ -52,6 +52,7 @@ public:
     virtual void CreateAristas() override;
 
     std::vector<FVector> Vertices;
+
     std::vector<FVector> VerticesP;// phi, theta, radio
 
     std::vector<Triangulo> Triangulos;
