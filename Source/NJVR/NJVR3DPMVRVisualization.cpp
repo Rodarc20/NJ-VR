@@ -15,7 +15,7 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     DeltaDistanciaArista = 2.0f;
     //DeltaDistanciaArista = 0.5f;
 
-	NodosMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("NodoMesh"));
+	NodosMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedNodoMesh"));
     NodosMesh->SetupAttachment(RootComponent);
 	/**
 	*	Create/replace a section for this procedural mesh component.
@@ -35,9 +35,11 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
 	// New in UE 4.17, multi-threaded PhysX cooking.
 	NodosMesh->bUseAsyncCooking = true;
 
-	AristasMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMeshArista"));
+	AristasMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedAristaMesh"));
     AristasMesh->SetupAttachment(RootComponent);
 	AristasMesh->bUseAsyncCooking = true;
+
+    CreateSphereTemplate(1);
 }
 
 void ANJVR3DPMVRVisualization::BeginPlay() {
@@ -191,6 +193,17 @@ void ANJVR3DPMVRVisualization::CreateNodos() {
             Nodos[i]->Actualizar();
         }
     }
+
+    //añandiendo nodos al procedular mesh
+    for (int i = 0; i < Nodos.Num(); i++) {
+        if (Nodos[i]->Valid) {
+            AddNodoToMesh(Nodos[i]->GetActorLocation(), RadioNodos, Nodos[i]->Color, i);
+        }
+        else {
+            AddNodoToMesh(Nodos[i]->GetActorLocation(), RadioNodosVirtuales, Nodos[i]->Color, i);
+        }
+    }
+    CreateNodosMesh();
 
 }
 
@@ -955,11 +968,13 @@ void ANJVR3DPMVRVisualization::ActualizarLayout() {//este actulizar deberia ser 
         UE_LOG(LogClass, Log, TEXT("Nodo id = %d, (%f,%f,%f)"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z);
         //Nodos[i]->SetActorLocation(NuevaPosicion);
         Nodos[i]->SetActorRelativeLocation(NuevaPosicion);
+        UpdatePosicionNodoMesh(Nodos[i]->Id, NuevaPosicion);
         //aqui debo pasar actualizar la posicion de un nodo, pero al inicio puedo ya crear un mesh
     }
     for (int i = 0; i < Aristas.Num(); i++) {
         Aristas[i]->Actualizar();
     }
+    UpdateNodosMesh();
 
 }
 
@@ -1277,9 +1292,46 @@ void ANJVR3DPMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, int 
     }
 }
 
+void ANJVR3DPMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, FLinearColor Color, int NumNodo) {
+    for (int i = 0; i < VerticesNodoTemplate.size(); i++) {
+        VerticesNodos.Add(VerticesNodoTemplate[i] * Radio + Posicion);
+    }
+    for (int i = 0; i < VerticesPNodoTemplate.size(); i++) {
+        VerticesPNodos.Add(VerticesPNodoTemplate[i]);
+    }
+    for (int i = 0; i < TriangulosNodoTemplate.size(); i++) {
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdC + NumNodo * VerticesNodoTemplate.size());
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdB + NumNodo * VerticesNodoTemplate.size());
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdA + NumNodo * VerticesNodoTemplate.size());
+    }
+    for (int i = 0; i < NormalsNodoTemplate.size(); i++) {
+        NormalsNodos.Add(NormalsNodoTemplate[i]);
+    }
+    for (int i = 0; i < UV0NodoTemplate.size(); i++) {
+        UV0Nodos.Add(UV0NodoTemplate[i]);
+    }
+    for (int i = 0; i < TangentsNodoTemplate.size(); i++) {
+        TangentsNodos.Add(TangentsNodoTemplate[i]);
+    }
+    for (int i = 0; i < VertexColorsNodoTemplate.size(); i++) {
+        VertexColorsNodos.Add(VertexColorsNodoTemplate[i]);
+    }
+}
+
+void ANJVR3DPMVRVisualization::UpdatePosicionNodoMesh(int IdNodo, FVector NewPosition) {
+    for (int i = 0; i < VerticesNodoTemplate.size(); i++) {
+        VerticesNodos[i + IdNodo * VerticesNodoTemplate.size()] = VerticesNodoTemplate[i] * Nodos[IdNodo]->Radio + NewPosition;
+    }
+}
+
 void ANJVR3DPMVRVisualization::CreateNodosMesh() {
 	NodosMesh->CreateMeshSection_LinearColor(0, VerticesNodos, TrianglesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos, true);
  
 	NodosMesh->ContainsPhysicsTriMeshData(false);
 }
+
+void ANJVR3DPMVRVisualization::UpdateNodosMesh() {
+	NodosMesh->UpdateMeshSection_LinearColor(0, VerticesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos);
+}
+
 

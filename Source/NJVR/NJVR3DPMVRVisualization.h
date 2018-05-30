@@ -153,9 +153,15 @@ public:
 
     void DividirTriangulos();
 
-    void AddNodoToMesh(FVector Posicion, float Radio, int NumNodo);
+    void AddNodoToMesh(FVector Posicion, float Radio, int NumNodo);//NumNodo es solo para facilidad de calculo
+
+    void AddNodoToMesh(FVector Posicion, float Radio, FLinearColor Color, int NumNodo);
 
     void CreateNodosMesh();
+
+    void UpdateNodosMesh();
+
+    void UpdatePosicionNodoMesh(int IdNodo, FVector NewPosition);
 
     //ProceduralMesh para las aristas
 	UPROPERTY(VisibleAnywhere)
