@@ -185,4 +185,14 @@ public:
 
 	TArray<FLinearColor> VertexColorsAristas;
 
+    UPROPERTY(EditAnywhere)
+    int PrecisionAristas; //NumeroLadosArista;//este tambien indica el tamaño de los arreglos
+
+    void AddAristaToMesh(FVector Source, FVector Target, int Radio, int NumArista);// precision es cuanto lados tendra el cilindo, minimo 3, radio, sera el radio del cilindro, este template no es tan adaptable como el de la esfera, por eso necesai dos parametros
+
+    void CreateAristasMesh();
+
+    void UpdateAristasMesh();
+
+    void UpdatePosicionesAristaMesh(int IdArista, FVector Source, FVector Target);
 };

@@ -14,6 +14,7 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     RadioHoja = 6.0f;
     DeltaDistanciaArista = 2.0f;
     //DeltaDistanciaArista = 0.5f;
+    PrecisionAristas = 8;
 
 	NodosMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedNodoMesh"));
     NodosMesh->SetupAttachment(RootComponent);
@@ -257,8 +258,6 @@ void ANJVR3DPMVRVisualization::CreateAristas() {
                 AristaInstanciado->Escala = Escala;
                 AristaInstanciado->Radio = RadioAristas;
                 AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-                AristaInstanciado->Actualizar();
-                AristaInstanciado->ActualizarCollision();
                 //AristaInstanciado->AttachRootComponentToActor(this);
 
                 Aristas.Add(AristaInstanciado);
@@ -292,12 +291,19 @@ void ANJVR3DPMVRVisualization::CreateAristas() {
         AristaInstanciado->Escala = Escala;
         AristaInstanciado->Radio = RadioAristas;
         AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-        AristaInstanciado->Actualizar();
-        AristaInstanciado->ActualizarCollision();
         //AristaInstanciado->AttachRootComponentToActor(this);
 
         Aristas.Add(AristaInstanciado);
         count++;
+    }
+    //añandiendo nodos al procedular mesh
+    for (int i = 0; i < Aristas.Num(); i++) {
+        AddAristaToMesh(Aristas[i]->SourceNodo->GetTransform().GetLocation(), Aristas[i]->TargetNodo->GetTransform().GetLocation(), RadioAristas, i);
+    }
+    CreateAristasMesh();
+    for (int i = 0; i < Aristas.Num(); i++) {
+        Aristas[i]->Actualizar();//estas funciones asumen que ya hay una mes creado, es decir ya existen vertices y demas, por eso debo  crear antes de usar
+        Aristas[i]->ActualizarCollision();
     }
 }
 
@@ -982,9 +988,11 @@ void ANJVR3DPMVRVisualization::ActualizarLayout() {//este actulizar deberia ser 
         //aqui debo pasar actualizar la posicion de un nodo, pero al inicio puedo ya crear un mesh
     }
     for (int i = 0; i < Aristas.Num(); i++) {
-        Aristas[i]->Actualizar();
+        //Aristas[i]->Actualizar();
+        UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetTransform().GetLocation(), Aristas[i]->TargetNodo->GetTransform().GetLocation());
     }
     UpdateNodosMesh();
+    UpdateAristasMesh();
 
 }
 
@@ -1342,11 +1350,89 @@ void ANJVR3DPMVRVisualization::CreateNodosMesh() {
     if (NodosMeshMaterial) {
         NodosMesh->SetMaterial(0, NodosMeshMaterial);
     }
-
 }
 
 void ANJVR3DPMVRVisualization::UpdateNodosMesh() {
 	NodosMesh->UpdateMeshSection_LinearColor(0, VerticesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos);
 }
 
+void ANJVR3DPMVRVisualization::AddAristaToMesh(FVector Source, FVector Target, int Radio, int NumArista) {
+    //precision debe ser mayor a 3, represante el numero de lados del cilindro
+    //la precision deberia ser de forma general,asi lo puedo usar para determinar la cantidad de vertices añadidos
+    FVector Direccion = (Target - Source).GetSafeNormal();
+    //calculando vertices superioes
+
+    float phi = PI/2;
+    float theta = FMath::Asin(Direccion.Y / FMath::Sin(phi)) + PI/2;
+    FVector VectorU;
+    VectorU.X = 1.0f * FMath::Sin(phi) * FMath::Cos(theta);
+    VectorU.Y = 1.0f * FMath::Sin(phi) * FMath::Sin(theta);
+    VectorU.Z = 1.0f * FMath::Cos(phi);
+    FVector VectorV = FVector::CrossProduct(Direccion, VectorU).GetSafeNormal();
+    float DeltaTheta = 2 * PI / PrecisionAristas;
+
+    for (int i = 0; i < PrecisionAristas; i++) {
+        VerticesAristas.Add(Target + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*Radio);
+        NormalsAristas.Add((VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal());
+        TangentsAristas.Add(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
+        UV0Aristas.Add(FVector2D(i*(1.0f/PrecisionAristas), 1));
+        VertexColorsAristas.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
+    }
+    for (int i = 0; i < PrecisionAristas; i++) {
+        VerticesAristas.Add(Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*Radio);
+        NormalsAristas.Add((VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal());
+        TangentsAristas.Add(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
+        UV0Aristas.Add(FVector2D(i*(1.0f/PrecisionAristas), 0));
+        VertexColorsAristas.Add(FLinearColor(0.0, 0.75, 0.75, 1.0));
+    }
+
+    for (int i = 0; i < PrecisionAristas; i++) {
+        TrianglesAristas.Add((i+1)%PrecisionAristas + NumArista * PrecisionAristas*2);
+        TrianglesAristas.Add(PrecisionAristas + (i + 1)%PrecisionAristas + NumArista * PrecisionAristas*2);
+        TrianglesAristas.Add(i + NumArista * PrecisionAristas*2);
+
+        TrianglesAristas.Add(PrecisionAristas + i + NumArista * PrecisionAristas*2);
+        TrianglesAristas.Add(i + NumArista * PrecisionAristas*2);
+        TrianglesAristas.Add(PrecisionAristas + (i+1)%PrecisionAristas + NumArista * PrecisionAristas*2);
+    }
+}
+
+void ANJVR3DPMVRVisualization::CreateAristasMesh() {
+	AristasMesh->CreateMeshSection_LinearColor(0, VerticesAristas, TrianglesAristas, NormalsAristas, UV0Aristas, VertexColorsAristas, TangentsAristas, false);
+        // Enable collision data
+	AristasMesh->ContainsPhysicsTriMeshData(false);
+
+    if (AristasMeshMaterial) {
+        AristasMesh->SetMaterial(0, AristasMeshMaterial);
+    }
+}
+
+void ANJVR3DPMVRVisualization::UpdateAristasMesh() {
+	AristasMesh->UpdateMeshSection_LinearColor(0, VerticesAristas, NormalsAristas, UV0Aristas, VertexColorsAristas, TangentsAristas);
+}
+
+void ANJVR3DPMVRVisualization::UpdatePosicionesAristaMesh(int IdArista, FVector Source, FVector Target) {
+    FVector Direccion = (Target - Source).GetSafeNormal();
+    //calculando vertices superioes
+
+    float phi = PI/2;
+    float theta = FMath::Asin(Direccion.Y / FMath::Sin(phi)) + PI/2;
+    FVector VectorU;
+    VectorU.X = 1.0f * FMath::Sin(phi) * FMath::Cos(theta);
+    VectorU.Y = 1.0f * FMath::Sin(phi) * FMath::Sin(theta);
+    VectorU.Z = 1.0f * FMath::Cos(phi);
+    FVector VectorV = FVector::CrossProduct(Direccion, VectorU).GetSafeNormal();
+    float DeltaTheta = 2 * PI / PrecisionAristas;
+
+    for (int i = 0; i < PrecisionAristas; i++) {
+        VerticesAristas[i + IdArista * PrecisionAristas*2] = Target + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioAristas;
+        NormalsAristas[i + IdArista * PrecisionAristas*2] = (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal();
+        TangentsAristas[i + IdArista * PrecisionAristas*2] = FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2));
+    }
+    for (int i = 0; i < PrecisionAristas; i++) {
+        VerticesAristas[i + IdArista * PrecisionAristas*2] = Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioAristas;
+        NormalsAristas[i + IdArista * PrecisionAristas*2] = (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal();
+        TangentsAristas[i + IdArista * PrecisionAristas*2] = FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2));
+    }
+}
 

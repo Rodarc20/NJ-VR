@@ -3,6 +3,7 @@
 #include "NJVR.h"
 #include "Nodo.h"
 #include "AristaCilindroPM.h"
+#include "NJVR3DPMVRVisualization.h"
 
 
 AAristaCilindroPM::AAristaCilindroPM() {
@@ -29,6 +30,26 @@ void AAristaCilindroPM::Actualizar() {
     SetActorRotation(NewRotation);
 
     Distancia = GetTransform().InverseTransformVector(Diferencia).Size();
+
+
+    //debo ir a mi owner, ya que mi owner es la VRVisualization que me creo, no es necesario buscar, asi podre tener varios arboles a la vez si confusiones
+    ANJVR3DPMVRVisualization * const VRVisualization = Cast<ANJVR3DPMVRVisualization>(GetOwner());
+    if (VRVisualization) {
+        UE_LOG(LogClass, Log, TEXT("Actualizando arita: %d"), Id);
+        VRVisualization->UpdatePosicionesAristaMesh(Id, SourceNodo->GetTransform().GetLocation(), TargetNodo->GetTransform().GetLocation());
+    }
+
+    /*TArray<AActor *> RobotsEncontrados;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARobot::StaticClass(), RobotsEncontrados);
+    //UE_LOG(LogClass, Log, TEXT("Numero de Partes Encontradas: %d"), PartesEncontradas.Num());
+    for (int i = 0; i < RobotsEncontrados.Num(); i++) {
+        ARobot * const RobotEncontrado = Cast<ARobot>(RobotsEncontrados[i]);
+        Jerarquia = Jerarquias[JerarquiaCompleta];
+        SetJerarquiaTask(EVRJerarquiaTask::ERotationTask);
+        if (RobotEncontrado) {
+            RobotEncontrado->SetJerarquiaTask(EVRJerarquiaTask::ERotationTask);
+        }
+    }*/
 }
 
 void AAristaCilindroPM::ActualizarCollision() {
