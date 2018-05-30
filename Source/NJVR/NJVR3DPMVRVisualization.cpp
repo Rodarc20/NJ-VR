@@ -39,7 +39,17 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     AristasMesh->SetupAttachment(RootComponent);
 	AristasMesh->bUseAsyncCooking = true;
 
-    CreateSphereTemplate(1);
+    CreateSphereTemplate(0);
+
+    static ConstructorHelpers::FObjectFinder<UMaterial> NodosMaterialAsset(TEXT("Material'/Game/Visualization/Materials/NodosMeshMaterial.NodosMeshMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
+    if (NodosMaterialAsset.Succeeded()) {
+        NodosMeshMaterial = NodosMaterialAsset.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UMaterial> AristasMaterialAsset(TEXT("Material'/Game/Visualization/Materials/AristasMeshMaterial.AristasMeshMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
+    if (AristasMaterialAsset.Succeeded()) {
+        AristasMeshMaterial = AristasMaterialAsset.Object;
+    }
 }
 
 void ANJVR3DPMVRVisualization::BeginPlay() {
@@ -1314,7 +1324,7 @@ void ANJVR3DPMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, FLin
         TangentsNodos.Add(TangentsNodoTemplate[i]);
     }
     for (int i = 0; i < VertexColorsNodoTemplate.size(); i++) {
-        VertexColorsNodos.Add(VertexColorsNodoTemplate[i]);
+        VertexColorsNodos.Add(Color);
     }
 }
 
@@ -1325,9 +1335,14 @@ void ANJVR3DPMVRVisualization::UpdatePosicionNodoMesh(int IdNodo, FVector NewPos
 }
 
 void ANJVR3DPMVRVisualization::CreateNodosMesh() {
-	NodosMesh->CreateMeshSection_LinearColor(0, VerticesNodos, TrianglesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos, true);
+	NodosMesh->CreateMeshSection_LinearColor(0, VerticesNodos, TrianglesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos, false);
  
 	NodosMesh->ContainsPhysicsTriMeshData(false);
+
+    if (NodosMeshMaterial) {
+        NodosMesh->SetMaterial(0, NodosMeshMaterial);
+    }
+
 }
 
 void ANJVR3DPMVRVisualization::UpdateNodosMesh() {

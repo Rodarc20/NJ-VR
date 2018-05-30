@@ -115,6 +115,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UProceduralMeshComponent * NodosMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UMaterial * NodosMeshMaterial;
+
 	TArray<FVector> VerticesNodos;
 
 	TArray<FVector> VerticesPNodos;
@@ -166,6 +169,9 @@ public:
     //ProceduralMesh para las aristas
 	UPROPERTY(VisibleAnywhere)
 	UProceduralMeshComponent * AristasMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UMaterial * AristasMeshMaterial;
 	
 	TArray<FVector> VerticesAristas;
 
