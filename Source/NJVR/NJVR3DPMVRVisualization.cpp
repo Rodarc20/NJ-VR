@@ -14,6 +14,30 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     RadioHoja = 6.0f;
     DeltaDistanciaArista = 2.0f;
     //DeltaDistanciaArista = 0.5f;
+
+	NodosMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("NodoMesh"));
+    NodosMesh->SetupAttachment(RootComponent);
+	/**
+	*	Create/replace a section for this procedural mesh component.
+	*	@param	SectionIndex		Index of the section to create or replace.
+	*	@param	Vertices			Vertex buffer of all vertex positions to use for this mesh section.
+	*	@param	Triangles			Index buffer indicating which vertices make up each triangle. Length must be a multiple of 3.
+	*	@param	Normals				Optional array of normal vectors for each vertex. If supplied, must be same length as Vertices array.
+	*	@param	UV0					Optional array of texture co-ordinates for each vertex. If supplied, must be same length as Vertices array.
+	*	@param	VertexColors		Optional array of colors for each vertex. If supplied, must be same length as Vertices array.
+	*	@param	Tangents			Optional array of tangent vector for each vertex. If supplied, must be same length as Vertices array.
+	*	@param	bCreateCollision	Indicates whether collision should be created for this section. This adds significant cost.
+	*/
+	//UFUNCTION(BlueprintCallable, Category = "Components|ProceduralMesh", meta = (AutoCreateRefTerm = "Normals,UV0,VertexColors,Tangents"))
+	//	void CreateMeshSection(int32 SectionIndex, const TArray<FVector>& Vertices, const TArray<int32>& Triangles, const TArray<FVector>& Normals,
+	// const TArray<FVector2D>& UV0, const TArray<FColor>& VertexColors, const TArray<FProcMeshTangent>& Tangents, bool bCreateCollision);
+ 
+	// New in UE 4.17, multi-threaded PhysX cooking.
+	NodosMesh->bUseAsyncCooking = true;
+
+	AristasMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedMeshArista"));
+    AristasMesh->SetupAttachment(RootComponent);
+	AristasMesh->bUseAsyncCooking = true;
 }
 
 void ANJVR3DPMVRVisualization::BeginPlay() {
@@ -931,6 +955,7 @@ void ANJVR3DPMVRVisualization::ActualizarLayout() {//este actulizar deberia ser 
         UE_LOG(LogClass, Log, TEXT("Nodo id = %d, (%f,%f,%f)"), Nodos[i]->Id, NuevaPosicion.X, NuevaPosicion.Y, NuevaPosicion.Z);
         //Nodos[i]->SetActorLocation(NuevaPosicion);
         Nodos[i]->SetActorRelativeLocation(NuevaPosicion);
+        //aqui debo pasar actualizar la posicion de un nodo, pero al inicio puedo ya crear un mesh
     }
     for (int i = 0; i < Aristas.Num(); i++) {
         Aristas[i]->Actualizar();
@@ -1070,9 +1095,191 @@ void ANJVR3DPMVRVisualization::ImprimirMatriz(FMatrix m) {
     }
 }
 
+//funciones para el procedural mesh
+
+void ANJVR3DPMVRVisualization::CreateSphereTemplate(int Precision) {
+    UE_LOG(LogClass, Log, TEXT("Creando esfera"));
+    float DeltaPhi = 1.10714872;
+    float DeltaTheta = PI * 72 / 180;
+    float DiffTheta = PI * 36 / 180;
+    VerticesNodoTemplate.push_back(FVector(0.0f, 0.0f, 1.0f));//puntos para radio uno
+    NormalsNodoTemplate.push_back(FVector(0.0f, 0.0f, 1.0f));//puntos para radio uno
+    //Tangents.Add(FProcMeshTangent(1.0f, 0.0f, 0.0f));
+    TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(PI/2), 1.0f * FMath::Cos(PI/2)));
+    VerticesPNodoTemplate.push_back(FVector(0.0f, 0.0f, 1.0f));
+    UV0NodoTemplate.push_back(FVector2D(0.0f,1.0f));
+	VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+    for (int i = 0; i < 5; i++) {
+        VerticesPNodoTemplate.push_back(FVector(DeltaPhi, i*DeltaTheta, 1.0f));//esto es en esferico, no se para que lo uso desues, creo que para las divisiones para aumentr la suavidad
+        FVector posicion;
+        posicion.X = 1.0f * FMath::Sin(DeltaPhi) * FMath::Cos(i*DeltaTheta);
+        posicion.Y = 1.0f * FMath::Sin(DeltaPhi) * FMath::Sin(i*DeltaTheta);
+        posicion.Z = 1.0f * FMath::Cos(DeltaPhi);
+        //hasta aqui posicion esta como unitario, puede servir para el verctor de normales
+        VerticesNodoTemplate.push_back(posicion);
+        NormalsNodoTemplate.push_back(posicion);
+        TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
+        UV0NodoTemplate.push_back(FVector2D(i*DeltaTheta/(2*PI), 1 - DeltaPhi/PI));
+        VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+    }
+    for (int i = 0; i < 5; i++) {
+        VerticesPNodoTemplate.push_back(FVector(PI - DeltaPhi, i*DeltaTheta + DiffTheta, 1.0f));
+        FVector posicion;
+        posicion.X = 1.0f * FMath::Sin(PI - DeltaPhi) * FMath::Cos(i*DeltaTheta + DiffTheta);
+        posicion.Y = 1.0f * FMath::Sin(PI - DeltaPhi) * FMath::Sin(i*DeltaTheta + DiffTheta);
+        posicion.Z = 1.0f * FMath::Cos(PI - DeltaPhi);
+        //hasta aqui posicion esta como unitario, puede servir para el verctor de normales
+        NormalsNodoTemplate.push_back(posicion);
+        TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
+        VerticesNodoTemplate.push_back(posicion);
+        UV0NodoTemplate.push_back(FVector2D((i*DeltaTheta + DiffTheta)/(2*PI), 1 - (PI - DeltaPhi)/PI));
+        VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+    }
+    VerticesNodoTemplate.push_back(FVector(0.0, 0.0f, -1.0f));//puntos para radio uno
+    NormalsNodoTemplate.push_back(FVector(0.0, 0.0f, -1.0f));//puntos para radio uno
+    //Tangents.Add(FProcMeshTangent(-1.0f, 0.0f, 0.0f));
+    TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(PI/2), 1.0f * FMath::Cos(PI/2)));
+    VerticesPNodoTemplate.push_back(FVector(PI, 0.0f, 1.0f));
+    UV0NodoTemplate.push_back(FVector2D(0.0f,0.0f));
+    VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+
+    //Agregados vertices y normales, faltarian agregar las tangentes
+
+    //Tirangulos superiores
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[0], VerticesNodoTemplate[1], VerticesNodoTemplate[2], 0, 1, 2, 0, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[0], VerticesNodoTemplate[2], VerticesNodoTemplate[3], 0, 2, 3, 0, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[0], VerticesNodoTemplate[3], VerticesNodoTemplate[4], 0, 3, 4, 0, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[0], VerticesNodoTemplate[4], VerticesNodoTemplate[5], 0, 4, 5, 0, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[0], VerticesNodoTemplate[5], VerticesNodoTemplate[1], 0, 5, 1, 0, 0));
+
+    //triangulos medios
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[1], VerticesNodoTemplate[6], VerticesNodoTemplate[2], 1, 6, 2, 1, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[2], VerticesNodoTemplate[6], VerticesNodoTemplate[7], 2, 6, 7, 1, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[2], VerticesNodoTemplate[7], VerticesNodoTemplate[3], 2, 7, 3, 1, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[3], VerticesNodoTemplate[7], VerticesNodoTemplate[8], 3, 7, 8, 1, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[3], VerticesNodoTemplate[8], VerticesNodoTemplate[4], 3, 8, 4, 1, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[4], VerticesNodoTemplate[8], VerticesNodoTemplate[9], 4, 8, 9, 1, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[4], VerticesNodoTemplate[9], VerticesNodoTemplate[5], 4, 9, 5, 1, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[5], VerticesNodoTemplate[9], VerticesNodoTemplate[10], 5, 9, 10, 1, 0));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[5], VerticesNodoTemplate[10], VerticesNodoTemplate[1], 5, 10, 1, 1, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[1], VerticesNodoTemplate[10], VerticesNodoTemplate[6], 1, 10, 6, 1, 0));
+
+    //triangulos inferiores
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[6], VerticesNodoTemplate[11], VerticesNodoTemplate[7], 6, 11, 7, 2, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[7], VerticesNodoTemplate[11], VerticesNodoTemplate[8], 7, 11, 8, 2, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[8], VerticesNodoTemplate[11], VerticesNodoTemplate[9], 8, 11, 9, 2, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[9], VerticesNodoTemplate[11], VerticesNodoTemplate[10], 9, 11, 10, 2, 1));
+    TriangulosNodoTemplate.push_back(Triangulo(VerticesNodoTemplate[10], VerticesNodoTemplate[11], VerticesNodoTemplate[6], 10, 11, 6, 2, 1));
+
+    while (Precision) {
+        DividirTriangulos();
+        Precision--;
+    }
+}
+
+FVector ANJVR3DPMVRVisualization::PuntoTFromAToB(FVector a, FVector b, float t) {
+    FVector direccion = b - a;
+    FVector punto = a + direccion*t;
+    //normalizar a esfera de radio 1
+    punto = punto.GetSafeNormal();
+    return punto;
+}
+
+FVector ANJVR3DPMVRVisualization::PuntoTFromAToBEsferico(FVector a, FVector b, float t) {
+    FVector direccion = b - a;
+    FVector punto = a + direccion*t;
+    //normalizar a esfera de radio 1
+    punto = punto.GetSafeNormal();
+    float phi = FMath::Acos(punto.Z);
+    float theta = FMath::Asin(punto.Y / FMath::Sin(phi));
+    FVector puntoesferico (phi, theta, 1.0f);
+    return puntoesferico;
+}
+
+void ANJVR3DPMVRVisualization::DividirTriangulo(Triangulo t) {
+    FVector D = PuntoTFromAToB(t.C, t.A, 0.5);
+    VerticesNodoTemplate.push_back(D);//0.5 es la mitad
+    int IdD = VerticesNodoTemplate.size() - 1;
+    FVector DP = PuntoTFromAToBEsferico(t.C, t.A, 0.5);
+    VerticesPNodoTemplate.push_back(DP);//0.5 es la mitad
+    NormalsNodoTemplate.push_back(D);
+    TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(DP.Y + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(DP.Y + PI/2), 1.0f * FMath::Cos(PI/2)));
+    UV0NodoTemplate.push_back(FVector2D(DP.Y/(2*PI), 1 - DP.X/PI));
+    VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+
+    FVector E = PuntoTFromAToB(t.B, t.A, 0.5);
+    VerticesNodoTemplate.push_back(E);//0.5 es la mitad
+    int IdE = VerticesNodoTemplate.size() - 1;
+    FVector EP = PuntoTFromAToBEsferico(t.B, t.A, 0.5);
+    VerticesPNodoTemplate.push_back(EP);//0.5 es la mitad
+    NormalsNodoTemplate.push_back(E);
+    TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(EP.Y + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(EP.Y + PI/2), 1.0f * FMath::Cos(PI/2)));
+    UV0NodoTemplate.push_back(FVector2D(EP.Y/(2*PI), 1 - EP.X/PI));
+    VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+
+    FVector F = PuntoTFromAToB(t.C, t.B, 0.5);
+    VerticesNodoTemplate.push_back(F);//0.5 es la mitad
+    int IdF = VerticesNodoTemplate.size() - 1;
+    FVector FP = PuntoTFromAToBEsferico(t.C, t.B, 0.5);
+    VerticesPNodoTemplate.push_back(FP);//0.5 es la mitad
+    NormalsNodoTemplate.push_back(F);
+    TangentsNodoTemplate.push_back(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(FP.Y + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(FP.Y + PI/2), 1.0f * FMath::Cos(PI/2)));
+    UV0NodoTemplate.push_back(FVector2D(FP.Y/(2*PI), 1 - FP.X/PI));
+    VertexColorsNodoTemplate.push_back(FLinearColor(0.75, 0.75, 0.75, 1.0));
+
+    //if (VerticesP[t.IdA].X == VerticesP[t.IdC].X) {//tringulo hacia abajo
+    if (t.Orientacion) {//tringulo hacia abajo
+        TriangulosNodoTemplate.push_back(Triangulo(t.A, E, D, t.IdA, IdE, IdD, t.Nivel*2, 0));
+        TriangulosNodoTemplate.push_back(Triangulo(D, E, F, IdD, IdE, IdF, t.Nivel*2, 0));
+        TriangulosNodoTemplate.push_back(Triangulo(D, F, t.C, IdD, IdF, t.IdC, t.Nivel*2, 0));
+        TriangulosNodoTemplate.push_back(Triangulo(E, t.B, F, IdE, t.IdB, IdF, t.Nivel*2 + 1, 1));
+    }
+    else {//triangulo hacia arriba, por lo tanto c y b esta a la misma algutar, a arriba
+        TriangulosNodoTemplate.push_back(Triangulo(t.A, E, D, t.IdA, IdE, IdD, t.Nivel*2, 0));
+        TriangulosNodoTemplate.push_back(Triangulo(E, t.B, F, IdE, t.IdB, IdF, t.Nivel*2 + 1, 1));
+        TriangulosNodoTemplate.push_back(Triangulo(E, F, D, IdE, IdF, IdD, t.Nivel*2+1, 1));
+        TriangulosNodoTemplate.push_back(Triangulo(D, F, t.C, IdD, IdF, t.IdC, t.Nivel*2 + 1, 1));
+    }
+}
+
+void ANJVR3DPMVRVisualization::DividirTriangulos() {
+    int n = TriangulosNodoTemplate.size();
+    for (int i = 0; i < n; i++) {
+        DividirTriangulo(TriangulosNodoTemplate[0]);
+        TriangulosNodoTemplate.erase(TriangulosNodoTemplate.begin());
+    }
+}
 
 
+void ANJVR3DPMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, int NumNodo) {
+    for (int i = 0; i < VerticesNodoTemplate.size(); i++) {
+        VerticesNodos.Add(VerticesNodoTemplate[i] * Radio + Posicion);
+    }
+    for (int i = 0; i < VerticesPNodoTemplate.size(); i++) {
+        VerticesPNodos.Add(VerticesPNodoTemplate[i]);
+    }
+    for (int i = 0; i < TriangulosNodoTemplate.size(); i++) {
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdC + NumNodo * VerticesNodoTemplate.size());
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdB + NumNodo * VerticesNodoTemplate.size());
+        TrianglesNodos.Add(TriangulosNodoTemplate[i].IdA + NumNodo * VerticesNodoTemplate.size());
+    }
+    for (int i = 0; i < NormalsNodoTemplate.size(); i++) {
+        NormalsNodos.Add(NormalsNodoTemplate[i]);
+    }
+    for (int i = 0; i < UV0NodoTemplate.size(); i++) {
+        UV0Nodos.Add(UV0NodoTemplate[i]);
+    }
+    for (int i = 0; i < TangentsNodoTemplate.size(); i++) {
+        TangentsNodos.Add(TangentsNodoTemplate[i]);
+    }
+    for (int i = 0; i < VertexColorsNodoTemplate.size(); i++) {
+        VertexColorsNodos.Add(VertexColorsNodoTemplate[i]);
+    }
+}
 
-
-
+void ANJVR3DPMVRVisualization::CreateNodosMesh() {
+	NodosMesh->CreateMeshSection_LinearColor(0, VerticesNodos, TrianglesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos, true);
+ 
+	NodosMesh->ContainsPhysicsTriMeshData(false);
+}
 

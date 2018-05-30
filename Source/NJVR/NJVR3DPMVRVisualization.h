@@ -4,11 +4,33 @@
 
 #include "CoreMinimal.h"
 #include "VRVisualization.h"
+#include "ProceduralMeshComponent.h"
+#include <vector>
 #include "NJVR3DPMVRVisualization.generated.h"
 
 /**
  * 
  */
+
+class Triangulo {
+    public:
+        int IdA;
+        int IdB;
+        int IdC;
+        int Nivel;
+        bool Orientacion;// 0 ahcia arriga, 1 hacia abajo, esto no se si lo use
+        FVector Centro;
+        FVector A;
+        FVector B;
+        FVector C;
+        float Phi;
+        float Theta;
+        Triangulo() {}
+        Triangulo(int a, int b, int c, int niv, bool ori): IdA(a), IdB(b), IdC(c), Nivel(niv), Orientacion(ori) { }
+        Triangulo(FVector va, FVector vb, FVector  vc, int niv, bool ori): A(va), B(vb), C(vc), Nivel(niv), Orientacion(ori) { }
+        Triangulo(FVector va, FVector vb, FVector  vc, int a, int b, int c, int niv, bool ori): A(va), B(vb), C(vc), IdA(a), IdB(b), IdC(c), Nivel(niv), Orientacion(ori) { }
+};
+
 UCLASS()
 class NJVR_API ANJVR3DPMVRVisualization : public AVRVisualization
 {
@@ -89,5 +111,66 @@ public:
     void ImprimirMatriz(FMatrix m);
 	
 	
+    //ProceduralMesh para los nodos
+	UPROPERTY(VisibleAnywhere)
+	UProceduralMeshComponent * NodosMesh;
+
+	TArray<FVector> VerticesNodos;
+
+	TArray<FVector> VerticesPNodos;
+
+	TArray<int32> TrianglesNodos;
+
+	TArray<FVector> NormalsNodos;
+
+	TArray<FVector2D> UV0Nodos;
+
+	TArray<FProcMeshTangent> TangentsNodos;
+
+	TArray<FLinearColor> VertexColorsNodos;
+
+    std::vector<Triangulo> TriangulosNodoTemplate;
+
+    std::vector<FVector> VerticesNodoTemplate;
+
+    std::vector<FVector> VerticesPNodoTemplate;// phi, theta, radio
+
+	std::vector<FVector> NormalsNodoTemplate;
+
+	std::vector<FVector2D> UV0NodoTemplate;
+
+	std::vector<FProcMeshTangent> TangentsNodoTemplate;
+
+	std::vector<FLinearColor> VertexColorsNodoTemplate;
+
+    void CreateSphereTemplate(int Precision);// crea esferas de radio 1
+
+    FVector PuntoTFromAToB(FVector a, FVector b, float t);
+
+    FVector PuntoTFromAToBEsferico(FVector a, FVector b, float t);
+
+    void DividirTriangulo(Triangulo t);
+
+    void DividirTriangulos();
+
+    void AddNodoToMesh(FVector Posicion, float Radio, int NumNodo);
+
+    void CreateNodosMesh();
+
+    //ProceduralMesh para las aristas
+	UPROPERTY(VisibleAnywhere)
+	UProceduralMeshComponent * AristasMesh;
 	
+	TArray<FVector> VerticesAristas;
+
+	TArray<int32> TrianglesAristas;
+
+	TArray<FVector> NormalsAristas;
+
+	TArray<FVector2D> UV0Aristas;
+
+	TArray<FProcMeshTangent> TangentsAristas;
+
+	TArray<FLinearColor> VertexColorsAristas;
+
 };
