@@ -40,7 +40,7 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     AristasMesh->SetupAttachment(RootComponent);
 	AristasMesh->bUseAsyncCooking = true;
 
-    CreateSphereTemplate(0);
+    CreateSphereTemplate(1);
 
     static ConstructorHelpers::FObjectFinder<UMaterial> NodosMaterialAsset(TEXT("Material'/Game/Visualization/Materials/NodosMeshMaterial.NodosMeshMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
     if (NodosMaterialAsset.Succeeded()) {
@@ -989,7 +989,9 @@ void ANJVR3DPMVRVisualization::ActualizarLayout() {//este actulizar deberia ser 
     }
     for (int i = 0; i < Aristas.Num(); i++) {
         //Aristas[i]->Actualizar();
-        UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetTransform().GetLocation(), Aristas[i]->TargetNodo->GetTransform().GetLocation());
+
+        //UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetTransform().GetLocation(), Aristas[i]->TargetNodo->GetTransform().GetLocation());
+        UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetRootComponent()->GetRelativeTransform().GetLocation(), Aristas[i]->TargetNodo->GetRootComponent()->GetRelativeTransform().GetLocation());
     }
     UpdateNodosMesh();
     UpdateAristasMesh();
