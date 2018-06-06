@@ -58,9 +58,11 @@ void ANJVR3DPMVRVisualization::BeginPlay() {
     //LayoutBase();
     //LayoutDistanciaReducida();
     //LayoutDistanciaAumentada();//el intermedio, funcona bien con los de radio grandes recuciendo el delta para los radios
+
     LayoutDistanciaAumentadaAnguloReducido();//acoplado bonito
 
     //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
+
     ActualizarLayout();
 }
 
@@ -988,10 +990,15 @@ void ANJVR3DPMVRVisualization::ActualizarLayout() {//este actulizar deberia ser 
         //aqui debo pasar actualizar la posicion de un nodo, pero al inicio puedo ya crear un mesh
     }
     for (int i = 0; i < Aristas.Num(); i++) {
-        //Aristas[i]->Actualizar();
+
+        Aristas[i]->Actualizar();
+        //UE_LOG(LogClass, Log, TEXT("AristaId = %d [Source %d (%f, %f, %f) - Target %d (%f, %f, %f)"), Aristas[i]->Id, Aristas[i]->SourceNodo->Id, Aristas[i]->SourceNodo->Xcoordinate, Aristas[i]->SourceNodo->Ycoordinate, Aristas[i]->SourceNodo->Zcoordinate, Aristas[i]->TargetNodo->Id, Aristas[i]->TargetNodo->Xcoordinate, Aristas[i]->TargetNodo->Ycoordinate, Aristas[i]->TargetNodo->Zcoordinate);
 
         //UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetTransform().GetLocation(), Aristas[i]->TargetNodo->GetTransform().GetLocation());
         UpdatePosicionesAristaMesh(Aristas[i]->Id, Aristas[i]->SourceNodo->GetRootComponent()->GetRelativeTransform().GetLocation(), Aristas[i]->TargetNodo->GetRootComponent()->GetRelativeTransform().GetLocation());
+        //FVector Source(Aristas[i]->SourceNodo->Xcoordinate, Aristas[i]->SourceNodo->Ycoordinate, Aristas[i]->SourceNodo->Zcoordinate);
+        //FVector Target(Aristas[i]->TargetNodo->Xcoordinate, Aristas[i]->TargetNodo->Ycoordinate, Aristas[i]->TargetNodo->Zcoordinate);
+        //UpdatePosicionesAristaMesh(Aristas[i]->Id, Source, Target);
     }
     UpdateNodosMesh();
     UpdateAristasMesh();
@@ -1385,7 +1392,8 @@ void ANJVR3DPMVRVisualization::AddAristaToMesh(FVector Source, FVector Target, i
         NormalsAristas.Add((VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal());
         TangentsAristas.Add(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
         UV0Aristas.Add(FVector2D(i*(1.0f/PrecisionAristas), 0));
-        VertexColorsAristas.Add(FLinearColor(0.0, 0.75, 0.75, 1.0));
+        //VertexColorsAristas.Add(FLinearColor(0.0, 0.75, 0.75, 1.0));
+        VertexColorsAristas.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
     }
 
     for (int i = 0; i < PrecisionAristas; i++) {
@@ -1432,9 +1440,9 @@ void ANJVR3DPMVRVisualization::UpdatePosicionesAristaMesh(int IdArista, FVector 
         TangentsAristas[i + IdArista * PrecisionAristas*2] = FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2));
     }
     for (int i = 0; i < PrecisionAristas; i++) {
-        VerticesAristas[i + IdArista * PrecisionAristas*2] = Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioAristas;
-        NormalsAristas[i + IdArista * PrecisionAristas*2] = (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal();
-        TangentsAristas[i + IdArista * PrecisionAristas*2] = FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2));
+        VerticesAristas[i + PrecisionAristas + IdArista * PrecisionAristas*2] = Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioAristas;
+        NormalsAristas[i + PrecisionAristas + IdArista * PrecisionAristas*2] = (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal();
+        TangentsAristas[i + PrecisionAristas + IdArista * PrecisionAristas*2] = FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2));
     }
 }
 
