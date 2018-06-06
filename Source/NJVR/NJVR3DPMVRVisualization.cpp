@@ -15,6 +15,7 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     DeltaDistanciaArista = 2.0f;
     //DeltaDistanciaArista = 0.5f;
     PrecisionAristas = 8;
+    PrecisionNodos = 2;
 
 	NodosMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GeneratedNodoMesh"));
     NodosMesh->SetupAttachment(RootComponent);
@@ -40,7 +41,7 @@ ANJVR3DPMVRVisualization::ANJVR3DPMVRVisualization() {
     AristasMesh->SetupAttachment(RootComponent);
 	AristasMesh->bUseAsyncCooking = true;
 
-    CreateSphereTemplate(1);
+    CreateSphereTemplate(PrecisionNodos);
 
     static ConstructorHelpers::FObjectFinder<UMaterial> NodosMaterialAsset(TEXT("Material'/Game/Visualization/Materials/NodosMeshMaterial.NodosMeshMaterial'"));//de usar este creo que debo crear un obtener un  material y ponerselo, este tiene el pivot en el centro de la esfera
     if (NodosMaterialAsset.Succeeded()) {

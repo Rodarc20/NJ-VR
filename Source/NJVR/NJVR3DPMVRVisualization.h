@@ -111,11 +111,14 @@ public:
     void ImprimirMatriz(FMatrix m);
 	
 	
+    UPROPERTY(EditAnywhere, Category = "Visualization - Parametros")
+    int PrecisionNodos; //NumeroLadosArista;//este tambien indica el tamaño de los arreglos
+
     //ProceduralMesh para los nodos
 	UPROPERTY(VisibleAnywhere)
 	UProceduralMeshComponent * NodosMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial * NodosMeshMaterial;
 
 	TArray<FVector> VerticesNodos;
@@ -170,7 +173,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UProceduralMeshComponent * AristasMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterial * AristasMeshMaterial;
 	
 	TArray<FVector> VerticesAristas;
@@ -185,7 +188,7 @@ public:
 
 	TArray<FLinearColor> VertexColorsAristas;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, Category = "Visualization - Parametros")
     int PrecisionAristas; //NumeroLadosArista;//este tambien indica el tamaño de los arreglos
 
     void AddAristaToMesh(FVector Source, FVector Target, int Radio, int NumArista);// precision es cuanto lados tendra el cilindo, minimo 3, radio, sera el radio del cilindro, este template no es tan adaptable como el de la esfera, por eso necesai dos parametros
