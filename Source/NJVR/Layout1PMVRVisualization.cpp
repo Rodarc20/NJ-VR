@@ -1060,9 +1060,9 @@ void ALayout1PMVRVisualization::DividirTriangulos() {
 }
 
 
-void ALayout1PMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, int NumNodo) {
+void ALayout1PMVRVisualization::AddNodoToMesh(FVector Posicion, float RadioNodo, int NumNodo) {
     for (int i = 0; i < VerticesNodoTemplate.size(); i++) {
-        VerticesNodos.Add(VerticesNodoTemplate[i] * Radio + Posicion);
+        VerticesNodos.Add(VerticesNodoTemplate[i] * RadioNodo + Posicion);
     }
     for (int i = 0; i < VerticesPNodoTemplate.size(); i++) {
         VerticesPNodos.Add(VerticesPNodoTemplate[i]);
@@ -1086,9 +1086,9 @@ void ALayout1PMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, int
     }
 }
 
-void ALayout1PMVRVisualization::AddNodoToMesh(FVector Posicion, float Radio, FLinearColor Color, int NumNodo) {
+void ALayout1PMVRVisualization::AddNodoToMesh(FVector Posicion, float RadioNodo, FLinearColor Color, int NumNodo) {
     for (int i = 0; i < VerticesNodoTemplate.size(); i++) {
-        VerticesNodos.Add(VerticesNodoTemplate[i] * Radio + Posicion);
+        VerticesNodos.Add(VerticesNodoTemplate[i] * RadioNodo + Posicion);
     }
     for (int i = 0; i < VerticesPNodoTemplate.size(); i++) {
         VerticesPNodos.Add(VerticesPNodoTemplate[i]);
@@ -1132,7 +1132,7 @@ void ALayout1PMVRVisualization::UpdateNodosMesh() {
 	NodosMesh->UpdateMeshSection_LinearColor(0, VerticesNodos, NormalsNodos, UV0Nodos, VertexColorsNodos, TangentsNodos);
 }
 
-void ALayout1PMVRVisualization::AddAristaToMesh(FVector Source, FVector Target, int Radio, int NumArista) {
+void ALayout1PMVRVisualization::AddAristaToMesh(FVector Source, FVector Target, int RadioArista, int NumArista) {
     //precision debe ser mayor a 3, represante el numero de lados del cilindro
     //la precision deberia ser de forma general,asi lo puedo usar para determinar la cantidad de vertices añadidos
     FVector Direccion = (Target - Source).GetSafeNormal();
@@ -1148,14 +1148,14 @@ void ALayout1PMVRVisualization::AddAristaToMesh(FVector Source, FVector Target, 
     float DeltaTheta = 2 * PI / PrecisionAristas;
 
     for (int i = 0; i < PrecisionAristas; i++) {
-        VerticesAristas.Add(Target + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*Radio);
+        VerticesAristas.Add(Target + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioArista);
         NormalsAristas.Add((VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal());
         TangentsAristas.Add(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
         UV0Aristas.Add(FVector2D(i*(1.0f/PrecisionAristas), 1));
         VertexColorsAristas.Add(FLinearColor(0.75, 0.75, 0.75, 1.0));
     }
     for (int i = 0; i < PrecisionAristas; i++) {
-        VerticesAristas.Add(Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*Radio);
+        VerticesAristas.Add(Source + (VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta))*RadioArista);
         NormalsAristas.Add((VectorU*FMath::Cos(i*DeltaTheta) + VectorV*FMath::Sin(i*DeltaTheta)).GetSafeNormal());
         TangentsAristas.Add(FProcMeshTangent(1.0f * FMath::Sin(PI/2)*FMath::Cos(i*DeltaTheta + PI/2), 1.0f * FMath::Sin(PI/2)*FMath::Sin(i*DeltaTheta + PI/2), 1.0f * FMath::Cos(PI/2)));
         UV0Aristas.Add(FVector2D(i*(1.0f/PrecisionAristas), 0));

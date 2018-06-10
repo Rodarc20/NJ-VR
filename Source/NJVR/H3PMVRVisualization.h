@@ -6,12 +6,11 @@
 #include "VRVisualization.h"
 #include "ProceduralMeshComponent.h"
 #include <vector>
-#include "Layout1PMVRVisualization.generated.h"
+#include "H3PMVRVisualization.generated.h"
 
 /**
  * 
  */
-
 class Triangulo {
     public:
         int IdA;
@@ -31,55 +30,36 @@ class Triangulo {
         Triangulo(FVector va, FVector vb, FVector  vc, int a, int b, int c, int niv, bool ori): A(va), B(vb), C(vc), IdA(a), IdB(b), IdC(c), Nivel(niv), Orientacion(ori) { }
 };
 
+
 UCLASS()
-class NJVR_API ALayout1PMVRVisualization : public AVRVisualization
+class NJVR_API AH3PMVRVisualization : public AVRVisualization
 {
 	GENERATED_BODY()
-	
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
-    ALayout1PMVRVisualization();
+    AH3PMVRVisualization();
 
     virtual void CreateNodos() override;
 
     virtual void CreateAristas() override;
+	
+    virtual void AplicarTraslacion(FVector Traslacion) override;
+	
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TraslacionConNodoGuia() override;
 
-    //int mod(int a, int b);
-
-    //float modFloat(float a, float b);
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
-    float Radio;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
-    float PhiMax;
+    UFUNCTION(BlueprintCallable, Category = "Visualization")
+    virtual void TrasladarRamaPressed() override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
-    float PhiMin;
+    float RadioHoja;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout(float NewRadio);
-
-    //Ubica el nivel mas denso de todo el arbol en el ecuador
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout3(float NewRadio);
-
-    void UbicacionesLayout4(ANodo * Rama, int NivelDenso);
-    float EncontrarRadio1(float PhiNivelDenso, int CantidadNodosNivel);//busca el nivel mas denso y hace un calculo sencillo
-    float EncontrarRadio2(float PhiUltimoNivel);//este deberia recibir el phi el ultimo nivel, para poder hacer los calculos, 
-
-    //ubica por ramas el nivel mas denso en la mitad de la esfera
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout4();
-
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void Layout2(ANodo * Node, float NewRadio, int NivelExp, float PhiInicial, float WInicioInicial, float WTamInicial);
-
-    int EncontrarNivel(class TQueue<ANodo*>& cola, ANodo * Rama, int Nivel);//que retorne el numero de hojas en el nivel que retorne
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float AreaHoja;
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void Calculos(ANodo * V);
@@ -89,30 +69,58 @@ public:
 
     void Calc();
 
+    void CalcularRadio(ANodo * V);
+
+    void CalcularRadioHemiesfera(ANodo * V);
+
+    void CalcularRadioHemiesferaH3(ANodo * V);
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutBase();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutBase2();
+
+    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
+    void LayoutBaseH3();
+
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
     void ActualizarLayout();
 
-
     UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void ExpandirLayout();
+    void ActualizarLayoutH3();
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization - Layouts")
-    void ReducionDistanciaHojas();
+    FMatrix MatrizTraslacion(float x, float y, float z);
 
-    virtual void AplicarTraslacion(FVector Traslacion) override;
+    FMatrix MatrizRotacionX(float angle);
+
+    FMatrix MatrizRotacionY(float angle);
+
+    FMatrix MatrizRotacionZ(float angle);
+
+    FMatrix MultiplicacionMatriz(FMatrix a, FMatrix b);
+
+    void ImprimirMatriz(FMatrix m);
+
+    float ConvertirADistanciaEuclideana(float x);
 	
-    virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) override;
+    bool IsFinite(FMatrix M);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float K;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float HemisphereAreaScale;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float LeafArea;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")
+    float EscalaSalida;
+
+    float CalcularDeltaPhi(float RadioHijo, float RadioPadre);
 	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta);
-    //interseccion con del laser con la esfera
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    virtual FVector InterseccionLineaSuperficie() override;
-	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    virtual void TraslacionConNodoGuia() override;
-	
-	
+
     UPROPERTY(EditAnywhere, Category = "Visualization - Parametros")
     int PrecisionNodos; //NumeroLadosArista;//este tambien indica el tamaño de los arreglos
 
@@ -161,15 +169,17 @@ public:
 
     void DividirTriangulos();
 
-    void AddNodoToMesh(FVector Posicion, float RadioNodo, int NumNodo);//NumNodo es solo para facilidad de calculo
+    void AddNodoToMesh(FVector Posicion, float Radio, int NumNodo);//NumNodo es solo para facilidad de calculo
 
-    void AddNodoToMesh(FVector Posicion, float RadioNodo, FLinearColor Color, int NumNodo);
+    void AddNodoToMesh(FVector Posicion, float Radio, FLinearColor Color, int NumNodo);
 
     void CreateNodosMesh();
 
     void UpdateNodosMesh();
 
     void UpdatePosicionNodoMesh(int IdNodo, FVector NewPosition);
+
+    void UpdatePosicionNodoMeshH3(int IdNodo, FVector NewPosition);
 
     //ProceduralMesh para las aristas
 	UPROPERTY(VisibleAnywhere)
@@ -193,11 +203,14 @@ public:
     UPROPERTY(EditAnywhere, Category = "Visualization - Parametros")
     int PrecisionAristas; //NumeroLadosArista;//este tambien indica el tamaño de los arreglos
 
-    void AddAristaToMesh(FVector Source, FVector Target, int RadioArista, int NumArista);// precision es cuanto lados tendra el cilindo, minimo 3, radio, sera el radio del cilindro, este template no es tan adaptable como el de la esfera, por eso necesai dos parametros
+    void AddAristaToMesh(FVector Source, FVector Target, int Radio, int NumArista);// precision es cuanto lados tendra el cilindo, minimo 3, radio, sera el radio del cilindro, este template no es tan adaptable como el de la esfera, por eso necesai dos parametros
 
     void CreateAristasMesh();
 
     void UpdateAristasMesh();
 
     void UpdatePosicionesAristaMesh(int IdArista, FVector Source, FVector Target);
+	
+    void UpdatePosicionesAristaMeshH3(int IdArista, FVector Source, FVector Target);
+	
 };
