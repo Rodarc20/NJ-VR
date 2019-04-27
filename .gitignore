@@ -4,6 +4,7 @@ DerivedDataCache
 Intermediate
 Saved
 .vs
+.vscode
 .vs/NJVR/v15/ipch
 *.VC.db
 *.opensdf
