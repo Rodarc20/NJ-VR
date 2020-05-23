@@ -80,6 +80,10 @@ AVRVisualization::AVRVisualization()
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/medicas12clases.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/message4.xml"));
     DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/rssnewsfeed.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/rss_661.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/medicas12classesimage.xml"));
+    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/mammals-4000.xml"));
+
     DataSetSeleccionado = 0;
 
     XmlSourceP = new FXmlFile;
