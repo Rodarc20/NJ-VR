@@ -25,6 +25,7 @@ void ANJVR3DVRVisualization::BeginPlay() {
 
     //LayoutDistanciaAumentadaHijoAnguloReducido();// mas pequeño que el anterior
     ActualizarLayout();
+    SetActorScale3D(FVector(0.3f));
 }
 
 void ANJVR3DVRVisualization::CreateNodos() {
