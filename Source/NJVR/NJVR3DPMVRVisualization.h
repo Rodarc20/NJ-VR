@@ -17,18 +17,18 @@ class Triangulo {
         int IdA;
         int IdB;
         int IdC;
-        int Nivel;
-        bool Orientacion;// 0 ahcia arriga, 1 hacia abajo, esto no se si lo use
-        FVector Centro;
         FVector A;
         FVector B;
         FVector C;
+        int Nivel;
+        bool Orientacion;// 0 ahcia arriga, 1 hacia abajo, esto no se si lo use
+        FVector Centro;
         float Phi;
         float Theta;
         Triangulo() {}
         Triangulo(int a, int b, int c, int niv, bool ori): IdA(a), IdB(b), IdC(c), Nivel(niv), Orientacion(ori) { }
         Triangulo(FVector va, FVector vb, FVector  vc, int niv, bool ori): A(va), B(vb), C(vc), Nivel(niv), Orientacion(ori) { }
-        Triangulo(FVector va, FVector vb, FVector  vc, int a, int b, int c, int niv, bool ori): A(va), B(vb), C(vc), IdA(a), IdB(b), IdC(c), Nivel(niv), Orientacion(ori) { }
+        Triangulo(FVector va, FVector vb, FVector  vc, int a, int b, int c, int niv, bool ori): IdA(a), IdB(b), IdC(c), A(va), B(vb), C(vc), Nivel(niv), Orientacion(ori) { }
 };
 
 UCLASS()
@@ -51,10 +51,8 @@ public:
 
     virtual void AplicarTraslacion(FVector Traslacion) override;
 	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TrasladarRamaPressed() override;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")

@@ -16,12 +16,12 @@ class Triangulo {
         int IdA;
         int IdB;
         int IdC;
-        int Nivel;
-        bool Orientacion;// 0 ahcia arriga, 1 hacia abajo, esto no se si lo use
-        FVector Centro;
         FVector A;
         FVector B;
         FVector C;
+        int Nivel;
+        bool Orientacion;// 0 ahcia arriga, 1 hacia abajo, esto no se si lo use
+        FVector Centro;
         float Phi;
         float Theta;
         Triangulo() {}

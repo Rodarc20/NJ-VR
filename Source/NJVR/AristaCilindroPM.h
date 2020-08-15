@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Arista.h"
+#include "Components/CapsuleComponent.h"
 #include "AristaCilindroPM.generated.h"
 
 /**

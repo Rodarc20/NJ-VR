@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Arista.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "AristaCilindroEsferica.generated.h"
 
 /**

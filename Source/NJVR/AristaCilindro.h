@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Arista.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "AristaCilindro.generated.h"
 
 /**

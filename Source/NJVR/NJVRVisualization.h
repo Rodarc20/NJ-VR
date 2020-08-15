@@ -24,12 +24,9 @@ public:
 	
     virtual void AplicarRotacionRelativaANodo(ANodo* NodoReferencia, FVector PuntoReferencia) override;
 	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual FVector InterseccionLineaSuperficie() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void RotacionRama();
+    virtual void RotacionRama() override;
 };

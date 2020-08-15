@@ -7,6 +7,8 @@
 #include "WidgetComponent.h"
 #include "WidgetInteractionComponent.h"
 #include "MotionControllerComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "VRPawn.generated.h"
 
 UCLASS()

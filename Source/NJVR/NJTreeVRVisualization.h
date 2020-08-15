@@ -46,13 +46,10 @@ public:
 
     void Calc();
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     void RotacionRama() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual FVector InterseccionLineaSuperficie() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 
 
