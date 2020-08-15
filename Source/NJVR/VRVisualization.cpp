@@ -32,7 +32,7 @@ AVRVisualization::AVRVisualization()
     //static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("Class'/Script/NJVR.NodoEsfera'"));
     static ConstructorHelpers::FClassFinder<ANodo> NodoClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/NodoEsfera_BP.NodoEsfera_BP_C'"));
     if (NodoClass.Succeeded()) {
-        if(GEngine)//no hacer esta verificación provocaba error al iniciar el editor
+        if(GEngine)//no hacer esta verificaciï¿½n provocaba error al iniciar el editor
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TipoNodo encontrado."));
         TipoNodo = NodoClass.Class;
     }
@@ -42,7 +42,7 @@ AVRVisualization::AVRVisualization()
     //static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("Class'/Script/NJVR.AristaCilindro'"));
     static ConstructorHelpers::FClassFinder<AArista> AristaClass(TEXT("BlueprintGeneratedClass'/Game/Visualization/Blueprints/Elements/AristaCilindro_BP.AristaCilindro_BP_C'"));
     if (AristaClass.Succeeded()) {
-        if(GEngine)//no hacer esta verificación provocaba error al iniciar el editor
+        if(GEngine)//no hacer esta verificaciï¿½n provocaba error al iniciar el editor
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TipoArista encontrado."));
         TipoArista = AristaClass.Class;
     }
@@ -68,18 +68,23 @@ AVRVisualization::AVRVisualization()
 
     SetVisualizationMode(EVRVisualizationMode::ENoMode);// como inicia en ste mdo deberia parecer marcado, el boton correspondiente,
     SetVisualizationTask(EVRVisualizationTask::ENoTask);//esta bien que empiece en ninguno, asi ningun boton tarea estara marcado
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/Sincbr-ilp-ir.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/imagensCorel.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/SinimagensCorel.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/AMTesis.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/LeafShapes.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/BrocadoL8.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/pendigits-orig.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/cbr-ilp-ir-son-int.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/medicas12clases.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/message4.xml"));
-    DataSets.Add(FString("D:/UnrealProjects/NJVR/Content/Resources/rssnewsfeed.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/cbr-ilp-ir-son.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/Sincbr-ilp-ir.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/imagensCorel.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/SinimagensCorel.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/AMTesis.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/LeafShapes.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/BrocadoL8.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/pendigits-orig.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/cbr-ilp-ir-son-int.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/medicas12clases.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/message4.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/rssnewsfeed.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/rss_661.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/medicas12classesimage.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/mammals-4000.xml"));
+    DataSets.Add(FString("D:/Unreal Projects/NJVR/Content/Resources/PB_images_corel_radial.xml"));
+
     DataSetSeleccionado = 0;
 
     XmlSourceP = new FXmlFile;
@@ -328,17 +333,17 @@ void AVRVisualization::CreateNodos() {
                 //UE_LOG(LogClass, Log, TEXT("Color = %d"), NodoInstanciado->ColorNum);
             }
             else {
-                NodoInstanciado->Color = ColorVirtual;//tambien debo cambiarle el tamaño
+                NodoInstanciado->Color = ColorVirtual;//tambien debo cambiarle el tamaï¿½o
                 NodoInstanciado->ColorNum = FCString::Atoi(*colorcdata);
                 NodoInstanciado->Radio = RadioNodosVirtuales;
             }
-            //actualizar nodo, para cambiar el color o el tamaño si es necesario
+            //actualizar nodo, para cambiar el color o el tamaï¿½o si es necesario
             NodoInstanciado->Escala = Escala;
             NodoInstanciado->Actualizar();
             //NodoInstanciado->AttachRootComponentToActor(this);
             NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);//segun el compilador de unral debo usar esto
             Nodos.Add(NodoInstanciado);
-            //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
+            //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualizaciï¿½n, aunque parece que esto no es suficient
         }
     }
     //UE_LOG(LogClass, Log, TEXT("NumeroColor = %d"), numerocolores.Num());
@@ -605,7 +610,7 @@ void AVRVisualization::AplicarTraslacion(FVector Traslacion) {
 /*void AVRVisualization::AplicarEscala(float NuevaEscala) {
     for (int i = 0; i < Nodos.Num(); i++) {
         Nodos[i]->Escala = NuevaEscala;
-        Nodos[i]->Actualizar();//este deberia actualziar tal vez también la posicion del nodo, o calcularlo afuera
+        Nodos[i]->Actualizar();//este deberia actualziar tal vez tambiï¿½n la posicion del nodo, o calcularlo afuera
         FTransform NewTransform = Nodos[i]->GetActorTransform();
         //NewTransform.SetLocation(Nodos[i]->GetTransform().GetLocation() * NuevaEscala);
         NewTransform.SetLocation(PosicionesNodosInicialEscala[i] * NuevaEscala);
@@ -686,7 +691,7 @@ FVector AVRVisualization::BuscarNodo(ANodo * &NodoEncontrado) {//en realidad dbe
     TArray<AActor*> vacio;
     FHitResult Hit;
     bool trace = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), PuntoInicial, PuntoFinal, TiposObjetos, false, vacio, EDrawDebugTrace::None, Hit, true, FLinearColor::Blue);//el none es para que no se dibuje nada
-    //hit se supone que devovera al actor y el punto de impacto si encontró algo, castearlo a nodo, y listo
+    //hit se supone que devovera al actor y el punto de impacto si encontrï¿½ algo, castearlo a nodo, y listo
     if (trace) {
         //solo que al agregar el worldynamic ,tengo que castear y verificar
         NodoEncontrado = Cast<ANodo>(Hit.Actor.Get());

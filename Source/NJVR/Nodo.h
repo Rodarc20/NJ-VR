@@ -76,7 +76,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     FLinearColor Color;//este podria cambiar a un arreglo de colores si tengo diferentes formas de clasificar
 
-
     //los labels como titulo del documento, y nombre del archivo
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Visualization")
     TArray<FString> Labels;
@@ -104,19 +103,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization")
     float Radio;
 
-    //Mesh del nodo
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Visualization")
-    UStaticMeshComponent * NodoMesh; // debe tener este componente ya que en cualquier tipo de nodo, podre cambiar el color del mesh
-
-    UPROPERTY(VisibleAnywhere, Category = "Visualization")
-    USphereComponent * NodoCollision;// el detector de colisiones es diferente en cada nodo por lo tanto se manejan con funciones diferentes, este deberia ser un UShape para poder generalizar, pero por ahora lo dejameros a decision de las subclases
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization", Meta = (BlueprintPublic = "true"))
-    UMaterialInstanceDynamic * NodoMaterialDynamic;
-
     //Cambiar el color del material
     UFUNCTION(BlueprintCallable, Category = "Visualization")
-    void CambiarColor(FLinearColor NewColor);
+    virtual void CambiarColor(FLinearColor NewColor);
 
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void Actualizar();

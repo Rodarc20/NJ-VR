@@ -38,9 +38,6 @@ void ANodo::Tick(float DeltaTime)
 }
 
 void ANodo::CambiarColor(FLinearColor NewColor) {
-    if (NodoMaterialDynamic != nullptr) {
-        NodoMaterialDynamic->SetVectorParameterValue(TEXT("Color"), NewColor);// a que pareametro del material se le asiganara el nuevo color
-    }
 }
 
 void ANodo::Actualizar() {
@@ -56,11 +53,11 @@ void ANodo::OcultarNombre() {
 }
 
 void ANodo::ActualizarRotacionNombre(FVector Direccion) {//deberia actualizarse solo, cuando este activo por alguna razon
-    FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion - NodoMesh->GetComponentLocation()).Rotator();
+    /*FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion - NodoMesh->GetComponentLocation()).Rotator();
     NodoMesh->SetWorldRotation(NewRotation);
     NewRotation = FRotationMatrix::MakeFromX(Direccion - Nombre->GetComponentLocation()).Rotator();
     //NewRotation = FRotationMatrix::MakeFromX(Direccion).Rotator();
-    Nombre->SetWorldRotation(NewRotation);
+    Nombre->SetWorldRotation(NewRotation);*/
 }
 
 void ANodo::MostrarNumero() {

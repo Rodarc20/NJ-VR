@@ -189,3 +189,17 @@ void ANodoEsfera::DesactivarResaltadoContenido() {
 
 void ANodoEsfera::DeterminarResaltado() {
 }
+
+void ANodoEsfera::CambiarColor(FLinearColor NewColor) {
+    if (NodoMaterialDynamic != nullptr) {
+        NodoMaterialDynamic->SetVectorParameterValue(TEXT("Color"), NewColor);// a que pareametro del material se le asiganara el nuevo color
+    }
+}
+
+void ANodoEsfera::ActualizarRotacionNombre(FVector Direccion) {//deberia actualizarse solo, cuando este activo por alguna razon
+    FRotator NewRotation = FRotationMatrix::MakeFromX(Direccion - NodoMesh->GetComponentLocation()).Rotator();
+    NodoMesh->SetWorldRotation(NewRotation);
+    NewRotation = FRotationMatrix::MakeFromX(Direccion - Nombre->GetComponentLocation()).Rotator();
+    //NewRotation = FRotationMatrix::MakeFromX(Direccion).Rotator();
+    Nombre->SetWorldRotation(NewRotation);
+}
