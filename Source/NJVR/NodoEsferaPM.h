@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Nodo.h"
+#include "Components/SphereComponent.h"
 #include "NodoEsferaPM.generated.h"
 
 /**

@@ -3,6 +3,9 @@
 #pragma once
 
 #include "Nodo.h"
+#include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "NodoEsfera.generated.h"
 
 /**

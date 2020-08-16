@@ -29,10 +29,8 @@ public:
 
     virtual void AplicarTraslacion(FVector Traslacion) override;
 	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TrasladarRamaPressed() override;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visualization - Parametros")

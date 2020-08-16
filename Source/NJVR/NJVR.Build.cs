@@ -6,6 +6,8 @@ public class NJVR : ModuleRules
 {
 	public NJVR(ReadOnlyTargetRules Target): base(Target)
 	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "XmlParser", "UMG", "ProceduralMeshComponent" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "SteamVR", "SteamVRController", "Slate", "SlateCore" });

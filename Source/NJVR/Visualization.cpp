@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NJVR.h"
 #include "Visualization.h"
+#include "NJVR.h"
 #include "Nodo.h"
 #include "Arista.h"
 
@@ -634,7 +634,7 @@ void AVisualization::CreateNodos2() {
                 NodoInstanciado->Labels.Add(labels[j]);
             }
             if(labels.Num()){
-                NodoInstanciado->Nombre->SetText(labels[0]);
+                NodoInstanciado->Nombre->SetText(FText::FromString(labels[0]));
             }
             NodoInstanciado->ParentId = FCString::Atoi(*parent);
             for (int j = 0; j < sons.Num(); j++) {
@@ -655,8 +655,8 @@ void AVisualization::CreateNodos2() {
             }
             //actualizar nodo, para cambiar el color o el tamaño si es necesario
             NodoInstanciado->Actualizar();
-            NodoInstanciado->AttachRootComponentToActor(this);
-            //NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::);//segun el compilador de unral debo usar esto
+            //NodoInstanciado->AttachRootComponentToActor(this);
+            NodoInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);//segun el compilador de unral debo usar esto
             Nodos.Add(NodoInstanciado);
             //NodoInstanciado->GetRootComponent()->SetupAttachment(RootComponent);// para hacerlo hioj de la visualización, aunque parece que esto no es suficient
             //distancia
@@ -713,7 +713,7 @@ void AVisualization::CreateAristas2() {//el ultimo nodoe debe tener una arista h
                 AristaInstanciado->SourceNodo = Nodos[padre];
                 AristaInstanciado->TargetNodo = Nodos[hijo];
                 AristaInstanciado->Actualizar();
-                AristaInstanciado->AttachRootComponentToActor(this);
+				AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
                 Aristas.Add(AristaInstanciado);
                 count++;
@@ -739,7 +739,7 @@ void AVisualization::CreateAristas2() {//el ultimo nodoe debe tener una arista h
         AristaInstanciado->SourceNodo = Nodos[padre];
         AristaInstanciado->TargetNodo = Nodos[hijo];
         AristaInstanciado->Actualizar();
-        AristaInstanciado->AttachRootComponentToActor(this);
+        AristaInstanciado->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
         Aristas.Add(AristaInstanciado);
         count++;

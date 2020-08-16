@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NJVR.h"
 #include "TriSphereVRVisualization.h"
+#include "NJVR.h"
 #include "Nodo.h"
 #include "Arista.h"
 #include "VRPawn.h"

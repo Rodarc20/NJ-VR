@@ -82,10 +82,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Visualization")
     void AplicarTraslacionEsferica(float TraslacionPhi, float TraslacionTheta);
     //interseccion con del laser con la esfera
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual FVector InterseccionLineaSuperficie() override;
 	
-    UFUNCTION(BlueprintCallable, Category = "Visualization")
     virtual void TraslacionConNodoGuia() override;
 	
 };

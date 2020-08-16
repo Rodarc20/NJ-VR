@@ -3,6 +3,7 @@
 #pragma once
 
 #include "VRVisualization.h"
+#include "Components/SphereComponent.h"
 #include "SemiEsferaVRVisualization.generated.h"
 
 /**
