@@ -1,5 +1,5 @@
 # NJ-VR
-Visualización de NJ en VR con Unreal Engine
+Visualización de NJ en VR con Unreal Engine 4.22
 
 
 Ubicar los conjuntos de datos en:
