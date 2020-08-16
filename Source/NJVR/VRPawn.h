@@ -4,8 +4,8 @@
 
 #include "GameFramework/Pawn.h"
 #include "HeadMountedDisplay.h"
-#include "WidgetComponent.h"
-#include "WidgetInteractionComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "MotionControllerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"

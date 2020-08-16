@@ -8,6 +8,7 @@ public class NJVRTarget : TargetRules
 	public NJVRTarget(TargetInfo Target): base(Target)
 	{
 		Type = TargetType.Game;
+		DefaultBuildSettings = BuildSettingsVersion.V2;
         ExtraModuleNames.Add("NJVR");
 	}
 }
