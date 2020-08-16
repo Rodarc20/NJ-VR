@@ -92,7 +92,7 @@ void ANJ3DVRVisualization::CreateNodos() {
         if (World) {
             FActorSpawnParameters SpawnParams;
             SpawnParams.Owner = this;
-            SpawnParams.Instigator = Instigator;
+            SpawnParams.Instigator = GetInstigator();
 
             FVector SpawnLocation(0.0f, FCString::Atof(*xcoordinate) - OrigenX, -1*FCString::Atof(*ycoordinate) - OrigenY);//ejes invertidos a los recibidos//-1 al y
             SpawnLocation = GetTransform().TransformPosition(SpawnLocation);
@@ -162,7 +162,7 @@ void ANJ3DVRVisualization::CreateAristas() {//el ultimo nodoe debe tener una ari
     if (World) {//este if deberia estar afuera
         FActorSpawnParameters SpawnParams;
         SpawnParams.Owner = this;
-        SpawnParams.Instigator = Instigator;
+        SpawnParams.Instigator = GetInstigator();
         for (int i = 0; i < Nodos.Num(); i++) {
             for (int j = 0; j < Nodos[i]->Sons.Num(); j++) {
                 int padre = i;
