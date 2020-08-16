@@ -63,8 +63,8 @@ AAristaCilindroEsferica::AAristaCilindroEsferica() {
 }
 
 void AAristaCilindroEsferica::Actualizar() {
-    FVector SourceRL = SourceNodo->GetRootComponent()->RelativeLocation;
-    FVector TargetRL = TargetNodo->GetRootComponent()->RelativeLocation;
+    FVector SourceRL = SourceNodo->GetRootComponent()->GetRelativeLocation();
+    FVector TargetRL = TargetNodo->GetRootComponent()->GetRelativeLocation();
     float RadioEsfera = SourceRL.Size();
     float DeltaPhi = TargetNodo->Phi - SourceNodo->Phi;
     FVector P1;//se supone que ya esta en relativo

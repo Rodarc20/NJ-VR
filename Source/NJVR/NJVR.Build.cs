@@ -10,7 +10,7 @@ public class NJVR : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "XmlParser", "UMG", "ProceduralMeshComponent" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "SteamVR", "SteamVRController", "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay", "SteamVR", /*"SteamVRController",*/ "Slate", "SlateCore" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
